@@ -6,17 +6,21 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { updateTask } from '@/actions/tasks';
+import { updateTask, getTaskLabels, toggleTaskLabel } from '@/actions/tasks';
+import { getLabels } from '@/actions/labels';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, Repeat } from 'lucide-react';
+import { CalendarIcon, Repeat, Plus, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { SubtasksList } from './subtasks-list';
 import { AttachmentsList } from './attachments-list';
 import { ActivityLog } from './activity-log';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from '@/components/ui/badge';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { useState, useEffect } from 'react';
 
 interface TaskDetailSheetProps {
   task: any;
@@ -25,10 +29,31 @@ interface TaskDetailSheetProps {
 }
 
 export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetProps) {
+  const [labels, setLabels] = useState<any[]>([]);
+  const [assignedLabels, setAssignedLabels] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (open && task) {
+        getLabels().then(setLabels);
+        getTaskLabels(task.id).then(setAssignedLabels);
+    }
+  }, [open, task]);
+
   if (!task) return null;
 
   const handleUpdate = async (data: any) => {
       await updateTask(task.id, data);
+  };
+
+  const handleToggleLabel = async (labelId: number) => {
+    const isAssigned = assignedLabels.some(l => l.id === labelId);
+    await toggleTaskLabel(task.id, labelId, !isAssigned);
+    if (isAssigned) {
+        setAssignedLabels(prev => prev.filter(l => l.id !== labelId));
+    } else {
+        const label = labels.find(l => l.id === labelId);
+        if (label) setAssignedLabels(prev => [...prev, label]);
+    }
   };
 
   return (
@@ -63,6 +88,47 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                         onBlur={(e) => handleUpdate({ description: e.target.value })}
                         className="min-h-[100px]"
                     />
+                </div>
+
+                <div className="grid gap-2">
+                    <Label>Labels</Label>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                        {assignedLabels.map(label => (
+                            <Badge key={label.id} variant="outline" style={{ borderColor: label.color, color: label.color }}>
+                                {label.name}
+                            </Badge>
+                        ))}
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="h-6 border-dashed">
+                                    <Plus className="w-3 h-3 mr-1" />
+                                    Add Label
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="p-0 w-[200px]" align="start">
+                                <Command>
+                                    <CommandInput placeholder="Search label..." />
+                                    <CommandList>
+                                        <CommandEmpty>No label found.</CommandEmpty>
+                                        <CommandGroup>
+                                            {labels.map(label => {
+                                                const isAssigned = assignedLabels.some(l => l.id === label.id);
+                                                return (
+                                                    <CommandItem key={label.id} onSelect={() => handleToggleLabel(label.id)}>
+                                                        <div className="flex items-center gap-2 w-full cursor-pointer">
+                                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: label.color }} />
+                                                            <span>{label.name}</span>
+                                                            {isAssigned && <Check className="ml-auto w-4 h-4" />}
+                                                        </div>
+                                                    </CommandItem>
+                                                );
+                                            })}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
                 </div>
 
                 <div className="grid gap-2">
@@ -105,8 +171,10 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                             </SelectContent>
                         </Select>
                     </div>
+                </div>
 
-                    <div className="grid gap-2">
+                <div className="grid grid-cols-2 gap-4">
+                     <div className="grid gap-2">
                         <Label>Due Date</Label>
                         <Popover>
                             <PopoverTrigger asChild>
@@ -131,7 +199,48 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                             </PopoverContent>
                         </Popover>
                     </div>
+
+                    <div className="grid gap-2">
+                        <Label>Deadline</Label>
+                        <Input
+                            type="datetime-local"
+                            defaultValue={task.deadline ? task.deadline : ''}
+                            onBlur={(e) => handleUpdate({ deadline: e.target.value || null })}
+                        />
+                    </div>
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                        <Label htmlFor="estimate">Estimate (min)</Label>
+                        <Input
+                            id="estimate"
+                            type="number"
+                            defaultValue={task.estimate}
+                            onBlur={(e) => handleUpdate({ estimate: parseInt(e.target.value) || null })}
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="actualTime">Actual (min)</Label>
+                        <Input
+                            id="actualTime"
+                            type="number"
+                            defaultValue={task.actualTime}
+                            onBlur={(e) => handleUpdate({ actualTime: parseInt(e.target.value) || null })}
+                        />
+                    </div>
+                </div>
+
+                <div className="grid gap-2">
+                    <Label htmlFor="reminders">Reminders</Label>
+                    <Input
+                        id="reminders"
+                        placeholder="e.g. 10m before"
+                        defaultValue={task.reminders}
+                        onBlur={(e) => handleUpdate({ reminders: e.target.value })}
+                    />
+                </div>
+
                 </div>
             </TabsContent>
 

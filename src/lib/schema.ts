@@ -32,6 +32,7 @@ export const tasks = sqliteTable('tasks', {
   completedAt: text('completed_at'),
   estimate: integer('estimate'), // In minutes
   actualTime: integer('actual_time'), // In minutes
+  reminders: text('reminders'), // JSON string for reminders
   priority: text('priority').default('none'), // high, medium, low, none
   recurrenceInterval: text('recurrence_interval'), // DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM
   recurrenceConfig: text('recurrence_config'), // JSON string for custom rules

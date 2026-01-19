@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { tasks, activityLogs } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { tasks, activityLogs, taskLabels, labels } from '@/lib/schema';
+import { eq, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { format } from 'date-fns';
 
@@ -62,4 +62,28 @@ export async function deleteTask(id: number) {
 
 export async function getActivityLogs(taskId: number) {
     return db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).all();
+}
+
+export async function getTaskLabels(taskId: number) {
+    return db.select({
+        id: labels.id,
+        name: labels.name,
+        color: labels.color
+    })
+    .from(labels)
+    .innerJoin(taskLabels, eq(labels.id, taskLabels.labelId))
+    .where(eq(taskLabels.taskId, taskId))
+    .all();
+}
+
+export async function toggleTaskLabel(taskId: number, labelId: number, selected: boolean) {
+    if (selected) {
+        const exists = db.select().from(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).get();
+        if (!exists) {
+            db.insert(taskLabels).values({ taskId, labelId }).run();
+        }
+    } else {
+        db.delete(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).run();
+    }
+    try { revalidatePath('/'); } catch (e) {}
 }

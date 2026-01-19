@@ -4,6 +4,7 @@ import "./globals.css";
 import { Sidebar } from "@/components/layout/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getLists } from "@/actions/lists";
+import { getLabels } from "@/actions/labels";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +19,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const lists = await getLists();
+  const labels = await getLabels();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -29,7 +31,7 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
           <div className="flex h-screen overflow-hidden">
-            <Sidebar className="hidden md:block w-64 flex-shrink-0" lists={lists} />
+            <Sidebar className="hidden md:block w-64 flex-shrink-0" lists={lists} labels={labels} />
             <main className="flex-1 overflow-y-auto p-8">
               {children}
             </main>
