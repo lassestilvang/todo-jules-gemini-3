@@ -6,13 +6,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import { AlertCircle, Calendar, Repeat } from 'lucide-react';
+import { Calendar, Repeat } from 'lucide-react';
 import { toggleTaskCompletion } from '@/actions/recurrence';
+import { Task } from '@/lib/types';
 
 interface TaskItemProps {
-  task: any;
+  task: Task;
   onToggle?: (id: number, checked: boolean) => void;
-  onClick: (task: any) => void;
+  onClick: (task: Task) => void;
 }
 
 export function TaskItem({ task, onToggle, onClick }: TaskItemProps) {
@@ -32,7 +33,7 @@ export function TaskItem({ task, onToggle, onClick }: TaskItemProps) {
     >
       <div onClick={(e) => e.stopPropagation()}>
         <Checkbox
-          checked={task.isCompleted}
+          checked={!!task.isCompleted}
           onCheckedChange={async (checked) => {
              if (onToggle) onToggle(task.id, checked as boolean);
              else await toggleTaskCompletion(task.id, checked as boolean);
@@ -56,7 +57,7 @@ export function TaskItem({ task, onToggle, onClick }: TaskItemProps) {
                     {format(new Date(task.date), 'MMM d')}
                 </span>
             )}
-            {task.recurrenceInterval && (
+            {task.recurrenceInterval && task.recurrenceInterval !== 'none' && (
                 <span className="flex items-center text-blue-500">
                     <Repeat className="w-3 h-3 mr-1" />
                     {task.recurrenceInterval}

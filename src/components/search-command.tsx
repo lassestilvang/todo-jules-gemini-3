@@ -10,14 +10,13 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { searchTasks } from '@/actions/search';
-import { Calendar, Circle, CheckCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Circle, CheckCircle } from 'lucide-react';
+import { Task } from '@/lib/types';
 
 export function SearchCommand() {
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
-  const [results, setResults] = React.useState<any[]>([]);
-  const router = useRouter();
+  const [results, setResults] = React.useState<Task[]>([]);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {

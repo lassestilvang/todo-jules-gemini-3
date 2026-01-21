@@ -12,17 +12,16 @@ import {
   Calendar,
   Layers,
   List as ListIcon,
-  Plus,
-  Settings,
   Tag
 } from 'lucide-react';
 import { SearchCommand } from '@/components/search-command';
 import { CreateListDialog } from './create-list-dialog';
 import { CreateLabelDialog } from './create-label-dialog';
+import { List, Label } from '@/lib/types';
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-    lists: any[];
-    labels: any[];
+    lists: List[];
+    labels: Label[];
 }
 
 export function Sidebar({ className, lists, labels }: SidebarProps) {
@@ -94,7 +93,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                 variant="ghost"
                 className="w-full justify-start"
                >
-                  <Tag className="mr-2 h-4 w-4" style={{ color: label.color }} />
+                  <Tag className="mr-2 h-4 w-4" style={{ color: label.color || '#000000' }} />
                   {label.name}
                </Button>
              ))}

@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, int } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
 // Lists Table
@@ -23,6 +23,7 @@ export const labels = sqliteTable('labels', {
 export const tasks = sqliteTable('tasks', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   listId: integer('list_id').references(() => lists.id),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parentId: integer('parent_id').references((): any => tasks.id), // Self-referencing for subtasks
   name: text('name').notNull(),
   description: text('description'),

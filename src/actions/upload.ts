@@ -1,10 +1,12 @@
 'use server';
 
-import { writeFile } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
+import { existsSync } from 'fs';
 import { join } from 'path';
 import { db } from '@/lib/db';
 import { attachments } from '@/lib/schema';
 import { revalidatePath } from 'next/cache';
+import { eq } from 'drizzle-orm';
 
 export async function uploadFile(taskId: number, formData: FormData) {
   const file = formData.get('file') as File;
@@ -21,10 +23,9 @@ export async function uploadFile(taskId: number, formData: FormData) {
 
   try {
       await writeFile(path, buffer);
-  } catch (err) {
-      const fs = require('fs');
-      if (!fs.existsSync(uploadDir)){
-          fs.mkdirSync(uploadDir, { recursive: true });
+  } catch (err) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!existsSync(uploadDir)){
+          await mkdir(uploadDir, { recursive: true });
           await writeFile(path, buffer);
       }
   }
@@ -37,11 +38,10 @@ export async function uploadFile(taskId: number, formData: FormData) {
       filePath: webPath
   }).run();
 
-  try { revalidatePath('/'); } catch (e) {}
+  try { revalidatePath('/'); } catch { /* empty */ }
   return { success: true, path: webPath };
 }
 
 export async function getAttachments(taskId: number) {
-    const { eq } = require('drizzle-orm');
     return db.select().from(attachments).where(eq(attachments.taskId, taskId)).all();
 }

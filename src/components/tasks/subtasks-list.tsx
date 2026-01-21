@@ -5,26 +5,27 @@ import { getSubtasks, createSubtask } from '@/actions/subtasks';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { updateTask } from '@/actions/tasks';
 import { cn } from '@/lib/utils';
+import { Task } from '@/lib/types';
 
 interface SubtasksListProps {
   taskId: number;
 }
 
 export function SubtasksList({ taskId }: SubtasksListProps) {
-  const [subtasks, setSubtasks] = React.useState<any[]>([]);
+  const [subtasks, setSubtasks] = React.useState<Task[]>([]);
   const [newSubtaskName, setNewSubtaskName] = React.useState('');
 
-  const loadSubtasks = async () => {
+  const loadSubtasks = React.useCallback(async () => {
     const data = await getSubtasks(taskId);
     setSubtasks(data);
-  };
+  }, [taskId]);
 
   React.useEffect(() => {
     loadSubtasks();
-  }, [taskId]);
+  }, [loadSubtasks]);
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +47,7 @@ export function SubtasksList({ taskId }: SubtasksListProps) {
         {subtasks.map(t => (
           <div key={t.id} className="flex items-center space-x-2 group">
             <Checkbox
-              checked={t.isCompleted}
+              checked={!!t.isCompleted}
               onCheckedChange={(c) => handleToggle(t.id, c as boolean)}
             />
             <span className={cn("text-sm flex-1", t.isCompleted && "line-through text-muted-foreground")}>
