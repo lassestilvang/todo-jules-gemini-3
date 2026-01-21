@@ -11,10 +11,10 @@ export async function getLabels() {
 
 export async function createLabel(data: { name: string; color?: string }) {
   db.insert(labels).values(data).run();
-  try { revalidatePath('/'); } catch (e) {}
+  try { revalidatePath('/'); } catch { /* empty */ }
 }
 
 export async function deleteLabel(id: number) {
   db.delete(labels).where(eq(labels.id, id)).run();
-  try { revalidatePath('/'); } catch (e) {}
+  try { revalidatePath('/'); } catch { /* empty */ }
 }

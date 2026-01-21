@@ -4,27 +4,26 @@ import * as React from 'react';
 import { uploadFile, getAttachments } from '@/actions/upload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Paperclip, FileIcon, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { Attachment } from '@/lib/types';
 
 interface AttachmentsListProps {
   taskId: number;
 }
 
 export function AttachmentsList({ taskId }: AttachmentsListProps) {
-  const [files, setFiles] = React.useState<any[]>([]);
+  const [files, setFiles] = React.useState<Attachment[]>([]);
   const [isUploading, setIsUploading] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const loadFiles = async () => {
+  const loadFiles = React.useCallback(async () => {
     const data = await getAttachments(taskId);
     setFiles(data);
-  };
+  }, [taskId]);
 
   React.useEffect(() => {
     loadFiles();
-  }, [taskId]);
+  }, [loadFiles]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];

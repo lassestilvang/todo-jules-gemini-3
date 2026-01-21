@@ -9,12 +9,12 @@ export async function getLists() {
   return db.select().from(lists).all();
 }
 
-export async function createList(data: { name: string; color?: string; icon?: string }) {
-  db.insert(lists).values(data).run();
-  try { revalidatePath('/'); } catch (e) {}
+export async function createList(name: string, color: string = '#000000') {
+  db.insert(lists).values({ name, color }).run();
+  try { revalidatePath('/'); } catch { /* empty */ }
 }
 
 export async function deleteList(id: number) {
   db.delete(lists).where(eq(lists.id, id)).run();
-  try { revalidatePath('/'); } catch (e) {}
+  try { revalidatePath('/'); } catch { /* empty */ }
 }

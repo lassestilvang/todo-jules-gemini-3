@@ -3,13 +3,14 @@
 import * as React from 'react';
 import { getLogs } from '@/actions/logs';
 import { format } from 'date-fns';
+import { ActivityLogEntry } from '@/lib/types';
 
 interface ActivityLogProps {
   taskId: number;
 }
 
 export function ActivityLog({ taskId }: ActivityLogProps) {
-  const [logs, setLogs] = React.useState<any[]>([]);
+  const [logs, setLogs] = React.useState<ActivityLogEntry[]>([]);
 
   React.useEffect(() => {
     getLogs(taskId).then(setLogs);
@@ -25,7 +26,7 @@ export function ActivityLog({ taskId }: ActivityLogProps) {
                 <span>
                     <span className="line-through">{log.oldValue}</span> <span>→</span> <span className="text-foreground">{log.newValue}</span>
                 </span>
-                <span>{format(new Date(log.timestamp), 'MMM d, HH:mm')}</span>
+                <span>{log.timestamp ? format(new Date(log.timestamp), 'MMM d, HH:mm') : ''}</span>
             </div>
         </div>
       ))}

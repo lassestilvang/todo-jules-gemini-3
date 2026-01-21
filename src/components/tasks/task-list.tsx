@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { TaskItem } from './task-item';
 import { AnimatePresence } from 'framer-motion';
-import { updateTask } from '@/actions/tasks';
 import { TaskDetailSheet } from './task-detail-sheet';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
@@ -12,14 +11,15 @@ import { createTask } from '@/actions/tasks';
 import { Plus } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Task } from '@/lib/types';
 
 interface TaskListProps {
-  tasks: any[];
+  tasks: Task[];
   title?: string;
 }
 
 export function TaskList({ tasks, title }: TaskListProps) {
-  const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [newTaskName, setNewTaskName] = useState('');
   const [showCompleted, setShowCompleted] = useState(false);
 

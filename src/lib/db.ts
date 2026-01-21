@@ -11,10 +11,12 @@ if (isBunTest) {
     // In test mode, we expect this module to be mocked or unused.
     // If it is loaded, we return a dummy or rely on the mock.
     // However, to avoid 'better-sqlite3' load, we must not require it.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dbInstance = {} as any;
 } else {
     // Use require to avoid top-level import being hoisted/evaluated immediately
     // if the bundler supports it (Next.js does).
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const Database = require('better-sqlite3');
     const sqlite = new Database('sqlite.db');
     dbInstance = drizzle(sqlite);

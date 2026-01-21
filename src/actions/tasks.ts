@@ -23,7 +23,7 @@ export async function createTask(data: {
     priority: data.priority || 'none',
   }).returning({ id: tasks.id }).get();
 
-  try { revalidatePath('/'); } catch (e) {}
+  try { revalidatePath('/'); } catch { /* empty */ }
   return result;
 }
 
@@ -36,8 +36,8 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
     // Log changes
     for (const [key, newValue] of Object.entries(data)) {
       if (key === 'updatedAt') continue;
-      // @ts-ignore
-      const oldValue = current[key];
+
+      const oldValue = (current as Record<string, unknown>)[key];
       // Simple equality check
       if (oldValue != newValue) {
         tx.insert(activityLogs).values({
@@ -52,12 +52,12 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
     tx.update(tasks).set({ ...data, updatedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss') }).where(eq(tasks.id, id)).run();
   });
 
-  try { revalidatePath('/'); } catch (e) {}
+  try { revalidatePath('/'); } catch { /* empty */ }
 }
 
 export async function deleteTask(id: number) {
   db.delete(tasks).where(eq(tasks.id, id)).run();
-  try { revalidatePath('/'); } catch (e) {}
+  try { revalidatePath('/'); } catch { /* empty */ }
 }
 
 export async function getActivityLogs(taskId: number) {
@@ -85,5 +85,5 @@ export async function toggleTaskLabel(taskId: number, labelId: number, selected:
     } else {
         db.delete(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).run();
     }
-    try { revalidatePath('/'); } catch (e) {}
+    try { revalidatePath('/'); } catch { /* empty */ }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -21,16 +21,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { useState, useEffect } from 'react';
+import { Task, Label as LabelType } from '@/lib/types';
 
 interface TaskDetailSheetProps {
-  task: any;
+  task: Task | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetProps) {
-  const [labels, setLabels] = useState<any[]>([]);
-  const [assignedLabels, setAssignedLabels] = useState<any[]>([]);
+  const [labels, setLabels] = useState<LabelType[]>([]);
+  const [assignedLabels, setAssignedLabels] = useState<LabelType[]>([]);
 
   useEffect(() => {
     if (open && task) {
@@ -41,7 +42,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
 
   if (!task) return null;
 
-  const handleUpdate = async (data: any) => {
+  const handleUpdate = async (data: Partial<Task>) => {
       await updateTask(task.id, data);
   };
 
@@ -84,7 +85,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                     <Label htmlFor="description">Description</Label>
                     <Textarea
                         id="description"
-                        defaultValue={task.description}
+                        defaultValue={task.description || ''}
                         onBlur={(e) => handleUpdate({ description: e.target.value })}
                         className="min-h-[100px]"
                     />
@@ -94,7 +95,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                     <Label>Labels</Label>
                     <div className="flex flex-wrap gap-2 mb-2">
                         {assignedLabels.map(label => (
-                            <Badge key={label.id} variant="outline" style={{ borderColor: label.color, color: label.color }}>
+                            <Badge key={label.id} variant="outline" style={{ borderColor: label.color || undefined, color: label.color || undefined }}>
                                 {label.name}
                             </Badge>
                         ))}
@@ -116,7 +117,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                                                 return (
                                                     <CommandItem key={label.id} onSelect={() => handleToggleLabel(label.id)}>
                                                         <div className="flex items-center gap-2 w-full cursor-pointer">
-                                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: label.color }} />
+                                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: label.color || '#000' }} />
                                                             <span>{label.name}</span>
                                                             {isAssigned && <Check className="ml-auto w-4 h-4" />}
                                                         </div>
@@ -142,7 +143,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                         <Label>Priority</Label>
-                        <Select defaultValue={task.priority} onValueChange={(val) => handleUpdate({ priority: val })}>
+                        <Select defaultValue={task.priority || 'none'} onValueChange={(val) => handleUpdate({ priority: val as Task['priority'] })}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select priority" />
                             </SelectTrigger>
@@ -216,7 +217,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                         <Input
                             id="estimate"
                             type="number"
-                            defaultValue={task.estimate}
+                            defaultValue={task.estimate || undefined}
                             onBlur={(e) => handleUpdate({ estimate: parseInt(e.target.value) || null })}
                         />
                     </div>
@@ -225,7 +226,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                         <Input
                             id="actualTime"
                             type="number"
-                            defaultValue={task.actualTime}
+                            defaultValue={task.actualTime || undefined}
                             onBlur={(e) => handleUpdate({ actualTime: parseInt(e.target.value) || null })}
                         />
                     </div>
@@ -236,7 +237,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                     <Input
                         id="reminders"
                         placeholder="e.g. 10m before"
-                        defaultValue={task.reminders}
+                        defaultValue={task.reminders || ''}
                         onBlur={(e) => handleUpdate({ reminders: e.target.value })}
                     />
                 </div>
