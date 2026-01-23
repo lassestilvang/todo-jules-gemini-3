@@ -33,6 +33,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
   if (!current) throw new Error("Task not found");
 
   db.transaction((tx) => {
+    const logsToInsert: (typeof activityLogs.$inferInsert)[] = [];
     // Log changes
     for (const [key, newValue] of Object.entries(data)) {
       if (key === 'updatedAt') continue;
@@ -40,13 +41,17 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
       const oldValue = (current as Record<string, unknown>)[key];
       // Simple equality check
       if (oldValue != newValue) {
-        tx.insert(activityLogs).values({
+        logsToInsert.push({
           taskId: id,
           field: key,
           oldValue: String(oldValue),
           newValue: String(newValue),
-        }).run();
+        });
       }
+    }
+
+    if (logsToInsert.length > 0) {
+      tx.insert(activityLogs).values(logsToInsert).run();
     }
 
     tx.update(tasks).set({ ...data, updatedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss') }).where(eq(tasks.id, id)).run();
