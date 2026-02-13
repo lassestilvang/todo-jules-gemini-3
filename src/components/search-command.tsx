@@ -30,15 +30,24 @@ export function SearchCommand() {
   }, []);
 
   React.useEffect(() => {
+    let isCancelled = false;
+
     if (query.length === 0) {
-        setResults([]);
-        return;
+      setResults([]);
+      return;
     }
+
     const timer = setTimeout(async () => {
-        const data = await searchTasks(query);
+      const data = await searchTasks(query);
+      if (!isCancelled) {
         setResults(data);
+      }
     }, 300);
-    return () => clearTimeout(timer);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timer);
+    };
   }, [query]);
 
   return (
