@@ -2,12 +2,23 @@
 
 import { db } from '@/lib/db';
 import { tasks, activityLogs, taskLabels, labels } from '@/lib/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { format } from 'date-fns';
 
 export async function getTasks() {
   return db.select().from(tasks).all();
+}
+
+export async function getTasksByDateRange(startDate: string, endDate: string) {
+  return db.select().from(tasks)
+    .where(
+      and(
+        sql`${tasks.date} >= ${startDate}`,
+        sql`${tasks.date} <= ${endDate}`
+      )
+    )
+    .all();
 }
 
 export async function createTask(data: {
