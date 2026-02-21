@@ -1,11 +1,10 @@
+import { drizzle, type BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-
-let dbInstance;
+let dbInstance: BetterSQLite3Database;
 
 // Check if we are running in a Bun test environment
 // Bun defines `Bun` global.
-const isBunTest = typeof Bun !== 'undefined' && process.env.NODE_ENV === 'test';
+const isBunTest = (typeof (globalThis as any).Bun !== 'undefined') && process.env.NODE_ENV === 'test';
 
 if (isBunTest) {
     // In test mode, we expect this module to be mocked or unused.
