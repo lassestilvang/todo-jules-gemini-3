@@ -10,6 +10,10 @@ export async function getTasks() {
   return db.select().from(tasks).all();
 }
 
+export async function getIncompleteTasks() {
+  return db.select().from(tasks).where(eq(tasks.isCompleted, false)).all();
+}
+
 export async function getTasksByDateRange(startDate: string, endDate: string) {
   return db.select().from(tasks)
     .where(
