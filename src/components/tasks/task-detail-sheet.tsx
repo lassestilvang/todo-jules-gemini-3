@@ -33,12 +33,14 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
   const [labels, setLabels] = useState<LabelType[]>([]);
   const [assignedLabels, setAssignedLabels] = useState<LabelType[]>([]);
 
+  useEffect(() => { getLabels().then(setLabels); }, []);
+
   useEffect(() => {
-    if (open && task) {
-        getLabels().then(setLabels);
+    if (task) {
+
         getTaskLabels(task.id).then(setAssignedLabels);
     }
-  }, [open, task]);
+  }, [task?.id]);
 
   if (!task) return null;
 
