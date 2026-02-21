@@ -103,3 +103,11 @@ export async function toggleTaskLabel(taskId: number, labelId: number, selected:
     }
     try { revalidatePath('/'); } catch { /* empty */ }
 }
+
+export async function getTasksAfterDate(startDate: string) {
+  return db.select().from(tasks)
+    .where(
+        sql`${tasks.date} > ${startDate}`
+    )
+    .all();
+}

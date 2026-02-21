@@ -1,8 +1,9 @@
-import { getTasks } from '@/actions/tasks';
+import { getTasksAfterDate } from '@/actions/tasks';
 import { TaskList } from '@/components/tasks/task-list';
+import { format } from 'date-fns';
 
 export default async function UpcomingPage() {
-  const allTasks = await getTasks();
-  const tasks = allTasks.filter(t => t.date && new Date(t.date) > new Date());
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const tasks = await getTasksAfterDate(today);
   return <TaskList tasks={tasks} title="Upcoming" />;
 }

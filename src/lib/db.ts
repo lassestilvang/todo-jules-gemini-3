@@ -1,4 +1,3 @@
-
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 
 let dbInstance;
@@ -18,7 +17,8 @@ if (isBunTest) {
     // if the bundler supports it (Next.js does).
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const Database = require('better-sqlite3');
-    const sqlite = new Database('sqlite.db');
+    const dbPath = process.env.DB_FILE || 'sqlite.db';
+    const sqlite = new Database(dbPath);
     dbInstance = drizzle(sqlite);
 }
 
