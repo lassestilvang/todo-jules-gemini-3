@@ -10,6 +10,13 @@ export async function getTasks() {
   return db.select().from(tasks).all();
 }
 
+export async function getUpcomingTasks() {
+  const today = format(new Date(), "yyyy-MM-dd");
+  return db.select().from(tasks)
+    .where(sql`${tasks.date} > ${today}`)
+    .all();
+}
+
 export async function getTasksByDateRange(startDate: string, endDate: string) {
   return db.select().from(tasks)
     .where(
