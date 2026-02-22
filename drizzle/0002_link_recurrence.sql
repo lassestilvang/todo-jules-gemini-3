@@ -1,0 +1,1 @@
+ALTER TABLE `tasks` ADD `recurrence_id` integer REFERENCES tasks(id);
