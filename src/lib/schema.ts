@@ -38,7 +38,7 @@ export const tasks = sqliteTable('tasks', {
   recurrenceInterval: text('recurrence_interval'), // DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM
   recurrenceConfig: text('recurrence_config'), // JSON string for custom rules
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  recurrenceId: integer('recurrence_id').references((): any => tasks.id), // References tasks.id of the original recurring task
+  recurrenceId: integer('recurrence_id').references((): any => tasks.id, { onDelete: 'set null' }), // References tasks.id of the original recurring task
   createdAt: text('created_at').default(sql`(CURRENT_TIMESTAMP)`),
   updatedAt: text('updated_at').default(sql`(CURRENT_TIMESTAMP)`),
 });
