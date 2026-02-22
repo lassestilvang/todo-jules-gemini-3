@@ -1,5 +1,5 @@
-import { getTasks } from '@/actions/tasks';
-import { getLists } from '@/actions/lists';
+import { getTasks, getTasksByListId } from '@/actions/tasks';
+import { getLists, getListById } from '@/actions/lists';
 import { Task, List } from '@/lib/types';
 import { TaskList } from '@/components/tasks/task-list';
 
