@@ -43,7 +43,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
   const current = db.select().from(tasks).where(eq(tasks.id, id)).get();
   if (!current) throw new Error("Task not found");
 
-  db.transaction((tx: any) => {
+  db.transaction((tx) => {
     const logsToInsert: (typeof activityLogs.$inferInsert)[] = [];
     // Log changes
     for (const [key, newValue] of Object.entries(data)) {
