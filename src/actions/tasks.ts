@@ -10,6 +10,9 @@ export async function getTasks() {
   return db.select().from(tasks).all();
 }
 
+export async function getIncompleteTasks() {
+  return db.select().from(tasks).where(eq(tasks.isCompleted, false)).all();
+}
 export async function getUpcomingTasks() {
   const today = format(new Date(), "yyyy-MM-dd");
   return db.select().from(tasks)
