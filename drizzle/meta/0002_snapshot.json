@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "be9f8263-c9d0-41db-9388-b8985210566f",
+  "id": "ddd7226b-1f9e-458f-aac4-5a0c66efeb9e",
   "prevId": "7ad89a59-fede-41e4-b4c8-ccbbda4fe129",
   "tables": {
     "activity_logs": {
@@ -395,13 +395,6 @@
           "notNull": false,
           "autoincrement": false
         },
-        "recurrence_id": {
-          "name": "recurrence_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "created_at": {
           "name": "created_at",
           "type": "text",
@@ -419,7 +412,15 @@
           "default": "(CURRENT_TIMESTAMP)"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "date_idx": {
+          "name": "date_idx",
+          "columns": [
+            "date"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "tasks_list_id_lists_id_fk": {
           "name": "tasks_list_id_lists_id_fk",

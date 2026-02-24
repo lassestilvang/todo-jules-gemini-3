@@ -1,74 +1,73 @@
-import { drizzle } from 'drizzle-orm/bun-sqlite';
-import { Database } from 'bun:sqlite';
-import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
-import { tasks, lists } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { db } from '../src/lib/db';
+import { tasks, lists } from '../src/lib/schema';
+import { sql } from 'drizzle-orm';
+import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 
-// Setup DB
-const sqlite = new Database(':memory:');
-const db = drizzle(sqlite);
+async function main() {
+  console.log('Running migrations...');
+  await migrate(db, { migrationsFolder: 'drizzle' });
 
-console.log('Running migrations...');
-migrate(db, { migrationsFolder: './drizzle' });
+  // Ensure a list exists
+  let list = await db.select().from(lists).limit(1).get();
+  if (!list) {
+      const res = await db.insert(lists).values({ name: 'Benchmark List' }).returning().get();
+      list = res;
+  }
 
-// Seed Data
-console.log('Seeding data...');
-const LIST_COUNT = 10;
-const TASKS_PER_LIST = 1000;
-const TOTAL_TASKS = LIST_COUNT * TASKS_PER_LIST;
+  console.log('Seeding data...');
+  const totalTasks = 10000;
+  const batchSize = 1000;
+  const today = new Date();
 
-// Create Lists
-db.insert(lists).values(
-  Array.from({ length: LIST_COUNT }, (_, i) => ({ name: `List ${i + 1}` }))
-).run();
+  // Create tasks with dates from -15 to +15 days from today
+  for (let i = 0; i < totalTasks; i += batchSize) {
+    const batch = [];
+    for (let j = 0; j < batchSize; j++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + Math.floor(Math.random() * 30) - 15);
+      batch.push({
+        name: `Task ${i + j}`,
+        date: date.toISOString().split('T')[0],
+        listId: list.id,
+      });
+    }
+    // Check if db.insert accepts array. Yes in drizzle.
+    await db.insert(tasks).values(batch);
+  }
+  console.log(`Seeded ${totalTasks} tasks.`);
 
-// Create Tasks
-const allTasks = [];
-for (let i = 0; i < TOTAL_TASKS; i++) {
-  const listId = (i % LIST_COUNT) + 1;
-  allTasks.push({
-    name: `Task ${i}`,
-    listId: listId,
-    description: `Description for task ${i}`,
-    priority: 'none' as const,
-  });
+  const todayStr = today.toISOString().split('T')[0];
+
+  console.log('--- Benchmark: "Today" Tasks ---');
+
+  // Measure "Fetch All + Memory Filter" (Bad)
+  const startBadToday = performance.now();
+  const allTasks = await db.select().from(tasks).all();
+  const badTodayTasks = allTasks.filter(t => t.date === todayStr);
+  const endBadToday = performance.now();
+  console.log(`Bad (Memory Filter): ${(endBadToday - startBadToday).toFixed(2)}ms, found ${badTodayTasks.length} tasks`);
+
+  // Measure "DB Filter" (Good)
+  const startGoodToday = performance.now();
+  const goodTodayTasks = await db.select().from(tasks).where(sql`${tasks.date} = ${todayStr}`).all();
+  const endGoodToday = performance.now();
+  console.log(`Good (DB Filter): ${(endGoodToday - startGoodToday).toFixed(2)}ms, found ${goodTodayTasks.length} tasks`);
+
+
+  console.log('--- Benchmark: "Upcoming" Tasks (> Today) ---');
+
+  // Measure "Fetch All + Memory Filter" (Bad)
+  const startBadUpcoming = performance.now();
+  const allTasks2 = await db.select().from(tasks).all(); // fetch again to be fair/uncached potentially
+  const badUpcomingTasks = allTasks2.filter(t => t.date && t.date > todayStr);
+  const endBadUpcoming = performance.now();
+  console.log(`Bad (Memory Filter): ${(endBadUpcoming - startBadUpcoming).toFixed(2)}ms, found ${badUpcomingTasks.length} tasks`);
+
+  // Measure "DB Filter" (Good)
+  const startGoodUpcoming = performance.now();
+  const goodUpcomingTasks = await db.select().from(tasks).where(sql`${tasks.date} > ${todayStr}`).all();
+  const endGoodUpcoming = performance.now();
+  console.log(`Good (DB Filter): ${(endGoodUpcoming - startGoodUpcoming).toFixed(2)}ms, found ${goodUpcomingTasks.length} tasks`);
 }
 
-// Batch insert tasks
-const chunkSize = 50;
-for (let i = 0; i < allTasks.length; i += chunkSize) {
-    const chunk = allTasks.slice(i, i + chunkSize);
-    db.insert(tasks).values(chunk).run();
-}
-
-console.log(`Seeded ${TOTAL_TASKS} tasks across ${LIST_COUNT} lists.`);
-
-// Benchmark
-const TARGET_LIST_ID = 1;
-
-// Method 1: Fetch All + JS Filter
-console.log('Running Method 1: Fetch All + JS Filter...');
-const start1 = performance.now();
-const allTasksFetched = db.select().from(tasks).all();
-const filteredTasks = allTasksFetched.filter(t => t.listId === TARGET_LIST_ID);
-const end1 = performance.now();
-const duration1 = end1 - start1;
-
-console.log(`Method 1 Duration: ${duration1.toFixed(2)}ms`);
-console.log(`Fetched count: ${filteredTasks.length}`);
-
-// Method 2: SQL Filter
-console.log('Running Method 2: SQL Filter...');
-const start2 = performance.now();
-const filteredTasksSql = db.select().from(tasks).where(eq(tasks.listId, TARGET_LIST_ID)).all();
-const end2 = performance.now();
-const duration2 = end2 - start2;
-
-console.log(`Method 2 Duration: ${duration2.toFixed(2)}ms`);
-console.log(`Fetched count: ${filteredTasksSql.length}`);
-
-// Improvement
-const improvement = ((duration1 - duration2) / duration1) * 100;
-console.log(`Improvement: ${improvement.toFixed(2)}%`);
-
-sqlite.close();
+main().catch(console.error);

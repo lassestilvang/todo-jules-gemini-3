@@ -1,6 +1,6 @@
-import { drizzle, type BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
 
-let dbInstance: BetterSQLite3Database;
+let dbInstance;
 
 // Check if we are running in a Bun test environment
 // Bun defines `Bun` global.
@@ -17,7 +17,8 @@ if (isBunTest) {
     // if the bundler supports it (Next.js does).
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const Database = require('better-sqlite3');
-    const sqlite = new Database('sqlite.db');
+    const dbPath = process.env.DB_FILE || 'sqlite.db';
+    const sqlite = new Database(dbPath);
     dbInstance = drizzle(sqlite);
 }
 

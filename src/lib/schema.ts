@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
 // Lists Table
@@ -41,6 +41,10 @@ export const tasks = sqliteTable('tasks', {
   recurrenceId: integer('recurrence_id').references((): any => tasks.id, { onDelete: 'set null' }), // References tasks.id of the original recurring task
   createdAt: text('created_at').default(sql`(CURRENT_TIMESTAMP)`),
   updatedAt: text('updated_at').default(sql`(CURRENT_TIMESTAMP)`),
+}, (table) => {
+  return {
+    dateIdx: index('date_idx').on(table.date),
+  };
 });
 
 // Task Labels (Many-to-Many)
