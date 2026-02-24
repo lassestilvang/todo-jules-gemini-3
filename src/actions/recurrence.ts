@@ -10,7 +10,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
   const task = db.select().from(tasks).where(eq(tasks.id, taskId)).get();
   if (!task) throw new Error("Task not found");
 
-  db.transaction((tx) => {
+  db.transaction((tx: typeof db) => {
     // Update original task
     tx.update(tasks).set({
         isCompleted,
