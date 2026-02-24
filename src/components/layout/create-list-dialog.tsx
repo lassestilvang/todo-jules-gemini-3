@@ -22,7 +22,7 @@ export function CreateListDialog() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) return;
-    await createList({ name });
+    await createList(name);
     setName('');
     setOpen(false);
   };

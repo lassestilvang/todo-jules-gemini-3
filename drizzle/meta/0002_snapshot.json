@@ -447,6 +447,19 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
+        },
+        "tasks_recurrence_id_tasks_id_fk": {
+          "name": "tasks_recurrence_id_tasks_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "tasks",
+          "columnsFrom": [
+            "recurrence_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},

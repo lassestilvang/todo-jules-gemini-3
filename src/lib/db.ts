@@ -4,7 +4,7 @@ let dbInstance;
 
 // Check if we are running in a Bun test environment
 // Bun defines `Bun` global.
-const isBunTest = typeof Bun !== 'undefined' && process.env.NODE_ENV === 'test';
+const isBunTest = (typeof (globalThis as any).Bun !== 'undefined') && process.env.NODE_ENV === 'test';
 
 if (isBunTest) {
     // In test mode, we expect this module to be mocked or unused.

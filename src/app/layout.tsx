@@ -18,8 +18,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const lists = await getLists();
-  const labels = await getLabels();
+  const [lists, labels] = await Promise.all([getLists(), getLabels()]);
 
   return (
     <html lang="en" suppressHydrationWarning>
