@@ -31,6 +31,10 @@ export async function getTasksByDateRange(startDate: string, endDate: string) {
     .all();
 }
 
+export async function getTasksForDate(date: string) {
+  return db.select().from(tasks).where(eq(tasks.date, date)).all();
+}
+
 export async function createTask(data: {
   name: string;
   description?: string;
