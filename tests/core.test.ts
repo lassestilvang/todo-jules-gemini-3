@@ -70,6 +70,38 @@ describe('Core Logic', () => {
             expect(allTasks.length).toBe(1);
             expect(allTasks[0].isCompleted).toBe(true);
         });
+
+        test('should link recurrence instances correctly', async () => {
+            const today = format(new Date(), 'yyyy-MM-dd');
+            // 1. Create a recurring task (Instance 1)
+            const instance1 = testDb.insert(tasks).values({
+                name: 'Recurrence Link Test ' + Date.now(),
+                recurrenceInterval: 'DAILY',
+                date: today
+            }).returning().get();
+
+            // 2. Complete Instance 1 -> Creates Instance 2
+            await toggleTaskCompletion(instance1.id, true);
+
+            const allTasks = testDb.select().from(tasks).where(eq(tasks.name, instance1.name)).all();
+            const instance2 = allTasks.find(t => t.id !== instance1.id);
+            expect(instance2).toBeDefined();
+
+            // Instance 2 should have recurrenceId pointing to Instance 1
+            expect(instance2.recurrenceId).toBe(instance1.id);
+
+            // 3. Complete Instance 2 -> Creates Instance 3
+            await toggleTaskCompletion(instance2.id, true);
+
+            const allTasks3 = testDb.select().from(tasks).where(eq(tasks.name, instance1.name)).all();
+            expect(allTasks3.length).toBe(3);
+
+            const instance3 = allTasks3.find(t => t.id !== instance1.id && t.id !== instance2.id);
+            expect(instance3).toBeDefined();
+
+            // Instance 3 should ALSO have recurrenceId pointing to Instance 1
+            expect(instance3.recurrenceId).toBe(instance1.id);
+        });
     });
 
     describe('Task Logic', () => {

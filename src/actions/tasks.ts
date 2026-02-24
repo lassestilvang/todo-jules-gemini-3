@@ -10,6 +10,16 @@ export async function getTasks() {
   return db.select().from(tasks).all();
 }
 
+export async function getUpcomingTasks() {
+  const today = format(new Date(), "yyyy-MM-dd");
+  return db.select().from(tasks)
+    .where(sql`${tasks.date} > ${today}`)
+    .all();
+}
+export async function getTasksByListId(listId: number) {
+  return db.select().from(tasks).where(eq(tasks.listId, listId)).all();
+}
+
 export async function getTasksByDateRange(startDate: string, endDate: string) {
   return db.select().from(tasks)
     .where(
@@ -47,7 +57,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
   const current = db.select().from(tasks).where(eq(tasks.id, id)).get();
   if (!current) throw new Error("Task not found");
 
-  db.transaction((tx) => {
+  db.transaction((tx: typeof db) => {
     const logsToInsert: (typeof activityLogs.$inferInsert)[] = [];
     // Log changes
     for (const [key, newValue] of Object.entries(data)) {
@@ -87,7 +97,7 @@ export async function getActivityLogs(taskId: number) {
 export async function getTaskLabels(taskId: number) {
     return db.select({
         id: labels.id,
-        name: labels.name,
+        name: labels.name, createdAt: labels.createdAt,
         color: labels.color
     })
     .from(labels)

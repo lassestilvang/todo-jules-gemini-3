@@ -10,7 +10,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
   const task = db.select().from(tasks).where(eq(tasks.id, taskId)).get();
   if (!task) throw new Error("Task not found");
 
-  db.transaction((tx) => {
+  db.transaction((tx: typeof db) => {
     // Update original task
     tx.update(tasks).set({
         isCompleted,
@@ -37,8 +37,11 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
         }
 
         // Check if next occurrence already exists (simple check to avoid duplicates if toggled multiple times quickly)
-        // Ideally we should link recurrence instances. For now, we just create a new independent task.
         const nextDateStr = format(nextDate, 'yyyy-MM-dd');
+
+        // Determine recurrence ID (link to original task)
+        const recurrenceId = task.recurrenceId || task.id;
+
 
         // Create new task
         tx.insert(tasks).values({
@@ -49,6 +52,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
             priority: task.priority,
             recurrenceInterval: task.recurrenceInterval,
             recurrenceConfig: task.recurrenceConfig,
+            recurrenceId: recurrenceId,
         }).run();
     }
   });
