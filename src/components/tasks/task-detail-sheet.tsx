@@ -7,7 +7,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { updateTask, getTaskLabels, toggleTaskLabel } from '@/actions/tasks';
-import { getLabels } from '@/actions/labels';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
@@ -27,17 +26,14 @@ interface TaskDetailSheetProps {
   task: Task | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  labels: LabelType[];
 }
 
-export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetProps) {
-  const [labels, setLabels] = useState<LabelType[]>([]);
+export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetailSheetProps) {
   const [assignedLabels, setAssignedLabels] = useState<LabelType[]>([]);
-
-  useEffect(() => { getLabels().then(setLabels); }, []);
 
   useEffect(() => {
     if (task) {
-
         getTaskLabels(task.id).then(setAssignedLabels);
     }
   }, [task?.id]);

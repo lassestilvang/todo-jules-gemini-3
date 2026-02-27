@@ -10,15 +10,16 @@ import { Button } from '@/components/ui/button';
 import { createTask } from '@/actions/tasks';
 import { Plus } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Task } from '@/lib/types';
+import { Label as LabelUI } from '@/components/ui/label';
+import { Task, Label } from '@/lib/types';
 
 interface TaskListProps {
   tasks: Task[];
   title?: string;
+  labels: Label[];
 }
 
-export function TaskList({ tasks, title }: TaskListProps) {
+export function TaskList({ tasks, title, labels }: TaskListProps) {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [newTaskName, setNewTaskName] = useState('');
   const [showCompleted, setShowCompleted] = useState(false);
@@ -42,9 +43,9 @@ export function TaskList({ tasks, title }: TaskListProps) {
                 checked={showCompleted}
                 onCheckedChange={(checked) => setShowCompleted(checked as boolean)}
             />
-            <Label htmlFor="show-completed" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            <LabelUI htmlFor="show-completed" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Show Completed
-            </Label>
+            </LabelUI>
           </div>
       </div>
 
@@ -81,6 +82,7 @@ export function TaskList({ tasks, title }: TaskListProps) {
         task={selectedTask}
         open={!!selectedTask}
         onOpenChange={(open) => !open && setSelectedTask(null)}
+        labels={labels}
       />
     </div>
   );
