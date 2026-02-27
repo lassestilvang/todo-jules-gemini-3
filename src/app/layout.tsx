@@ -18,7 +18,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [lists, labels] = await Promise.all([getLists(), getLabels()]);
+  const [lists, labels] = await Promise.all([getLists(), getLabels()]); // Fetch in parallel for better TTFB
 
   return (
     <html lang="en" suppressHydrationWarning>
