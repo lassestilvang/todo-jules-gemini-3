@@ -48,7 +48,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
               eq(tasks.recurrenceId, recurrenceId),
               eq(tasks.date, nextDateStr)
           ))
-          .get();
+          .findFirst();
 
         if (!existingTask) {
             // Create new task
