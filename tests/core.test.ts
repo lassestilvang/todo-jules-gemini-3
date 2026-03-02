@@ -37,8 +37,11 @@ describe('Core Logic', () => {
         // or the test environment's migration runner is behaving differently.
         try {
             testDb.run(sql`ALTER TABLE tasks ADD COLUMN recurrence_id integer REFERENCES tasks(id)`);
-        } catch (e) {
-            // Ignore if it already exists (though the error suggests it doesn't)
+        } catch (e: any) {
+            // Ignore only if the column already exists, otherwise re-throw.
+            if (!e.message.includes('duplicate column name')) {
+                throw e;
+            }
         }
     });
 
