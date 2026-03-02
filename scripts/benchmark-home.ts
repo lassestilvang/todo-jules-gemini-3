@@ -15,8 +15,9 @@ async function main() {
   }
 
   // Count existing tasks
-  const existing = await db.select({ count: tasks.id }).from(tasks).all();
-  console.log(`Current task count: ${existing.length}`);
+  const result = await db.select({ count: count() }).from(tasks).get();
+  const existingCount = result?.count ?? 0;
+  console.log(`Current task count: ${existingCount}`);
 
   // Create mixed workload: 80% completed, 20% incomplete (simulating realistic inbox)
   // The original problem was filtering *incomplete* tasks.
