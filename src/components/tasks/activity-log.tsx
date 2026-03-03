@@ -7,14 +7,29 @@ import { ActivityLogEntry } from '@/lib/types';
 
 interface ActivityLogProps {
   taskId: number;
+  initialLogs?: ActivityLogEntry[] | null;
 }
 
-export function ActivityLog({ taskId }: ActivityLogProps) {
-  const [logs, setLogs] = React.useState<ActivityLogEntry[]>([]);
+export function ActivityLog({ taskId, initialLogs = null }: ActivityLogProps) {
+  const [logs, setLogs] = React.useState<ActivityLogEntry[]>(initialLogs || []);
+  const [loading, setLoading] = React.useState(!initialLogs);
 
   React.useEffect(() => {
-    getLogs(taskId).then(setLogs);
-  }, [taskId]);
+    if (initialLogs !== null) {
+        setLogs(initialLogs);
+        setLoading(false);
+    } else {
+        setLoading(true);
+        getLogs(taskId).then((data) => {
+            setLogs(data);
+            setLoading(false);
+        });
+    }
+  }, [taskId, initialLogs]);
+
+  if (loading) {
+      return <div className="text-sm text-muted-foreground mt-4 animate-pulse">Loading activity...</div>;
+  }
 
   return (
     <div className="space-y-4 mt-4">
