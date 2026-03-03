@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { tasks, activityLogs, taskLabels, labels } from '@/lib/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { tasks, activityLogs, taskLabels, labels, attachments } from '@/lib/schema';
+import { eq, and, sql, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { format } from 'date-fns';
 
@@ -32,6 +32,22 @@ export async function getTasksByDateRange(startDate: string, endDate: string) {
       )
     )
     .all();
+}
+
+export async function getTaskDetailedInfo(taskId: number) {
+  const [assignedLabels, subtasks, attachmentsList, logs] = await Promise.all([
+    getTaskLabels(taskId),
+    db.select().from(tasks).where(eq(tasks.parentId, taskId)).all(),
+    db.select().from(attachments).where(eq(attachments.taskId, taskId)).all(),
+    db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).orderBy(desc(activityLogs.timestamp)).all()
+  ]);
+
+  return {
+    assignedLabels,
+    subtasks,
+    attachments: attachmentsList,
+    logs
+  };
 }
 
 export async function getTasksForDate(date: string) {
