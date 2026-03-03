@@ -9,10 +9,11 @@ import { Attachment } from '@/lib/types';
 
 interface AttachmentsListProps {
   taskId: number;
+  initialAttachments?: Attachment[] | null;
 }
 
-export function AttachmentsList({ taskId }: AttachmentsListProps) {
-  const [files, setFiles] = React.useState<Attachment[]>([]);
+export function AttachmentsList({ taskId, initialAttachments = null }: AttachmentsListProps) {
+  const [files, setFiles] = React.useState<Attachment[]>(initialAttachments || []);
   const [isUploading, setIsUploading] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -22,8 +23,12 @@ export function AttachmentsList({ taskId }: AttachmentsListProps) {
   }, [taskId]);
 
   React.useEffect(() => {
-    loadFiles();
-  }, [loadFiles]);
+    if (initialAttachments !== null) {
+        setFiles(initialAttachments);
+    } else {
+        loadFiles();
+    }
+  }, [taskId, initialAttachments, loadFiles]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
