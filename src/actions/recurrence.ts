@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db';
 import { tasks } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { addDays, addWeeks, addMonths, addYears, format } from 'date-fns';
 import { revalidatePath } from 'next/cache';
 
@@ -36,24 +36,33 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
                 break;
         }
 
-        // Check if next occurrence already exists (simple check to avoid duplicates if toggled multiple times quickly)
         const nextDateStr = format(nextDate, 'yyyy-MM-dd');
 
         // Determine recurrence ID (link to original task)
         const recurrenceId = task.recurrenceId || task.id;
 
+        // Check if next occurrence already exists (simple check to avoid duplicates if toggled multiple times quickly)
+        const existingTask = tx.select()
+          .from(tasks)
+          .where(and(
+              eq(tasks.recurrenceId, recurrenceId),
+              eq(tasks.date, nextDateStr)
+          ))
+          .get();
 
-        // Create new task
-        tx.insert(tasks).values({
-            name: task.name,
-            description: task.description,
-            listId: task.listId,
-            date: nextDateStr,
-            priority: task.priority,
-            recurrenceInterval: task.recurrenceInterval,
-            recurrenceConfig: task.recurrenceConfig,
-            recurrenceId: recurrenceId,
-        }).run();
+        if (!existingTask) {
+            // Create new task
+            tx.insert(tasks).values({
+                name: task.name,
+                description: task.description,
+                listId: task.listId,
+                date: nextDateStr,
+                priority: task.priority,
+                recurrenceInterval: task.recurrenceInterval,
+                recurrenceConfig: task.recurrenceConfig,
+                recurrenceId: recurrenceId,
+            }).run();
+        }
     }
   });
 
