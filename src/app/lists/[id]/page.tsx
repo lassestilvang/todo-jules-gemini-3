@@ -6,10 +6,8 @@ export default async function ListPage({ params }: { params: { id: string } }) {
   const { id } = await params;
   const listId = parseInt(id);
 
-  const [tasks, list] = await Promise.all([
-    getTasksByListId(listId),
-    getListById(listId),
-  ]);
+  const tasks = await getTasksByListId(listId);
+  const list = await getListById(listId);
 
   return <TaskList tasks={tasks} title={list?.name || 'List'} />;
 }
