@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { updateTask, toggleTaskLabel, getTaskDetailedInfo } from '@/actions/tasks';
+import { getLabels } from '@/actions/labels';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,8 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   const [subtasks, setSubtasks] = useState<Task[] | null>(null);
   const [attachments, setAttachments] = useState<Attachment[] | null>(null);
   const [logs, setLogs] = useState<ActivityLogEntry[] | null>(null);
+
+  useEffect(() => { getLabels().then(setLabels); }, []);
 
   useEffect(() => {
     if (task) {
