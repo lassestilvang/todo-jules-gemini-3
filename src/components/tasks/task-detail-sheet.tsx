@@ -21,16 +21,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { useState, useEffect } from 'react';
-import { Task, Label as LabelType, ActivityLogEntry, Attachment } from '@/lib/types';
+import { Task, Label as LabelType, Attachment, ActivityLogEntry } from '@/lib/types';
 
 interface TaskDetailSheetProps {
   task: Task | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  labels: LabelType[];
 }
 
-export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetProps) {
-  const [labels, setLabels] = useState<LabelType[]>([]);
+export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetailSheetProps) {
   const [assignedLabels, setAssignedLabels] = useState<LabelType[]>([]);
   const [subtasks, setSubtasks] = useState<Task[] | null>(null);
   const [attachments, setAttachments] = useState<Attachment[] | null>(null);
@@ -47,7 +47,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
         setLogs(null);
 
         getTaskDetailedInfo(task.id).then(data => {
-            setAssignedLabels(data.assignedLabels);
+            setAssignedLabels(data.labels);
             setSubtasks(data.subtasks);
             setAttachments(data.attachments);
             setLogs(data.logs);
