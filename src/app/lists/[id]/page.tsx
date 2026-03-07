@@ -1,13 +1,13 @@
 import { getTasksByListId } from '@/actions/tasks';
 import { getListById } from '@/actions/lists';
+import { getLabels } from '@/actions/labels';
 import { TaskList } from '@/components/tasks/task-list';
 
 export default async function ListPage({ params }: { params: { id: string } }) {
   const { id } = await params;
   const listId = parseInt(id);
 
-  const tasks = await getTasksByListId(listId);
-  const list = await getListById(listId);
+  const [tasks, list, labels] = await Promise.all([getTasksByListId(listId), getListById(listId), getLabels()]);
 
-  return <TaskList tasks={tasks} title={list?.name || 'List'} />;
+  return <TaskList tasks={tasks} title={list?.name || 'List'} labels={labels} />;
 }
