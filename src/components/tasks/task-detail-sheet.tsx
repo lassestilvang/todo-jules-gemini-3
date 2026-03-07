@@ -127,18 +127,21 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                     <CommandList>
                                         <CommandEmpty>No label found.</CommandEmpty>
                                         <CommandGroup>
-                                            {labels.map(label => {
-                                                const isAssigned = assignedLabels.some(l => l.id === label.id);
-                                                return (
-                                                    <CommandItem key={label.id} onSelect={() => handleToggleLabel(label.id)}>
+                                            {(() => {
+                                                const assignedLabelIds = new Set(assignedLabels.map(l => l.id));
+                                                return labels.map(label => {
+                                                    const isAssigned = assignedLabelIds.has(label.id);
+                                                    return (
+                                                        <CommandItem key={label.id} onSelect={() => handleToggleLabel(label.id)}>
                                                         <div className="flex items-center gap-2 w-full cursor-pointer">
                                                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: label.color || '#000' }} />
                                                             <span>{label.name}</span>
                                                             {isAssigned && <Check className="ml-auto w-4 h-4" />}
                                                         </div>
-                                                    </CommandItem>
-                                                );
-                                            })}
+                                                        </CommandItem>
+                                                    );
+                                                });
+                                            })()}
                                         </CommandGroup>
                                     </CommandList>
                                 </Command>
