@@ -12,10 +12,11 @@ import { Task } from '@/lib/types';
 
 interface SubtasksListProps {
   taskId: number;
+  initialSubtasks?: Task[] | null;
 }
 
-export function SubtasksList({ taskId }: SubtasksListProps) {
-  const [subtasks, setSubtasks] = React.useState<Task[]>([]);
+export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListProps) {
+  const [subtasks, setSubtasks] = React.useState<Task[]>(initialSubtasks || []);
   const [newSubtaskName, setNewSubtaskName] = React.useState('');
 
   const loadSubtasks = React.useCallback(async () => {
@@ -24,8 +25,12 @@ export function SubtasksList({ taskId }: SubtasksListProps) {
   }, [taskId]);
 
   React.useEffect(() => {
-    loadSubtasks();
-  }, [loadSubtasks]);
+    if (initialSubtasks !== null) {
+        setSubtasks(initialSubtasks);
+    } else {
+        loadSubtasks();
+    }
+  }, [taskId, initialSubtasks, loadSubtasks]);
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();

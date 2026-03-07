@@ -4,10 +4,11 @@ import { db } from '@/lib/db';
 import { labels } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { cache } from 'react';
 
-export async function getLabels() {
+export const getLabels = cache(async function getLabels() {
   return db.select().from(labels).all();
-}
+});
 
 export async function createLabel(data: { name: string; color?: string }) {
   db.insert(labels).values(data).run();

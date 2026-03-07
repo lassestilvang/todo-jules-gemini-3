@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { updateTask, getTaskLabels, toggleTaskLabel } from '@/actions/tasks';
+import { updateTask, toggleTaskLabel, getTaskDetailedInfo } from '@/actions/tasks';
 import { getLabels } from '@/actions/labels';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -21,24 +21,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { useState, useEffect } from 'react';
-import { Task, Label as LabelType } from '@/lib/types';
+import { Task, Label as LabelType, Attachment, ActivityLogEntry } from '@/lib/types';
 
 interface TaskDetailSheetProps {
   task: Task | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  labels: LabelType[];
 }
 
-export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetProps) {
-  const [labels, setLabels] = useState<LabelType[]>([]);
+export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetailSheetProps) {
   const [assignedLabels, setAssignedLabels] = useState<LabelType[]>([]);
+  const [subtasks, setSubtasks] = useState<Task[] | null>(null);
+  const [attachments, setAttachments] = useState<Attachment[] | null>(null);
+  const [logs, setLogs] = useState<ActivityLogEntry[] | null>(null);
 
   useEffect(() => { getLabels().then(setLabels); }, []);
 
   useEffect(() => {
     if (task) {
+        // Reset state for new task to avoid ghosting
+        setAssignedLabels([]);
+        setSubtasks(null);
+        setAttachments(null);
+        setLogs(null);
 
-        getTaskLabels(task.id).then(setAssignedLabels);
+        getTaskDetailedInfo(task.id).then(data => {
+            setAssignedLabels(data.labels);
+            setSubtasks(data.subtasks);
+            setAttachments(data.attachments);
+            setLogs(data.logs);
+        });
     }
   }, [task?.id]);
 
@@ -114,18 +127,21 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                                     <CommandList>
                                         <CommandEmpty>No label found.</CommandEmpty>
                                         <CommandGroup>
-                                            {labels.map(label => {
-                                                const isAssigned = assignedLabels.some(l => l.id === label.id);
-                                                return (
-                                                    <CommandItem key={label.id} onSelect={() => handleToggleLabel(label.id)}>
+                                            {(() => {
+                                                const assignedLabelIds = new Set(assignedLabels.map(l => l.id));
+                                                return labels.map(label => {
+                                                    const isAssigned = assignedLabelIds.has(label.id);
+                                                    return (
+                                                        <CommandItem key={label.id} onSelect={() => handleToggleLabel(label.id)}>
                                                         <div className="flex items-center gap-2 w-full cursor-pointer">
                                                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: label.color || '#000' }} />
                                                             <span>{label.name}</span>
                                                             {isAssigned && <Check className="ml-auto w-4 h-4" />}
                                                         </div>
-                                                    </CommandItem>
-                                                );
-                                            })}
+                                                        </CommandItem>
+                                                    );
+                                                });
+                                            })()}
                                         </CommandGroup>
                                     </CommandList>
                                 </Command>
@@ -135,11 +151,11 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                 </div>
 
                 <div className="grid gap-2">
-                    <SubtasksList taskId={task.id} />
+                    <SubtasksList taskId={task.id} initialSubtasks={subtasks} />
                 </div>
 
                 <div className="grid gap-2">
-                    <AttachmentsList taskId={task.id} />
+                    <AttachmentsList taskId={task.id} initialAttachments={attachments} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -248,7 +264,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
             </TabsContent>
 
             <TabsContent value="history">
-                <ActivityLog taskId={task.id} />
+                <ActivityLog taskId={task.id} initialLogs={logs} />
             </TabsContent>
         </Tabs>
       </SheetContent>
