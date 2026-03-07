@@ -4,7 +4,7 @@ import * as React from 'react';
 import { TaskItem } from './task-item';
 import { AnimatePresence } from 'framer-motion';
 import { TaskDetailSheet } from './task-detail-sheet';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { createTask } from '@/actions/tasks';
@@ -31,7 +31,10 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
       setNewTaskName('');
   };
 
-  const filteredTasks = tasks.filter(task => showCompleted || !task.isCompleted);
+  const filteredTasks = useMemo(
+    () => tasks.filter(task => showCompleted || !task.isCompleted),
+    [tasks, showCompleted]
+  );
 
   return (
     <div className="max-w-4xl mx-auto">
