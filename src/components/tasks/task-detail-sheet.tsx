@@ -20,7 +20,7 @@ import { ActivityLog } from './activity-log';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Task, Label as LabelType, Attachment, ActivityLogEntry } from '@/lib/types';
 
 interface TaskDetailSheetProps {
@@ -36,7 +36,8 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   const [attachments, setAttachments] = useState<Attachment[] | null>(null);
   const [logs, setLogs] = useState<ActivityLogEntry[] | null>(null);
 
-  useEffect(() => { getLabels().then(setLabels); }, []);
+  const labelsMap = useMemo(() => new Map(labels.map(l => [l.id, l])), [labels]);
+  const assignedLabelIds = useMemo(() => new Set(assignedLabels.map(l => l.id)), [assignedLabels]);
 
   useEffect(() => {
     if (task) {
@@ -62,12 +63,12 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   };
 
   const handleToggleLabel = async (labelId: number) => {
-    const isAssigned = assignedLabels.some(l => l.id === labelId);
+    const isAssigned = assignedLabelIds.has(labelId);
     await toggleTaskLabel(task.id, labelId, !isAssigned);
     if (isAssigned) {
         setAssignedLabels(prev => prev.filter(l => l.id !== labelId));
     } else {
-        const label = labels.find(l => l.id === labelId);
+        const label = labelsMap.get(labelId);
         if (label) setAssignedLabels(prev => [...prev, label]);
     }
   };
@@ -127,21 +128,18 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                     <CommandList>
                                         <CommandEmpty>No label found.</CommandEmpty>
                                         <CommandGroup>
-                                            {(() => {
-                                                const assignedLabelIds = new Set(assignedLabels.map(l => l.id));
-                                                return labels.map(label => {
-                                                    const isAssigned = assignedLabelIds.has(label.id);
-                                                    return (
-                                                        <CommandItem key={label.id} onSelect={() => handleToggleLabel(label.id)}>
+                                            {labels.map(label => {
+                                                const isAssigned = assignedLabelIds.has(label.id);
+                                                return (
+                                                    <CommandItem key={label.id} onSelect={() => handleToggleLabel(label.id)}>
                                                         <div className="flex items-center gap-2 w-full cursor-pointer">
                                                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: label.color || '#000' }} />
                                                             <span>{label.name}</span>
                                                             {isAssigned && <Check className="ml-auto w-4 h-4" />}
                                                         </div>
-                                                        </CommandItem>
-                                                    );
-                                                });
-                                            })()}
+                                                    </CommandItem>
+                                                );
+                                            })}
                                         </CommandGroup>
                                     </CommandList>
                                 </Command>
