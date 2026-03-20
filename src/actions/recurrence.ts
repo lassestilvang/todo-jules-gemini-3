@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { tasks } from '@/lib/schema';
+import { tasks, taskLabels } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 import { addDays, addWeeks, addMonths, addYears, format } from 'date-fns';
 import { revalidatePath } from 'next/cache';
@@ -52,7 +52,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
 
         if (!existingTask) {
             // Create new task
-            tx.insert(tasks).values({
+            const newTask = tx.insert(tasks).values({
                 name: task.name,
                 description: task.description,
                 listId: task.listId,
@@ -61,7 +61,36 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
                 recurrenceInterval: task.recurrenceInterval,
                 recurrenceConfig: task.recurrenceConfig,
                 recurrenceId: recurrenceId,
-            }).run();
+                estimate: task.estimate,
+                reminders: task.reminders,
+            }).returning().get();
+
+            if (newTask) {
+                // Link labels
+                const labels = tx.select().from(taskLabels).where(eq(taskLabels.taskId, task.id)).all();
+                if (labels.length > 0) {
+                    tx.insert(taskLabels).values(
+                        labels.map(l => ({ taskId: newTask.id, labelId: l.labelId }))
+                    ).run();
+                }
+
+                // Link subtasks
+                const subtasks = tx.select().from(tasks).where(eq(tasks.parentId, task.id)).all();
+                if (subtasks.length > 0) {
+                    tx.insert(tasks).values(
+                        subtasks.map(st => ({
+                            name: st.name,
+                            description: st.description,
+                            listId: st.listId,
+                            date: st.date ? nextDateStr : null,
+                            priority: st.priority,
+                            estimate: st.estimate,
+                            reminders: st.reminders,
+                            parentId: newTask.id,
+                        }))
+                    ).run();
+                }
+            }
         }
     }
   });

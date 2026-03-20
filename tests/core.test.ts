@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeAll } from "bun:test";
 import { mock } from "bun:test";
-import { tasks, activityLogs } from '@/lib/schema';
+import { tasks, activityLogs, taskLabels, labels } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 import { addDays, format } from 'date-fns';
 import { Database } from 'bun:sqlite';
@@ -109,6 +109,55 @@ describe('Core Logic', () => {
 
             // Instance 3 should ALSO have recurrenceId pointing to Instance 1
             expect(instance3.recurrenceId).toBe(instance1.id);
+        });
+
+        test('should copy fields, labels, and subtasks to new recurrence instance', async () => {
+            const today = format(new Date(), 'yyyy-MM-dd');
+
+            // Create a label
+            const label = testDb.insert(labels).values({ name: 'Test Label ' + Date.now() }).returning().get();
+
+            // Create recurring task
+            const task = testDb.insert(tasks).values({
+                name: 'Rich Recurrence Test ' + Date.now(),
+                recurrenceInterval: 'DAILY',
+                date: today,
+                estimate: 60,
+                reminders: '["10m"]'
+            }).returning().get();
+
+            // Link label
+            testDb.insert(taskLabels).values({ taskId: task.id, labelId: label.id }).run();
+
+            // Create subtask
+            testDb.insert(tasks).values({
+                name: 'Subtask for Recurrence',
+                parentId: task.id,
+                estimate: 30
+            }).run();
+
+            // Complete task to trigger recurrence
+            await toggleTaskCompletion(task.id, true);
+
+            // Fetch new instance
+            const allTasks = testDb.select().from(tasks).where(eq(tasks.name, task.name)).all();
+            const newTask = allTasks.find(t => t.id !== task.id);
+            expect(newTask).toBeDefined();
+
+            // Verify copied fields
+            expect(newTask.estimate).toBe(60);
+            expect(newTask.reminders).toBe('["10m"]');
+
+            // Verify labels
+            const newLabels = testDb.select().from(taskLabels).where(eq(taskLabels.taskId, newTask.id)).all();
+            expect(newLabels.length).toBe(1);
+            expect(newLabels[0].labelId).toBe(label.id);
+
+            // Verify subtasks
+            const newSubtasks = testDb.select().from(tasks).where(eq(tasks.parentId, newTask.id)).all();
+            expect(newSubtasks.length).toBe(1);
+            expect(newSubtasks[0].name).toBe('Subtask for Recurrence');
+            expect(newSubtasks[0].estimate).toBe(30);
         });
     });
 
