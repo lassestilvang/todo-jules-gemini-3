@@ -1,7 +1,6 @@
 'use server';
 
 import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
 import { join } from 'path';
 import { db } from '@/lib/db';
 import { attachments } from '@/lib/schema';
@@ -23,10 +22,12 @@ export async function uploadFile(taskId: number, formData: FormData) {
 
   try {
       await writeFile(path, buffer);
-  } catch (err) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!existsSync(uploadDir)){
+  } catch (err: unknown) {
+      if (err instanceof Error && (err as any).code === 'ENOENT') {
           await mkdir(uploadDir, { recursive: true });
           await writeFile(path, buffer);
+      } else {
+          throw err;
       }
   }
 
