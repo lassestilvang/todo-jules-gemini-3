@@ -22,8 +22,8 @@ export async function uploadFile(taskId: number, formData: FormData) {
 
   try {
       await writeFile(path, buffer);
-  } catch (err: unknown) {
-      if (err instanceof Error && (err as any).code === 'ENOENT') {
+  } catch (err) {
+      if (typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code === 'ENOENT') {
           await mkdir(uploadDir, { recursive: true });
           await writeFile(path, buffer);
       } else {
