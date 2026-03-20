@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { tasks } from '@/lib/schema';
+import { tasks, taskLabels } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 import { addDays, addWeeks, addMonths, addYears, format } from 'date-fns';
 import { revalidatePath } from 'next/cache';
@@ -52,7 +52,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
 
         if (!existingTask) {
             // Create new task
-            tx.insert(tasks).values({
+            const newTask = tx.insert(tasks).values({
                 name: task.name,
                 description: task.description,
                 listId: task.listId,
@@ -61,7 +61,33 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
                 recurrenceInterval: task.recurrenceInterval,
                 recurrenceConfig: task.recurrenceConfig,
                 recurrenceId: recurrenceId,
-            }).run();
+                estimate: task.estimate,
+                reminders: task.reminders,
+            }).returning().get();
+
+            if (newTask) {
+                // Copy labels
+                const existingLabels = tx.select().from(taskLabels).where(eq(taskLabels.taskId, task.id)).all();
+                if (existingLabels.length > 0) {
+                    tx.insert(taskLabels).values(
+                        existingLabels.map(l => ({ taskId: newTask.id, labelId: l.labelId }))
+                    ).run();
+                }
+
+                // Copy subtasks
+                const existingSubtasks = tx.select().from(tasks).where(eq(tasks.parentId, task.id)).all();
+                if (existingSubtasks.length > 0) {
+                    tx.insert(tasks).values(
+                        existingSubtasks.map(st => ({
+                            ...st,
+                            id: undefined, // Let DB generate new ID
+                            parentId: newTask.id,
+                            isCompleted: false, // Reset completion status for new recurrence
+                            completedAt: null,
+                        }))
+                    ).run();
+                }
+            }
         }
     }
   });
