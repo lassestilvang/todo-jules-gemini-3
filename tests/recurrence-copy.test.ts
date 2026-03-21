@@ -42,6 +42,9 @@ describe('Recurrence Logic - Copy fields', () => {
             name: 'Subtask 1',
             parentId: parent.id,
             estimate: 30,
+            isCompleted: true,
+            actualTime: 15,
+            completedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
         }).run();
 
         // Toggle parent completion
