@@ -1,6 +1,6 @@
 'use server';
 
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, access } from 'fs/promises';
 import { join } from 'path';
 import { db } from '@/lib/db';
 import { attachments } from '@/lib/schema';
@@ -21,15 +21,11 @@ export async function uploadFile(taskId: number, formData: FormData) {
   const path = join(uploadDir, filename);
 
   try {
-      await writeFile(path, buffer);
-  } catch (err) {
-      if (typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code === 'ENOENT') {
-          await mkdir(uploadDir, { recursive: true });
-          await writeFile(path, buffer);
-      } else {
-          throw err;
-      }
+      await access(uploadDir);
+  } catch {
+      await mkdir(uploadDir, { recursive: true });
   }
+  await writeFile(path, buffer);
 
   const webPath = `/uploads/${filename}`;
 
