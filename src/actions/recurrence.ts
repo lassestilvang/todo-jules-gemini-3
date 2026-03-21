@@ -66,27 +66,24 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
             }).returning().get();
 
             if (newTask) {
-                // Link labels
-                const labels = tx.select().from(taskLabels).where(eq(taskLabels.taskId, task.id)).all();
-                if (labels.length > 0) {
+                // Copy labels
+                const existingLabels = tx.select().from(taskLabels).where(eq(taskLabels.taskId, task.id)).all();
+                if (existingLabels.length > 0) {
                     tx.insert(taskLabels).values(
-                        labels.map(l => ({ taskId: newTask.id, labelId: l.labelId }))
+                        existingLabels.map(l => ({ taskId: newTask.id, labelId: l.labelId }))
                     ).run();
                 }
 
-                // Link subtasks
-                const subtasks = tx.select().from(tasks).where(eq(tasks.parentId, task.id)).all();
-                if (subtasks.length > 0) {
+                // Copy subtasks
+                const existingSubtasks = tx.select().from(tasks).where(eq(tasks.parentId, task.id)).all();
+                if (existingSubtasks.length > 0) {
                     tx.insert(tasks).values(
-                        subtasks.map(st => ({
-                            name: st.name,
-                            description: st.description,
-                            listId: st.listId,
-                            date: st.date ? nextDateStr : null,
-                            priority: st.priority,
-                            estimate: st.estimate,
-                            reminders: st.reminders,
+                        existingSubtasks.map(st => ({
+                            ...st,
+                            id: undefined, // Let DB generate new ID
                             parentId: newTask.id,
+                            isCompleted: false, // Reset completion status for new recurrence
+                            completedAt: null,
                         }))
                     ).run();
                 }
