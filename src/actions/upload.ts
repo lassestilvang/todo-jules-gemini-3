@@ -21,9 +21,14 @@ export async function uploadFile(taskId: number, formData: FormData) {
   const path = join(uploadDir, filename);
 
   try {
-      await access(uploadDir);
-  } catch {
-      await mkdir(uploadDir, { recursive: true });
+      await writeFile(path, buffer);
+  } catch (err) {
+      if (err instanceof Object && 'code' in err && err.code === 'ENOENT') {
+          await mkdir(uploadDir, { recursive: true });
+          await writeFile(path, buffer);
+      } else {
+          throw err;
+      }
   }
   await writeFile(path, buffer);
 
