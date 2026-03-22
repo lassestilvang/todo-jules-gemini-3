@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { writeFile, mkdir, rm } from 'fs/promises';
+import { writeFile, mkdir, rm, access } from 'fs/promises';
 import { existsSync } from 'fs';
 
 const uploadDir = join(process.cwd(), 'public', 'uploads-bench');
@@ -17,7 +17,7 @@ async function withExistsSync() {
   }
 }
 
-async function optimized() {
+async function optimizedEnoent() {
   try {
       await writeFile(path, buffer);
   } catch (err) {
@@ -30,8 +30,22 @@ async function optimized() {
   }
 }
 
+async function withAccess() {
+  try {
+      await access(uploadDir);
+  } catch {
+      await mkdir(uploadDir, { recursive: true });
+  }
+  await writeFile(path, buffer);
+}
+
+async function withMkdirOnly() {
+  await mkdir(uploadDir, { recursive: true });
+  await writeFile(path, buffer);
+}
+
 async function runBenchmark(name: string, fn: () => Promise<void>) {
-  const iterations = 1000;
+  const iterations = 10000;
 
   // Clean up before run
   await rm(uploadDir, { recursive: true, force: true });
@@ -39,7 +53,7 @@ async function runBenchmark(name: string, fn: () => Promise<void>) {
   const start = performance.now();
   for (let i = 0; i < iterations; i++) {
     // We remove the directory periodically to trigger the catch block
-    if (i % 10 === 0) {
+    if (i % 100 === 0) {
       await rm(uploadDir, { recursive: true, force: true });
     }
     await fn();
@@ -52,7 +66,9 @@ async function runBenchmark(name: string, fn: () => Promise<void>) {
 async function main() {
   console.log('Running benchmark...');
   await runBenchmark('withExistsSync', withExistsSync);
-  await runBenchmark('optimized', optimized);
+  await runBenchmark('optimizedEnoent', optimizedEnoent);
+  await runBenchmark('withAccess', withAccess);
+  await runBenchmark('withMkdirOnly', withMkdirOnly);
 
   // Cleanup
   await rm(uploadDir, { recursive: true, force: true });
