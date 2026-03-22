@@ -48,7 +48,7 @@ bench("for...in", () => {
   for (const key in data) {
     if (key === 'updatedAt') continue;
 
-    const newValue = (data as any)[key];
+    const newValue = (data as Record<string, unknown>)[key];
     const oldValue = (current as Record<string, unknown>)[key];
     if (oldValue != newValue) {
       logsToInsert.push({
@@ -70,7 +70,7 @@ bench("Object.keys", () => {
     const key = keys[i];
     if (key === 'updatedAt') continue;
 
-    const newValue = (data as any)[key];
+    const newValue = (data as Record<string, unknown>)[key];
     const oldValue = (current as Record<string, unknown>)[key];
     if (oldValue != newValue) {
       logsToInsert.push({

@@ -42,6 +42,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   useEffect(() => {
     if (task) {
         // Reset state for new task to avoid ghosting
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setAssignedLabels([]);
         setSubtasks(null);
         setAttachments(null);
@@ -54,7 +55,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
             setLogs(data.logs);
         });
     }
-  }, [task?.id]);
+  }, [task]);
 
   if (!task) return null;
 
