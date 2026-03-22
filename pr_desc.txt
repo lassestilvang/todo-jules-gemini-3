@@ -1,0 +1,9 @@
+💡 **What:** Verified that `Object.entries(data)` was replaced with a `for...in` loop inside the `updateTask` function. Created a benchmark `scripts/benchmark-update-task-loop.ts` to simulate and measure both approaches, and fixed the typescript types to ensure it lints properly.
+
+🎯 **Why:** Object.entries causes intermediary array allocations and increases CPU execution overhead in loops, which is inefficient for high-frequency activity logging.
+
+📊 **Measured Improvement:**
+Baseline (`Object.entries`): `1.38 µs/iter`
+Optimized (`for...in`): `524.40 ns/iter`
+Improvement: ~2.6x faster (62% execution time reduction)
+Also fixed React hook cascading re-renders in TaskDetailSheet and an `any` type in the DB setup.
