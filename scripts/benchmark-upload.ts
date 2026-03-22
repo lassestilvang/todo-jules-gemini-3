@@ -1,77 +1,70 @@
+import { run, bench, group } from 'mitata';
+import { rmSync, mkdirSync } from 'fs';
+import { writeFile, mkdir, access } from 'fs/promises';
 import { join } from 'path';
-import { writeFile, mkdir, rm, access } from 'fs/promises';
-import { existsSync } from 'fs';
 
-const uploadDir = join(process.cwd(), 'public', 'uploads-bench');
-const path = join(uploadDir, 'test-file.txt');
-const buffer = Buffer.from('benchmark test');
+const uploadDir1 = join(process.cwd(), 'public', 'uploads_bench_1');
+const uploadDir2 = join(process.cwd(), 'public', 'uploads_bench_2');
+const uploadDir3 = join(process.cwd(), 'public', 'uploads_bench_3');
 
-async function withExistsSync() {
-  try {
-      await writeFile(path, buffer);
-  } catch (err) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!existsSync(uploadDir)){
-          await mkdir(uploadDir, { recursive: true });
-          await writeFile(path, buffer);
-      }
-  }
-}
-
-async function optimizedEnoent() {
-  try {
-      await writeFile(path, buffer);
-  } catch (err) {
-      if (typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code === 'ENOENT') {
-          await mkdir(uploadDir, { recursive: true });
-          await writeFile(path, buffer);
-      } else {
-          throw err;
-      }
-  }
-}
-
-async function withAccess() {
-  try {
-      await access(uploadDir);
-  } catch {
-      await mkdir(uploadDir, { recursive: true });
-  }
-  await writeFile(path, buffer);
-}
-
-async function withMkdirOnly() {
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(path, buffer);
-}
-
-async function runBenchmark(name: string, fn: () => Promise<void>) {
-  const iterations = 10000;
-
-  // Clean up before run
-  await rm(uploadDir, { recursive: true, force: true });
-
-  const start = performance.now();
-  for (let i = 0; i < iterations; i++) {
-    // We remove the directory periodically to trigger the catch block
-    if (i % 100 === 0) {
-      await rm(uploadDir, { recursive: true, force: true });
-    }
-    await fn();
-  }
-  const end = performance.now();
-
-  console.log(`${name}: ${(end - start).toFixed(2)}ms`);
-}
+const buffer = Buffer.alloc(1024);
 
 async function main() {
-  console.log('Running benchmark...');
-  await runBenchmark('withExistsSync', withExistsSync);
-  await runBenchmark('optimizedEnoent', optimizedEnoent);
-  await runBenchmark('withAccess', withAccess);
-  await runBenchmark('withMkdirOnly', withMkdirOnly);
+    try { mkdirSync(uploadDir1, { recursive: true }); } catch(e){}
+    try { mkdirSync(uploadDir2, { recursive: true }); } catch(e){}
+    try { mkdirSync(uploadDir3, { recursive: true }); } catch(e){}
 
-  // Cleanup
-  await rm(uploadDir, { recursive: true, force: true });
+    group('File Upload - Existing Dir', () => {
+      bench('Using try/catch ENOENT (Current Code)', async () => {
+        const filename = `${Date.now()}-test.txt`;
+        const path = join(uploadDir1, filename);
+
+        try {
+          await writeFile(path, buffer);
+        } catch (err) {
+          if (typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code === 'ENOENT') {
+            await mkdir(uploadDir1, { recursive: true });
+            await writeFile(path, buffer);
+          } else {
+            throw err;
+          }
+        }
+      });
+
+      bench('Using fs/promises access (Proposed)', async () => {
+        const filename = `${Date.now()}-test.txt`;
+        const path = join(uploadDir2, filename);
+
+        try {
+          await access(uploadDir2);
+        } catch {
+          await mkdir(uploadDir2, { recursive: true });
+        }
+        await writeFile(path, buffer);
+      });
+
+      bench('Using relying on mkdir error handling directly (Proposed)', async () => {
+        const filename = `${Date.now()}-test.txt`;
+        const path = join(uploadDir3, filename);
+
+        try {
+            await mkdir(uploadDir3, { recursive: true });
+        } catch (err) {
+            if (typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code !== 'EEXIST') {
+                throw err;
+            }
+        }
+        await writeFile(path, buffer);
+      });
+    });
+
+    await run();
+
+    try {
+      rmSync(uploadDir1, { recursive: true, force: true });
+      rmSync(uploadDir2, { recursive: true, force: true });
+      rmSync(uploadDir3, { recursive: true, force: true });
+    } catch (e) {}
 }
 
 main().catch(console.error);
