@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { cache } from 'react';
 
 export const getLists = cache(async function getLists() {
+  // Optimized: Cache the lists query to prevent redundant database calls in a single render pass
   return db.select().from(lists).all();
 });
 
