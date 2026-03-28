@@ -79,8 +79,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
   db.transaction((tx: typeof db) => {
     const logsToInsert: (typeof activityLogs.$inferInsert)[] = [];
     // Log changes
-    for (const key in data) {
-      const newValue = data[key as keyof typeof data];
+    for (const [key, newValue] of Object.entries(data)) {
       if (key === 'updatedAt') continue;
 
       const oldValue = (current as Record<string, unknown>)[key];
