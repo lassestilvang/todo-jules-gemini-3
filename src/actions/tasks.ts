@@ -7,39 +7,37 @@ import { revalidatePath } from 'next/cache';
 import { format } from 'date-fns';
 
 export async function getTasks() {
-  return db.select().from(tasks).all();
+  return await db.select().from(tasks);
 }
 
 export async function getIncompleteTasks() {
-  return db.select().from(tasks).where(eq(tasks.isCompleted, false)).all();
+  return await db.select().from(tasks).where(eq(tasks.isCompleted, false));
 }
 export async function getUpcomingTasks() {
   const today = format(new Date(), "yyyy-MM-dd");
-  return db.select().from(tasks)
-    .where(sql`${tasks.date} > ${today}`)
-    .all();
+  return await db.select().from(tasks)
+    .where(sql`${tasks.date} > ${today}`);
 }
 export async function getTasksByListId(listId: number) {
-  return db.select().from(tasks).where(eq(tasks.listId, listId)).all();
+  return await db.select().from(tasks).where(eq(tasks.listId, listId));
 }
 
 export async function getTasksByDateRange(startDate: string, endDate: string) {
-  return db.select().from(tasks)
+  return await db.select().from(tasks)
     .where(
       and(
         sql`${tasks.date} >= ${startDate}`,
         sql`${tasks.date} <= ${endDate}`
       )
-    )
-    .all();
+    );
 }
 
 export async function getTaskDetailedInfo(taskId: number) {
   const [assignedLabels, subtasks, attachmentsList, logs] = await Promise.all([
     getTaskLabels(taskId),
-    db.select().from(tasks).where(eq(tasks.parentId, taskId)).all(),
-    db.select().from(attachments).where(eq(attachments.taskId, taskId)).all(),
-    db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).orderBy(desc(activityLogs.timestamp)).all()
+    db.select().from(tasks).where(eq(tasks.parentId, taskId)),
+    db.select().from(attachments).where(eq(attachments.taskId, taskId)),
+    db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).orderBy(desc(activityLogs.timestamp))
   ]);
 
   return {
@@ -51,7 +49,7 @@ export async function getTaskDetailedInfo(taskId: number) {
 }
 
 export async function getTasksForDate(date: string) {
-  return db.select().from(tasks).where(eq(tasks.date, date)).all();
+  return await db.select().from(tasks).where(eq(tasks.date, date));
 }
 
 export async function createTask(data: {
@@ -62,10 +60,10 @@ export async function createTask(data: {
   priority?: 'high' | 'medium' | 'low' | 'none';
   recurrenceInterval?: string;
 }) {
-  const result = db.insert(tasks).values({
+  const result = (await db.insert(tasks).values({
     ...data,
     priority: data.priority || 'none',
-  }).returning({ id: tasks.id }).get();
+  }).returning({ id: tasks.id }))[0];
 
   try { revalidatePath('/'); } catch { /* empty */ }
   return result;
@@ -73,7 +71,7 @@ export async function createTask(data: {
 
 export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>) {
   // Get current task state for logging
-  const current = db.select().from(tasks).where(eq(tasks.id, id)).get();
+  const current = (await db.select().from(tasks).where(eq(tasks.id, id)).limit(1))[0];
   if (!current) throw new Error("Task not found");
 
   db.transaction((tx: typeof db) => {
@@ -105,42 +103,40 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
 }
 
 export async function deleteTask(id: number) {
-  db.delete(tasks).where(eq(tasks.id, id)).run();
+  await db.delete(tasks).where(eq(tasks.id, id));
   try { revalidatePath('/'); } catch { /* empty */ }
 }
 
 export async function getActivityLogs(taskId: number) {
-    return db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).all();
+    return await db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId));
 }
 
 export async function getTaskLabels(taskId: number) {
-    return db.select({
+    return await db.select({
         id: labels.id,
         name: labels.name, createdAt: labels.createdAt,
         color: labels.color
     })
     .from(labels)
     .innerJoin(taskLabels, eq(labels.id, taskLabels.labelId))
-    .where(eq(taskLabels.taskId, taskId))
-    .all();
+    .where(eq(taskLabels.taskId, taskId));
 }
 
 export async function toggleTaskLabel(taskId: number, labelId: number, selected: boolean) {
     if (selected) {
-        const exists = db.select().from(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).get();
+        const exists = (await db.select().from(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).limit(1))[0];
         if (!exists) {
-            db.insert(taskLabels).values({ taskId, labelId }).run();
+            await db.insert(taskLabels).values({ taskId, labelId });
         }
     } else {
-        db.delete(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).run();
+        await db.delete(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId)));
     }
     try { revalidatePath('/'); } catch { /* empty */ }
 }
 
 export async function getTasksAfterDate(startDate: string) {
-  return db.select().from(tasks)
+  return await db.select().from(tasks)
     .where(
         sql`${tasks.date} > ${startDate}`
-    )
-    .all();
+    );
 }
