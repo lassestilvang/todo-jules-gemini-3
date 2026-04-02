@@ -1,5 +1,5 @@
-import { db } from './src/lib/db';
-import { tasks } from './src/lib/schema';
+import { db } from '../src/lib/db';
+import { tasks } from '../src/lib/schema';
 import { eq } from 'drizzle-orm';
 
 async function test() {
