@@ -30,7 +30,6 @@ export async function uploadFile(taskId: number, formData: FormData) {
           throw err;
       }
   }
-  await writeFile(path, buffer);
 
   const webPath = `/uploads/${filename}`;
 
