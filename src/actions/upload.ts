@@ -1,6 +1,6 @@
 'use server';
 
-import { writeFile, mkdir, access } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { db } from '@/lib/db';
 import { attachments } from '@/lib/schema';
