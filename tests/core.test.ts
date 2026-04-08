@@ -63,7 +63,7 @@ describe('Core Logic', () => {
             expect(nextTask).toBeDefined();
 
             const expectedDate = format(addDays(new Date(today), 1), 'yyyy-MM-dd');
-            expect(nextTask.date).toBe(expectedDate);
+            expect(nextTask!.date).toBe(expectedDate);
         });
 
         test('should not generate recurrence for normal tasks', async () => {
@@ -93,22 +93,22 @@ describe('Core Logic', () => {
 
             const allTasks = testDb.select().from(tasks).where(eq(tasks.name, instance1.name)).all();
             const instance2 = allTasks.find(t => t.id !== instance1.id);
-            expect(instance2).toBeDefined();
+            expect(instance2!).toBeDefined();
 
             // Instance 2 should have recurrenceId pointing to Instance 1
-            expect(instance2.recurrenceId).toBe(instance1.id);
+            expect(instance2!.recurrenceId).toBe(instance1.id);
 
             // 3. Complete Instance 2 -> Creates Instance 3
-            await toggleTaskCompletion(instance2.id, true);
+            await toggleTaskCompletion(instance2!.id, true);
 
             const allTasks3 = testDb.select().from(tasks).where(eq(tasks.name, instance1.name)).all();
             expect(allTasks3.length).toBe(3);
 
-            const instance3 = allTasks3.find(t => t.id !== instance1.id && t.id !== instance2.id);
-            expect(instance3).toBeDefined();
+            const instance3 = allTasks3.find(t => t.id !== instance1.id && t.id !== instance2!.id);
+            expect(instance3!).toBeDefined();
 
             // Instance 3 should ALSO have recurrenceId pointing to Instance 1
-            expect(instance3.recurrenceId).toBe(instance1.id);
+            expect(instance3!.recurrenceId).toBe(instance1.id);
         });
 
         test('should copy fields, labels, and subtasks to new recurrence instance', async () => {
@@ -145,16 +145,16 @@ describe('Core Logic', () => {
             expect(newTask).toBeDefined();
 
             // Verify copied fields
-            expect(newTask.estimate).toBe(60);
-            expect(newTask.reminders).toBe('["10m"]');
+            expect(newTask!.estimate).toBe(60);
+            expect(newTask!.reminders).toBe('["10m"]');
 
             // Verify labels
-            const newLabels = testDb.select().from(taskLabels).where(eq(taskLabels.taskId, newTask.id)).all();
+            const newLabels = testDb.select().from(taskLabels).where(eq(taskLabels.taskId, newTask!.id)).all();
             expect(newLabels.length).toBe(1);
             expect(newLabels[0].labelId).toBe(label.id);
 
             // Verify subtasks
-            const newSubtasks = testDb.select().from(tasks).where(eq(tasks.parentId, newTask.id)).all();
+            const newSubtasks = testDb.select().from(tasks).where(eq(tasks.parentId, newTask!.id)).all();
             expect(newSubtasks.length).toBe(1);
             expect(newSubtasks[0].name).toBe('Subtask for Recurrence');
             expect(newSubtasks[0].estimate).toBe(30);

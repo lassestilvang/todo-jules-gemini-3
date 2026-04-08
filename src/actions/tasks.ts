@@ -69,18 +69,25 @@ export async function createTask(data: {
   return result;
 }
 
-export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>) {
-  // Get current task state for logging
-  const current = (await db.select().from(tasks).where(eq(tasks.id, id)).limit(1))[0];
-  if (!current) throw new Error("Task not found");
+export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>, previousState?: Partial<typeof tasks.$inferInsert>) {
+  // Try to use provided state, otherwise fallback to fetching
+  let current = previousState;
+
+  if (!current) {
+      current = (await db.select().from(tasks).where(eq(tasks.id, id)).limit(1))[0];
+      if (!current) throw new Error("Task not found");
+  }
 
   db.transaction((tx: typeof db) => {
     const logsToInsert: (typeof activityLogs.$inferInsert)[] = [];
-    // Log changes
-    for (const [key, newValue] of Object.entries(data)) {
+
+    // Log changes - optimized for...in
+    for (const key in data) {
       if (key === 'updatedAt') continue;
 
+      const newValue = (data as Record<string, unknown>)[key];
       const oldValue = (current as Record<string, unknown>)[key];
+
       // Simple equality check
       if (oldValue != newValue) {
         logsToInsert.push({
