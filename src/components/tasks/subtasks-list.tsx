@@ -41,7 +41,12 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
   };
 
   const handleToggle = async (id: number, checked: boolean) => {
-    await updateTask(id, { isCompleted: checked });
+    const task = subtasks.find(t => t.id === id);
+    if (task) {
+        await updateTask(id, { isCompleted: checked }, { isCompleted: task.isCompleted });
+    } else {
+        await updateTask(id, { isCompleted: checked });
+    }
     setSubtasks(prev => prev.map(t => t.id === id ? { ...t, isCompleted: checked } : t));
   };
 

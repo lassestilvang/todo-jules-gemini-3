@@ -49,7 +49,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
         setLogs(null);
 
         getTaskDetailedInfo(task.id).then(data => {
-            setAssignedLabels(data.labels);
+            setAssignedLabels(data.assignedLabels);
             setSubtasks(data.subtasks);
             setAttachments(data.attachments);
             setLogs(data.logs);
@@ -60,7 +60,11 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   if (!task) return null;
 
   const handleUpdate = async (data: Partial<Task>) => {
-      await updateTask(task.id, data);
+      const previousState: Partial<Task> = {};
+      for (const key in data) {
+          previousState[key as keyof Task] = task[key as keyof Task] as any;
+      }
+      await updateTask(task.id, data, previousState);
   };
 
   const handleToggleLabel = async (labelId: number) => {
