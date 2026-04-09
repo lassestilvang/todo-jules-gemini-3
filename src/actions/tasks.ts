@@ -83,7 +83,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
 
     // Log changes - optimized for...in
     for (const key in data) {
-      if (key === 'updatedAt') continue;
+      if (key === 'updatedAt' || !Object.hasOwn(data, key)) continue;
 
       const newValue = (data as Record<string, unknown>)[key];
       const oldValue = (current as Record<string, unknown>)[key];
