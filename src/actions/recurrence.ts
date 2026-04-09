@@ -70,7 +70,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
                 const existingLabels = tx.select().from(taskLabels).where(eq(taskLabels.taskId, task.id)).all();
                 if (existingLabels.length > 0) {
                     tx.insert(taskLabels).values(
-                        existingLabels.map((l: any) => ({ taskId: newTask.id, labelId: l.labelId }))
+                        existingLabels.map(l => ({ taskId: newTask.id, labelId: l.labelId }))
                     ).run();
                 }
 
