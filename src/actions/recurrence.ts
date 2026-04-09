@@ -78,7 +78,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
                 const existingSubtasks = tx.select().from(tasks).where(eq(tasks.parentId, task.id)).all();
                 if (existingSubtasks.length > 0) {
                     tx.insert(tasks).values(
-                        existingSubtasks.map((st: any) => ({
+                        existingSubtasks.map(st => ({
                             ...st,
                             id: undefined, // Let DB generate new ID
                             parentId: newTask.id,
