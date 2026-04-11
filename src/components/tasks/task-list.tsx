@@ -58,8 +58,9 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
             value={newTaskName}
             onChange={(e) => setNewTaskName(e.target.value)}
             className="flex-1"
+            aria-label="New task name"
           />
-          <Button type="submit" size="icon">
+          <Button type="submit" size="icon" disabled={!newTaskName.trim()} aria-label="Add task">
               <Plus className="h-4 w-4" />
           </Button>
       </form>
