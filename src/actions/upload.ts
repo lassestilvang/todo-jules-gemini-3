@@ -1,7 +1,7 @@
 'use server';
 
 import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { join, basename } from 'path';
 import { db } from '@/lib/db';
 import { attachments } from '@/lib/schema';
 import { revalidatePath } from 'next/cache';
@@ -16,7 +16,9 @@ export async function uploadFile(taskId: number, formData: FormData) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const filename = `${Date.now()}-${file.name}`;
+  // SECURE: Sanitize file name to prevent path traversal
+  const safeName = basename(file.name);
+  const filename = `${Date.now()}-${safeName}`;
   const uploadDir = join(process.cwd(), 'public', 'uploads');
   const path = join(uploadDir, filename);
 
@@ -35,7 +37,7 @@ export async function uploadFile(taskId: number, formData: FormData) {
 
   db.insert(attachments).values({
       taskId,
-      fileName: file.name,
+      fileName: safeName,
       filePath: webPath
   }).run();
 
