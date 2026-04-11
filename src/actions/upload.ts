@@ -17,8 +17,11 @@ export async function uploadFile(taskId: number, formData: FormData) {
   const buffer = Buffer.from(bytes);
 
   // SECURE: Sanitize file name to prevent path traversal
+  if (!(file instanceof File)) {
+    throw new Error('Invalid file upload');
+  }
   const safeName = basename(file.name);
-  const filename = `${Date.now()}-${safeName}`;
+  const filename = `${crypto.randomUUID()}-${safeName}`;
   const uploadDir = join(process.cwd(), 'public', 'uploads');
   const path = join(uploadDir, filename);
 
