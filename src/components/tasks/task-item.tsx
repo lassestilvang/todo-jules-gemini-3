@@ -33,6 +33,7 @@ export function TaskItem({ task, onToggle, onClick }: TaskItemProps) {
     >
       <div onClick={(e) => e.stopPropagation()}>
         <Checkbox
+          aria-label={`Mark task "${task.name}" as ${task.isCompleted ? 'incomplete' : 'complete'}`}
           checked={!!task.isCompleted}
           onCheckedChange={async (checked) => {
              if (onToggle) onToggle(task.id, checked as boolean);

@@ -57,6 +57,7 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
         {subtasks.map(t => (
           <div key={t.id} className="flex items-center space-x-2 group">
             <Checkbox
+              aria-label={`Mark subtask "${t.name}" as ${t.isCompleted ? 'incomplete' : 'complete'}`}
               checked={!!t.isCompleted}
               onCheckedChange={(c) => handleToggle(t.id, c as boolean)}
             />
@@ -73,8 +74,9 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
           placeholder="Add subtask..."
           value={newSubtaskName}
           onChange={(e) => setNewSubtaskName(e.target.value)}
+          aria-label="New subtask name"
         />
-        <Button size="sm" variant="ghost" type="submit" disabled={!newSubtaskName}>
+        <Button size="sm" variant="ghost" type="submit" disabled={!newSubtaskName.trim()} aria-label="Add subtask">
           <Plus className="h-4 w-4" />
         </Button>
       </form>
