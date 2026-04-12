@@ -31,6 +31,7 @@ export function SearchCommand() {
 
   React.useEffect(() => {
     let isCancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
 
     if (!open) {
       if (query.length > 0) {
@@ -38,6 +39,7 @@ export function SearchCommand() {
       }
       return () => {
         isCancelled = true;
+        if (timer) clearTimeout(timer);
       };
     }
 
@@ -45,10 +47,11 @@ export function SearchCommand() {
       setResults([]);
       return () => {
         isCancelled = true;
+        if (timer) clearTimeout(timer);
       };
     }
 
-    const timer = setTimeout(async () => {
+    timer = setTimeout(async () => {
       const data = await searchTasks(query);
       if (!isCancelled) {
         setResults(data);
@@ -57,7 +60,7 @@ export function SearchCommand() {
 
     return () => {
       isCancelled = true;
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
     };
   }, [query, open]);
 
