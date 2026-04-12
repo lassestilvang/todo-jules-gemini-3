@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "2b23c07c-2de9-4a57-b6a3-c001cc9454b5",
-  "prevId": "bf0fd137-433a-4235-8662-385700f81de9",
+  "id": "8a38f68d-e57c-486d-8ff4-966fa601402d",
+  "prevId": "2b23c07c-2de9-4a57-b6a3-c001cc9454b5",
   "tables": {
     "activity_logs": {
       "name": "activity_logs",
@@ -51,7 +51,15 @@
           "default": "(CURRENT_TIMESTAMP)"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "activity_logs_task_id_idx": {
+          "name": "activity_logs_task_id_idx",
+          "columns": [
+            "task_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "activity_logs_task_id_tasks_id_fk": {
           "name": "activity_logs_task_id_tasks_id_fk",
@@ -111,7 +119,15 @@
           "default": "(CURRENT_TIMESTAMP)"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "attachments_task_id_idx": {
+          "name": "attachments_task_id_idx",
+          "columns": [
+            "task_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "attachments_task_id_tasks_id_fk": {
           "name": "attachments_task_id_tasks_id_fk",
@@ -252,7 +268,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "task_labels_task_id_idx": {
+          "name": "task_labels_task_id_idx",
+          "columns": [
+            "task_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "task_labels_task_id_tasks_id_fk": {
           "name": "task_labels_task_id_tasks_id_fk",
@@ -424,6 +448,13 @@
           "name": "date_idx",
           "columns": [
             "date"
+          ],
+          "isUnique": false
+        },
+        "parent_id_idx": {
+          "name": "parent_id_idx",
+          "columns": [
+            "parent_id"
           ],
           "isUnique": false
         }
