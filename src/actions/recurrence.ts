@@ -70,7 +70,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
                 const existingLabels = tx.select().from(taskLabels).where(eq(taskLabels.taskId, task.id)).all();
                 if (existingLabels.length > 0) {
                     tx.insert(taskLabels).values(
-                        existingLabels.map(l => ({ taskId: newTask.id, labelId: l.labelId }))
+                        existingLabels.map((l: { labelId: number }) => ({ taskId: newTask.id, labelId: l.labelId }))
                     ).run();
                 }
 
@@ -78,7 +78,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
                 const existingSubtasks = tx.select().from(tasks).where(eq(tasks.parentId, task.id)).all();
                 if (existingSubtasks.length > 0) {
                     tx.insert(tasks).values(
-                        existingSubtasks.map(st => ({
+                        existingSubtasks.map((st: typeof tasks.$inferSelect) => ({
                             ...st,
                             id: undefined, // Let DB generate new ID
                             parentId: newTask.id,

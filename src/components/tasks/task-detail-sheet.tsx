@@ -62,7 +62,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   const handleUpdate = async (data: Partial<Task>) => {
       const previousState: Partial<Task> = {};
       for (const key in data) {
-          if (Object.hasOwn(data, key)) previousState[key as keyof Task] = task[key as keyof Task];
+          if (Object.hasOwn(data, key)) previousState[key as keyof Task] = task[key as keyof Task] as never
       }
       await updateTask(task.id, data, previousState);
   };
