@@ -8,7 +8,7 @@ import { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { createTask } from '@/actions/tasks';
-import { Plus } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label as LabelUI } from '@/components/ui/label';
 import { Task, Label } from '@/lib/types';
@@ -23,12 +23,19 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [newTaskName, setNewTaskName] = useState('');
   const [showCompleted, setShowCompleted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCreate = async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!newTaskName.trim()) return;
-      await createTask({ name: newTaskName });
-      setNewTaskName('');
+      if (!newTaskName.trim() || isSubmitting) return;
+
+      setIsSubmitting(true);
+      try {
+        await createTask({ name: newTaskName });
+        setNewTaskName('');
+      } finally {
+        setIsSubmitting(false);
+      }
   };
 
   const filteredTasks = useMemo(
@@ -59,9 +66,10 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
             onChange={(e) => setNewTaskName(e.target.value)}
             className="flex-1"
             aria-label="New task name"
+            disabled={isSubmitting}
           />
-          <Button type="submit" size="icon" disabled={!newTaskName.trim()} aria-label="Add task">
-              <Plus className="h-4 w-4" />
+          <Button type="submit" size="icon" disabled={!newTaskName.trim() || isSubmitting} aria-label="Add task">
+              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           </Button>
       </form>
 
