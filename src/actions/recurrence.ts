@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { tasks } from '@/lib/schema';
+import { tasks, taskLabels } from '@/lib/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { addDays, addWeeks, addMonths, addYears, format } from 'date-fns';
 import { revalidatePath } from 'next/cache';
@@ -67,23 +67,49 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
 
             if (newTask) {
                 // Copy labels
-                tx.run(sql`INSERT INTO task_labels (task_id, label_id) SELECT ${newTask.id}, label_id FROM task_labels WHERE task_id = ${task.id}`);
-
-                // Copy subtasks completely to avoid data loss
                 tx.run(sql`
-                    INSERT INTO tasks (
-                        list_id, parent_id, name, description,
-                        date, deadline, is_completed, completed_at,
-                        estimate, actual_time, reminders, priority,
-                        recurrence_interval, recurrence_config, recurrence_id
+                    INSERT INTO ${taskLabels} (task_id, label_id)
+                    SELECT ${newTask.id}, label_id
+                    FROM ${taskLabels}
+                    WHERE task_id = ${task.id}
+                `);
+
+                // Copy subtasks
+                tx.run(sql`
+                    INSERT INTO ${tasks} (
+                        list_id,
+                        parent_id,
+                        name,
+                        description,
+                        date,
+                        deadline,
+                        is_completed,
+                        completed_at,
+                        estimate,
+                        actual_time,
+                        reminders,
+                        priority,
+                        recurrence_interval,
+                        recurrence_config,
+                        recurrence_id
                     )
                     SELECT
-                        list_id, ${newTask.id}, name, description,
-                        date, deadline, false, null,
-                        estimate, null, reminders, priority,
-                        recurrence_interval, recurrence_config, recurrence_id
-                    FROM tasks
-
+                        list_id,
+                        ${newTask.id},
+                        name,
+                        description,
+                        date,
+                        deadline,
+                        false,
+                        null,
+                        estimate,
+                        actual_time,
+                        reminders,
+                        priority,
+                        recurrence_interval,
+                        recurrence_config,
+                        recurrence_id
+                    FROM ${tasks}
                     WHERE parent_id = ${task.id}
                 `);
             }

@@ -31,6 +31,7 @@ export function SearchCommand() {
 
   React.useEffect(() => {
     let isCancelled = false;
+    // eslint-disable-next-line prefer-const
     let timer: ReturnType<typeof setTimeout> | undefined;
 
     if (!open) {

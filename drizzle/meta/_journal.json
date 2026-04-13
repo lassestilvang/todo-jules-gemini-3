@@ -43,6 +43,13 @@
       "when": 1776016389368,
       "tag": "0005_whole_red_wolf",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1776077102927,
+      "tag": "0006_overjoyed_sunfire",
+      "breakpoints": true
     }
   ]
 }
