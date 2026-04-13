@@ -21,6 +21,14 @@ export async function uploadFile(taskId: number, formData: FormData) {
     throw new Error('Invalid file upload');
   }
   const safeName = basename(file.name);
+
+  // SECURE: Validate file extension to prevent uploading dangerous files (e.g., Stored XSS via .html, .svg)
+  const ext = safeName.split('.').pop()?.toLowerCase();
+  const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'pdf', 'txt', 'csv', 'docx', 'xlsx'];
+  if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {
+    throw new Error('File type not allowed for security reasons');
+  }
+
   const filename = `${crypto.randomUUID()}-${safeName}`;
   const uploadDir = join(process.cwd(), 'public', 'uploads');
   const path = join(uploadDir, filename);
