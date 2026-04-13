@@ -23,7 +23,8 @@ export async function uploadFile(taskId: number, formData: FormData) {
   const safeName = basename(file.name);
 
   // SECURE: Validate file extension to prevent uploading dangerous files (e.g., Stored XSS via .html, .svg)
-  const ext = safeName.split('.').pop()?.toLowerCase();
+  const parts = safeName.split('.');
+  const ext = parts.length > 1 ? parts.pop()?.toLowerCase() : undefined;
   const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'pdf', 'txt', 'csv', 'docx', 'xlsx'];
   if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {
     throw new Error('File type not allowed for security reasons');
