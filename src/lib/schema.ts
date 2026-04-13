@@ -44,6 +44,7 @@ export const tasks = sqliteTable('tasks', {
 }, (table) => {
   return {
     dateIdx: index('date_idx').on(table.date),
+    parentIdIdx: index('parent_id_idx').on(table.parentId),
   };
 });
 
@@ -52,6 +53,10 @@ export const taskLabels = sqliteTable('task_labels', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   taskId: integer('task_id').references(() => tasks.id).notNull(),
   labelId: integer('label_id').references(() => labels.id).notNull(),
+}, (table) => {
+  return {
+    taskIdIdx: index('task_labels_task_id_idx').on(table.taskId),
+  };
 });
 
 // Attachments
@@ -61,6 +66,10 @@ export const attachments = sqliteTable('attachments', {
   filePath: text('file_path').notNull(),
   fileName: text('file_name').notNull(),
   createdAt: text('created_at').default(sql`(CURRENT_TIMESTAMP)`),
+}, (table) => {
+  return {
+    taskIdIdx: index('attachments_task_id_idx').on(table.taskId),
+  };
 });
 
 // Activity Logs
@@ -71,4 +80,8 @@ export const activityLogs = sqliteTable('activity_logs', {
   oldValue: text('old_value'),
   newValue: text('new_value'),
   timestamp: text('timestamp').default(sql`(CURRENT_TIMESTAMP)`),
+}, (table) => {
+  return {
+    taskIdIdx: index('activity_logs_task_id_idx').on(table.taskId),
+  };
 });

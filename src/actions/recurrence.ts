@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { tasks, taskLabels } from '@/lib/schema';
+import { tasks } from '@/lib/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { addDays, addWeeks, addMonths, addYears, format } from 'date-fns';
 import { revalidatePath } from 'next/cache';
@@ -67,7 +67,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
 
             if (newTask) {
                 // Copy labels
-                tx.run(sql`INSERT INTO ${taskLabels} (${taskLabels.taskId}, ${taskLabels.labelId}) SELECT ${newTask.id}, ${taskLabels.labelId} FROM ${taskLabels} WHERE ${taskLabels.taskId} = ${task.id}`);
+                tx.run(sql`INSERT INTO task_labels (task_id, label_id) SELECT ${newTask.id}, label_id FROM task_labels WHERE task_id = ${task.id}`);
 
                 // Copy subtasks completely to avoid data loss
                 tx.run(sql`
@@ -83,6 +83,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
                         estimate, null, reminders, priority,
                         recurrence_interval, recurrence_config, recurrence_id
                     FROM tasks
+
                     WHERE parent_id = ${task.id}
                 `);
             }
