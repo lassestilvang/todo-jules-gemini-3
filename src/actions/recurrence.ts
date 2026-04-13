@@ -67,7 +67,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
 
             if (newTask) {
                 // Copy labels
-                tx.run(sql`INSERT INTO task_labels (task_id, label_id) SELECT ${newTask.id}, label_id FROM task_labels WHERE task_id = ${task.id}`);
+                tx.run(sql`INSERT INTO ${taskLabels} (${taskLabels.taskId}, ${taskLabels.labelId}) SELECT ${newTask.id}, ${taskLabels.labelId} FROM ${taskLabels} WHERE ${taskLabels.taskId} = ${task.id}`);
 
                 // Copy subtasks completely to avoid data loss
                 tx.run(sql`
