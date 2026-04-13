@@ -62,6 +62,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   const handleUpdate = async (data: Partial<Task>) => {
       const previousState: Partial<Task> = {};
       for (const key in data) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           if (Object.hasOwn(data, key)) (previousState as any)[key] = task[key as keyof Task];
       }
       await updateTask(task.id, data, previousState);
