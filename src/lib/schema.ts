@@ -45,6 +45,8 @@ export const tasks = sqliteTable('tasks', {
   return {
     dateIdx: index('date_idx').on(table.date),
     parentIdIdx: index('parent_id_idx').on(table.parentId),
+    listIdIdx: index('tasks_list_id_idx').on(table.listId),
+    recurrenceIdIdx: index('tasks_recurrence_id_idx').on(table.recurrenceId),
   };
 });
 
