@@ -13,6 +13,10 @@ export async function uploadFile(taskId: number, formData: FormData) {
     throw new Error('No file uploaded');
   }
 
+  if (!(file instanceof File)) {
+    throw new Error('Invalid file upload');
+  }
+
   // SECURE: Limit file size to 5MB to prevent DoS attacks via disk/memory exhaustion
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
   if (file.size > MAX_FILE_SIZE) {
