@@ -5,24 +5,25 @@ import { tasks, activityLogs, taskLabels, labels, attachments } from '@/lib/sche
 import { eq, and, sql, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { format } from 'date-fns';
+import { cache } from 'react';
 
-export async function getTasks() {
+export const getTasks = cache(async function getTasks() {
   return await db.select().from(tasks);
-}
+});
 
-export async function getIncompleteTasks() {
+export const getIncompleteTasks = cache(async function getIncompleteTasks() {
   return await db.select().from(tasks).where(eq(tasks.isCompleted, false));
-}
-export async function getUpcomingTasks() {
+});
+export const getUpcomingTasks = cache(async function getUpcomingTasks() {
   const today = format(new Date(), "yyyy-MM-dd");
   return await db.select().from(tasks)
     .where(sql`${tasks.date} > ${today}`);
-}
-export async function getTasksByListId(listId: number) {
+});
+export const getTasksByListId = cache(async function getTasksByListId(listId: number) {
   return await db.select().from(tasks).where(eq(tasks.listId, listId));
-}
+});
 
-export async function getTasksByDateRange(startDate: string, endDate: string) {
+export const getTasksByDateRange = cache(async function getTasksByDateRange(startDate: string, endDate: string) {
   return await db.select().from(tasks)
     .where(
       and(
@@ -30,7 +31,7 @@ export async function getTasksByDateRange(startDate: string, endDate: string) {
         sql`${tasks.date} <= ${endDate}`
       )
     );
-}
+});
 
 export async function getTaskDetailedInfo(taskId: number) {
   const [assignedLabels, subtasks, attachmentsList, logs] = await Promise.all([
@@ -48,9 +49,9 @@ export async function getTaskDetailedInfo(taskId: number) {
   };
 }
 
-export async function getTasksForDate(date: string) {
+export const getTasksForDate = cache(async function getTasksForDate(date: string) {
   return await db.select().from(tasks).where(eq(tasks.date, date));
-}
+});
 
 export async function createTask(data: {
   name: string;
@@ -141,9 +142,9 @@ export async function toggleTaskLabel(taskId: number, labelId: number, selected:
     try { revalidatePath('/'); } catch { /* empty */ }
 }
 
-export async function getTasksAfterDate(startDate: string) {
+export const getTasksAfterDate = cache(async function getTasksAfterDate(startDate: string) {
   return await db.select().from(tasks)
     .where(
         sql`${tasks.date} > ${startDate}`
     );
-}
+});
