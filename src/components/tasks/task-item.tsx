@@ -27,12 +27,21 @@ export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       className={cn(
-        "flex items-center space-x-4 p-4 border rounded-lg mb-2 bg-card hover:bg-accent/50 transition-colors cursor-pointer group",
+        "flex items-center space-x-4 p-4 border rounded-lg mb-2 bg-card hover:bg-accent/50 transition-colors cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         task.isCompleted && "opacity-50"
       )}
       onClick={() => onClick(task)}
+      role="button"
+      tabIndex={0}
+      aria-label={`Open details for task: ${task.name}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick(task);
+        }
+      }}
     >
-      <div onClick={(e) => e.stopPropagation()}>
+      <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
         <Checkbox
           aria-label={`Mark task "${task.name}" as ${task.isCompleted ? 'incomplete' : 'complete'}`}
           checked={!!task.isCompleted}

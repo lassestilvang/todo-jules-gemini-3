@@ -4,3 +4,6 @@
 ## 2024-05-15 - Replace div with button for search trigger
 **Learning:** Interactive "fake inputs" used as global search triggers (cmd+k) are often built with `div` elements, breaking keyboard navigation. These must use native `<button>` elements to automatically enter the tab order and support keyboard activation, avoiding a major accessibility barrier.
 **Action:** Always verify that elements triggering modals or sidebars use a semantic `<button>` tag, or have proper `role="button"` and `tabIndex=0` with `keydown` handling.
+## 2024-04-14 - Add Keyboard Navigation to Custom List Items
+**Learning:** Custom components (like `div`s acting as list items) that handle `onClick` events require explicit `role="button"`, `tabIndex={0}`, `onKeyDown` handlers (for Enter/Space), and visible focus states (`focus-visible:ring-2`) to be accessible to keyboard users. Child interactive elements (like Checkboxes) must stop keydown event propagation to prevent triggering the parent's action.
+**Action:** Always add keyboard event handlers and focus styles when making non-interactive elements clickable.
