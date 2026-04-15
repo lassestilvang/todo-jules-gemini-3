@@ -65,8 +65,8 @@ export async function createTask(data: {
 }) {
   // SECURE: Rate limit task creation to 20 per minute per IP to prevent DoS/spam
   const headersList = await headers();
-  const ip = headersList.get('x-forwarded-for') || '127.0.0.1';
-  if (!rateLimit(ip, 20, 60 * 1000)) {
+  const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  if (!rateLimit(`createTask:${ip}`, 20, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
 
