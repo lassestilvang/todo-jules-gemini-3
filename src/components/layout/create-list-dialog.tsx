@@ -12,19 +12,26 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import { createList } from '@/actions/lists';
 
 export function CreateListDialog() {
   const [open, setOpen] = React.useState(false);
   const [name, setName] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name) return;
-    await createList(name);
-    setName('');
-    setOpen(false);
+    if (!name || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      await createList(name);
+      setName('');
+      setOpen(false);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -47,10 +54,14 @@ export function CreateListDialog() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Work, Personal"
+              disabled={isSubmitting}
             />
           </div>
           <DialogFooter>
-            <Button type="submit">Create List</Button>
+            <Button type="submit" disabled={!name || isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Create List
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

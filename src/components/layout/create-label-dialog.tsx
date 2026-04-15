@@ -14,22 +14,28 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { createLabel } from '@/actions/labels';
-import { Plus } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
 export function CreateLabelDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [color, setColor] = useState('#EF4444'); // Default red
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || isSubmitting) return;
 
-    await createLabel({ name, color });
-    setOpen(false);
-    setName('');
-    setColor('#EF4444');
+    setIsSubmitting(true);
+    try {
+      await createLabel({ name, color });
+      setOpen(false);
+      setName('');
+      setColor('#EF4444');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -59,6 +65,7 @@ export function CreateLabelDialog() {
                 onChange={(e) => setName(e.target.value)}
                 className="col-span-3"
                 autoFocus
+                disabled={isSubmitting}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -72,17 +79,22 @@ export function CreateLabelDialog() {
                     value={color}
                     onChange={(e) => setColor(e.target.value)}
                     className="w-12 h-10 p-1"
+                    disabled={isSubmitting}
                   />
                   <Input
                     value={color}
                     onChange={(e) => setColor(e.target.value)}
                     className="flex-1"
+                    disabled={isSubmitting}
                   />
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Create Label</Button>
+            <Button type="submit" disabled={!name.trim() || isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Create Label
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

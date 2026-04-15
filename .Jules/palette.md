@@ -7,3 +7,7 @@
 ## 2024-04-14 - Add Keyboard Navigation to Custom List Items
 **Learning:** Custom components (like `div`s acting as list items) that handle `onClick` events require explicit `role="button"`, `tabIndex={0}`, `onKeyDown` handlers (for Enter/Space), and visible focus states (`focus-visible:ring-2`) to be accessible to keyboard users. Child interactive elements (like Checkboxes) must stop keydown event propagation to prevent triggering the parent's action.
 **Action:** Always add keyboard event handlers and focus styles when making non-interactive elements clickable.
+
+## 2024-04-15 - Add loading states to creation dialogs
+**Learning:** For asynchronous dialog submissions (like creating labels or lists), users may double-click the submit button if there is no immediate visual feedback or disabled state, leading to duplicate database records and a confusing UX.
+**Action:** Always implement an `isSubmitting` state in dialog forms to disable inputs and the submit button, and include a visual indicator (like a loading spinner) during the async operation to prevent duplicate submissions and provide clear feedback.
