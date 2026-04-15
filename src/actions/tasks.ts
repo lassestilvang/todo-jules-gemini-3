@@ -33,7 +33,8 @@ export const getTasksByDateRange = cache(async function getTasksByDateRange(star
     );
 });
 
-export async function getTaskDetailedInfo(taskId: number) {
+// ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
+export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(taskId: number) {
   const [assignedLabels, subtasks, attachmentsList, logs] = await Promise.all([
     getTaskLabels(taskId),
     db.select().from(tasks).where(eq(tasks.parentId, taskId)),
@@ -47,7 +48,7 @@ export async function getTaskDetailedInfo(taskId: number) {
     attachments: attachmentsList,
     logs
   };
-}
+});
 
 export const getTasksForDate = cache(async function getTasksForDate(date: string) {
   return await db.select().from(tasks).where(eq(tasks.date, date));
@@ -115,11 +116,13 @@ export async function deleteTask(id: number) {
   try { revalidatePath('/'); } catch { /* empty */ }
 }
 
-export async function getActivityLogs(taskId: number) {
+// ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
+export const getActivityLogs = cache(async function getActivityLogs(taskId: number) {
     return await db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId));
-}
+});
 
-export async function getTaskLabels(taskId: number) {
+// ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
+export const getTaskLabels = cache(async function getTaskLabels(taskId: number) {
     return await db.select({
         id: labels.id,
         name: labels.name, createdAt: labels.createdAt,
@@ -128,7 +131,7 @@ export async function getTaskLabels(taskId: number) {
     .from(labels)
     .innerJoin(taskLabels, eq(labels.id, taskLabels.labelId))
     .where(eq(taskLabels.taskId, taskId));
-}
+});
 
 export async function toggleTaskLabel(taskId: number, labelId: number, selected: boolean) {
     if (selected) {
