@@ -22,7 +22,7 @@ export function CreateListDialog() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || isSubmitting) return;
+    if (!name.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
     try {
