@@ -6,6 +6,8 @@ import { eq, and, sql, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { format } from 'date-fns';
 import { cache } from 'react';
+import { headers } from 'next/headers';
+import { rateLimit } from '@/lib/rate-limit';
 
 export const getTasks = cache(async function getTasks() {
   return await db.select().from(tasks);
@@ -62,6 +64,13 @@ export async function createTask(data: {
   priority?: 'high' | 'medium' | 'low' | 'none';
   recurrenceInterval?: string;
 }) {
+  // SECURE: Rate limit task creation to 20 per minute per IP to prevent DoS/spam
+  const headersList = await headers();
+  const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  if (!rateLimit(`createTask:${ip}`, 20, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   const result = (await db.insert(tasks).values({
     ...data,
     priority: data.priority || 'none',
