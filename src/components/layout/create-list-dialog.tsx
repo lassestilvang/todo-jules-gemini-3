@@ -58,7 +58,7 @@ export function CreateListDialog() {
             />
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={!name || isSubmitting}>
+            <Button type="submit" disabled={!name.trim() || isSubmitting}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create List
             </Button>
