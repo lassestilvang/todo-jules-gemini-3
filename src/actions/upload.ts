@@ -6,8 +6,17 @@ import { db } from '@/lib/db';
 import { attachments } from '@/lib/schema';
 import { revalidatePath } from 'next/cache';
 import { eq } from 'drizzle-orm';
+import { headers } from 'next/headers';
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function uploadFile(taskId: number, formData: FormData) {
+  // SECURE: Rate limit uploads to 10 per minute per IP to prevent DoS
+  const headersList = await headers();
+  const ip = headersList.get('x-forwarded-for') || '127.0.0.1';
+  if (!rateLimit(ip, 10, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   const file = formData.get('file') as File;
   if (!file) {
     throw new Error('No file uploaded');

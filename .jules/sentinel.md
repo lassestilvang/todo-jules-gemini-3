@@ -7,3 +7,8 @@
 **Vulnerability:** The application was missing a file upload size limit in `src/actions/upload.ts`. A malicious user could have uploaded a massive file (e.g., several gigabytes) which would have caused the server to crash with an Out-Of-Memory (OOM) error when attempting to read the file into a Buffer via `await file.arrayBuffer()`, leading to a Denial of Service (DoS) attack.
 **Learning:** Always implement file size limits *before* reading the file into memory. Relying on metadata like `file.size` from the `FormData` is an effective way to short-circuit the request and prevent memory exhaustion.
 **Prevention:** Implement file size limits early in the request lifecycle, ensuring the application rejects overly large files before allocating significant resources or attempting to read them into buffers.
+
+## 2024-05-26 - [Add Rate Limiting to Sensitive Actions]
+**Vulnerability:** Missing rate limits on actions like task creation (`createTask`) and file uploads (`uploadFile`) exposed the application to Denial of Service (DoS) and resource exhaustion attacks by allowing malicious actors to spam requests indiscriminately.
+**Learning:** Next.js Server Actions execute on the server and bypass traditional client-side protections. If an action allocates resources (database writes, file system I/O, etc.), it must be protected against abuse natively. Relying only on frontend form submission states is insufficient for security.
+**Prevention:** Implement IP-based or user-based rate limiting on resource-intensive Server Actions, using `headers().get('x-forwarded-for')` to track client IPs, and rejecting requests that exceed sensible limits within a given time window.
