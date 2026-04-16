@@ -18,4 +18,4 @@
 
 ## 2024-05-24 - SQL INSERT INTO SELECT for Relation Copying
 **Learning:** When copying relational data (like task labels or subtasks) for a new task occurrence, fetching the existing relations into application memory with `.select().all()` and then mapping over them to `.insert()` creates unnecessary memory allocations and serialization overhead. Benchmarks confirm that replacing this application-level loop with a raw SQL `INSERT INTO ... SELECT` statement improves the relation copying performance by keeping the data movement entirely within the SQLite engine.
-**Action:** Replace dynamic application-level `.map()` inserts with raw SQL `INSERT INTO ... SELECT` statements when copying relational data, ensuring all required columns are explicitly selected.
+**Action:** Replace dynamic application-level map inserts with raw SQL INSERT INTO SELECT statements when copying relational data. Use Drizzle schema objects (e.g., table.column) for column names to ensure type safety and handle potential schema changes.
