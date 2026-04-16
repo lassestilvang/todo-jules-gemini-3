@@ -66,6 +66,7 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
             }).returning().get();
 
             if (newTask) {
+                // ⚡ Bolt: Optimized by replacing application-level .map() inserts with a raw SQL INSERT INTO SELECT statement
                 // Copy labels
                 tx.run(sql`
                     INSERT INTO ${taskLabels} (task_id, label_id)
