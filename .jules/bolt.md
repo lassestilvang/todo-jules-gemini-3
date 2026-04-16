@@ -16,6 +16,9 @@
 **Learning:** Next.js Server Components running in the App Router often trigger identical database fetch queries across multiple components (e.g., layout and page level) within the same render pass, leading to redundant work and slower execution times. Wrapping the database fetch function in React's `cache()` memoizes the query results, so the database query executes only once per server request lifecycle.
 **Action:** Use React's `cache()` to wrap read-only server actions to effortlessly deduplicate queries across React Server Components without resorting to complex state management. Ensure this is limited to data fetching, not mutations.
 
+## 2024-06-15 - Unnecessary DB writes and Next.js Cache invalidations on Blur
+**Learning:** Tabbing through inputs triggers `onBlur` events which call server actions (like `updateTask`). If no actual value was changed, executing the default `UPDATE` statement and invoking `revalidatePath('/')` causes unnecessary database writes and completely invalidates the Next.js router cache, forcing an expensive and jarring full-page re-render.
+**Action:** Implement an early return inside the update logic. By comparing the new payload with the current state, completely skip the DB transaction and cache invalidation if no fields have materially changed.
 ## 2024-05-25 - Avoid App-Level Relational Copies in Loops
 **Learning:** Copying relational data (like subtasks or labels) in loops or during task recurrence via application-level queries (`tx.select()` followed by mapping to `tx.insert().values()`) introduces N+1 performance issues, slow iteration, and significant memory allocation overhead. Benchmarks show `INSERT INTO ... SELECT` directly in SQLite reduces iteration times by ~20% and memory footprint by over 10x.
 **Action:** Replace dynamic application-level map/inserts with raw SQL `INSERT INTO ... SELECT` statements when copying existing records, ensuring all required fields are correctly projected.

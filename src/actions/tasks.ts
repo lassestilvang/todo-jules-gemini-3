@@ -99,6 +99,8 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
       if (!current) throw new Error("Task not found");
   }
 
+  let hasChanges = false;
+
   db.transaction((tx: typeof db) => {
     const logsToInsert: (typeof activityLogs.$inferInsert)[] = [];
 
@@ -120,14 +122,16 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
       }
     }
 
-    if (logsToInsert.length > 0) {
-      tx.insert(activityLogs).values(logsToInsert).run();
-    }
+    if (logsToInsert.length === 0) return; // ⚡ Bolt: Add early return to skip unnecessary DB writes and cache invalidations
 
-    tx.update(tasks).set({ ...safeData, updatedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss') }).where(eq(tasks.id, id)).run();
+    hasChanges = true;
+    tx.insert(activityLogs).values(logsToInsert).run();
+    tx.update(tasks).set({ ...data, updatedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss') }).where(eq(tasks.id, id)).run();
   });
 
-  try { revalidatePath('/'); } catch { /* empty */ }
+  if (hasChanges) {
+    try { revalidatePath('/'); } catch { /* empty */ }
+  }
 }
 
 export async function deleteTask(id: number) {
