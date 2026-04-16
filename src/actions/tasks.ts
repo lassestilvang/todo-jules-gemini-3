@@ -71,9 +71,12 @@ export async function createTask(data: {
     throw new Error('Too many requests. Please try again later.');
   }
 
+  // SECURE: Prevent mass assignment by explicitly selecting allowed fields
+  const { name, description, listId, date, priority, recurrenceInterval } = data;
+
   const result = (await db.insert(tasks).values({
-    ...data,
-    priority: data.priority || 'none',
+    name, description, listId, date, recurrenceInterval,
+    priority: priority || 'none',
   }).returning({ id: tasks.id }))[0];
 
   try { revalidatePath('/'); } catch { /* empty */ }
@@ -81,6 +84,9 @@ export async function createTask(data: {
 }
 
 export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>, previousState?: Partial<typeof tasks.$inferInsert>) {
+  // SECURE: Prevent mass assignment vulnerabilities by omitting protected fields
+  const { id: _id, createdAt: _createdAt, ...safeData } = data;
+
   // Try to use provided state, otherwise fallback to fetching
   let current = previousState;
 
@@ -93,10 +99,10 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
     const logsToInsert: (typeof activityLogs.$inferInsert)[] = [];
 
     // Log changes - optimized for...in
-    for (const key of Object.keys(data)) {
-      if (key === 'updatedAt' || (data as Record<string, unknown>)[key] === undefined) continue;
+    for (const key of Object.keys(safeData)) {
+      if (key === 'updatedAt' || (safeData as Record<string, unknown>)[key] === undefined) continue;
 
-      const newValue = (data as Record<string, unknown>)[key];
+      const newValue = (safeData as Record<string, unknown>)[key];
       const oldValue = (current as Record<string, unknown>)[key];
 
       // Simple equality check
@@ -114,7 +120,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
       tx.insert(activityLogs).values(logsToInsert).run();
     }
 
-    tx.update(tasks).set({ ...data, updatedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss') }).where(eq(tasks.id, id)).run();
+    tx.update(tasks).set({ ...safeData, updatedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss') }).where(eq(tasks.id, id)).run();
   });
 
   try { revalidatePath('/'); } catch { /* empty */ }
