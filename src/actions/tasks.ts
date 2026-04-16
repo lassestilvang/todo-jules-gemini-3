@@ -85,7 +85,11 @@ export async function createTask(data: {
 
 export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>, previousState?: Partial<typeof tasks.$inferInsert>) {
   // SECURE: Prevent mass assignment vulnerabilities by omitting protected fields
-  const { id: _id, createdAt: _createdAt, ...safeData } = data;
+  const safeData = Object.fromEntries(
+    Object.entries(data).filter(([key]) => 
+      ['name', 'description', 'listId', 'parentId', 'date', 'deadline', 'isCompleted', 'completedAt', 'estimate', 'actualTime', 'reminders', 'priority', 'recurrenceInterval', 'recurrenceConfig', 'recurrenceId'].includes(key)
+    )
+  );
 
   // Try to use provided state, otherwise fallback to fetching
   let current = previousState;
