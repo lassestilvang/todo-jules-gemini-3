@@ -6,12 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { updateTask, toggleTaskLabel, getTaskDetailedInfo } from '@/actions/tasks';
+import { updateTask, toggleTaskLabel, getTaskDetailedInfo, deleteTask } from '@/actions/tasks';
 
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, Repeat, Plus, Check } from 'lucide-react';
+import { CalendarIcon, Repeat, Plus, Check, Trash2, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { SubtasksList } from './subtasks-list';
@@ -35,6 +35,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   const [subtasks, setSubtasks] = useState<Task[] | null>(null);
   const [attachments, setAttachments] = useState<Attachment[] | null>(null);
   const [logs, setLogs] = useState<ActivityLogEntry[] | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const labelsMap = useMemo(() => new Map(labels.map(l => [l.id, l])), [labels]);
   const assignedLabelIds = useMemo(() => new Set(assignedLabels.map(l => l.id)), [assignedLabels]);
@@ -76,6 +77,18 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
     } else {
         const label = labelsMap.get(labelId);
         if (label) setAssignedLabels(prev => [...prev, label]);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this task?')) {
+        setIsDeleting(true);
+        try {
+            await deleteTask(task.id);
+            onOpenChange(false);
+        } finally {
+            setIsDeleting(false);
+        }
     }
   };
 
@@ -262,6 +275,13 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                         defaultValue={task.reminders || ''}
                         onBlur={(e) => handleUpdate({ reminders: e.target.value })}
                     />
+                </div>
+
+                <div className="pt-4 mt-4 border-t">
+                    <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="w-full sm:w-auto">
+                        {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                        Delete Task
+                    </Button>
                 </div>
 
                 </div>

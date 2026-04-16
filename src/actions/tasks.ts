@@ -71,9 +71,12 @@ export async function createTask(data: {
     throw new Error('Too many requests. Please try again later.');
   }
 
+  // SECURE: Prevent mass assignment by explicitly selecting allowed fields
+  const { name, description, listId, date, priority, recurrenceInterval } = data;
+
   const result = (await db.insert(tasks).values({
-    ...data,
-    priority: data.priority || 'none',
+    name, description, listId, date, recurrenceInterval,
+    priority: priority || 'none',
   }).returning({ id: tasks.id }))[0];
 
   try { revalidatePath('/'); } catch { /* empty */ }
@@ -81,6 +84,13 @@ export async function createTask(data: {
 }
 
 export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>, previousState?: Partial<typeof tasks.$inferInsert>) {
+  // SECURE: Prevent mass assignment vulnerabilities by omitting protected fields
+  const safeData = Object.fromEntries(
+    Object.entries(data).filter(([key]) => 
+      ['name', 'description', 'listId', 'parentId', 'date', 'deadline', 'isCompleted', 'completedAt', 'estimate', 'actualTime', 'reminders', 'priority', 'recurrenceInterval', 'recurrenceConfig', 'recurrenceId'].includes(key)
+    )
+  );
+
   // Try to use provided state, otherwise fallback to fetching
   let current = previousState;
 
@@ -95,10 +105,10 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
     const logsToInsert: (typeof activityLogs.$inferInsert)[] = [];
 
     // Log changes - optimized for...in
-    for (const key of Object.keys(data)) {
-      if (key === 'updatedAt' || (data as Record<string, unknown>)[key] === undefined) continue;
+    for (const key of Object.keys(safeData)) {
+      if (key === 'updatedAt' || (safeData as Record<string, unknown>)[key] === undefined) continue;
 
-      const newValue = (data as Record<string, unknown>)[key];
+      const newValue = (safeData as Record<string, unknown>)[key];
       const oldValue = (current as Record<string, unknown>)[key];
 
       // Simple equality check
