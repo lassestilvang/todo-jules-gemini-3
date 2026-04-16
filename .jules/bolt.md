@@ -15,3 +15,7 @@
 ## 2024-12-02 - Duplicate Database Queries in Server Components
 **Learning:** Next.js Server Components running in the App Router often trigger identical database fetch queries across multiple components (e.g., layout and page level) within the same render pass, leading to redundant work and slower execution times. Wrapping the database fetch function in React's `cache()` memoizes the query results, so the database query executes only once per server request lifecycle.
 **Action:** Use React's `cache()` to wrap read-only server actions to effortlessly deduplicate queries across React Server Components without resorting to complex state management. Ensure this is limited to data fetching, not mutations.
+
+## 2024-05-24 - SQL INSERT INTO SELECT for Relation Copying
+**Learning:** When copying relational data (like task labels or subtasks) for a new task occurrence, fetching the existing relations into application memory with `.select().all()` and then mapping over them to `.insert()` creates unnecessary memory allocations and serialization overhead. Benchmarks confirm that replacing this application-level loop with a raw SQL `INSERT INTO ... SELECT` statement improves the relation copying performance by keeping the data movement entirely within the SQLite engine.
+**Action:** Replace dynamic application-level `.map()` inserts with raw SQL `INSERT INTO ... SELECT` statements when copying relational data, ensuring all required columns are explicitly selected.
