@@ -15,3 +15,7 @@
 ## 2024-12-02 - Duplicate Database Queries in Server Components
 **Learning:** Next.js Server Components running in the App Router often trigger identical database fetch queries across multiple components (e.g., layout and page level) within the same render pass, leading to redundant work and slower execution times. Wrapping the database fetch function in React's `cache()` memoizes the query results, so the database query executes only once per server request lifecycle.
 **Action:** Use React's `cache()` to wrap read-only server actions to effortlessly deduplicate queries across React Server Components without resorting to complex state management. Ensure this is limited to data fetching, not mutations.
+
+## 2024-06-15 - Unnecessary DB writes and Next.js Cache invalidations on Blur
+**Learning:** Tabbing through inputs triggers `onBlur` events which call server actions (like `updateTask`). If no actual value was changed, executing the default `UPDATE` statement and invoking `revalidatePath('/')` causes unnecessary database writes and completely invalidates the Next.js router cache, forcing an expensive and jarring full-page re-render.
+**Action:** Implement an early return inside the update logic. By comparing the new payload with the current state, completely skip the DB transaction and cache invalidation if no fields have materially changed.
