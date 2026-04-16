@@ -11,7 +11,9 @@ export const getLabels = cache(async function getLabels() {
 });
 
 export async function createLabel(data: { name: string; color?: string }) {
-  db.insert(labels).values(data).run();
+  // SECURE: Prevent mass assignment
+  const { name, color } = data;
+  db.insert(labels).values({ name, color }).run();
   try { revalidatePath('/'); } catch { /* empty */ }
 }
 
