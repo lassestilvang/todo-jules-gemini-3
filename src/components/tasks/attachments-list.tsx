@@ -54,6 +54,9 @@ export function AttachmentsList({ taskId, initialAttachments = null }: Attachmen
       <h3 className="text-sm font-medium mb-2">Attachments</h3>
 
       <div className="space-y-2">
+          {files.length === 0 && (
+              <p className="text-sm text-muted-foreground italic">No attachments yet.</p>
+          )}
           {files.map(file => (
               <a
                 key={file.id}

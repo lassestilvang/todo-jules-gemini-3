@@ -61,16 +61,20 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
     <div className="space-y-2 mt-4">
       <h3 className="text-sm font-medium mb-2">Subtasks</h3>
       <div className="space-y-2">
+        {subtasks.length === 0 && (
+          <p className="text-sm text-muted-foreground italic">No subtasks yet.</p>
+        )}
         {subtasks.map(t => (
           <div key={t.id} className="flex items-center space-x-2 group">
             <Checkbox
+              id={`subtask-${t.id}`}
               aria-label={`Mark subtask "${t.name}" as ${t.isCompleted ? 'incomplete' : 'complete'}`}
               checked={!!t.isCompleted}
               onCheckedChange={(c) => handleToggle(t.id, c as boolean)}
             />
-            <span className={cn("text-sm flex-1", t.isCompleted && "line-through text-muted-foreground")}>
+            <label htmlFor={`subtask-${t.id}`} className={cn("text-sm flex-1 cursor-pointer", t.isCompleted && "line-through text-muted-foreground")}>
               {t.name}
-            </span>
+            </label>
           </div>
         ))}
       </div>
