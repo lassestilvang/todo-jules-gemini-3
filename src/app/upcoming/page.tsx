@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 
 export default async function UpcomingPage() {
   const today = format(new Date(), 'yyyy-MM-dd');
-  const [tasks, labels] = await Promise.all([getTasksAfterDate(today), getLabels()]);
+  const tasks = await getTasksAfterDate(today);
+  const labels = await getLabels();
   return <TaskList tasks={tasks} title="Upcoming" labels={labels} />;
 }
