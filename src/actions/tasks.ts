@@ -81,12 +81,14 @@ export async function createTask(data: {
   return result;
 }
 
+const ALLOWED_TASK_KEYS = ['name', 'description', 'listId', 'parentId', 'date', 'deadline', 'isCompleted', 'completedAt', 'estimate', 'actualTime', 'reminders', 'priority', 'recurrenceInterval', 'recurrenceConfig', 'recurrenceId'] as const;
+
 export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>, previousState?: Partial<typeof tasks.$inferInsert>) {
   // SECURE: Prevent mass assignment vulnerabilities by omitting protected fields
-  const allowedKeys = new Set(['name', 'description', 'listId', 'parentId', 'date', 'deadline', 'isCompleted', 'completedAt', 'estimate', 'actualTime', 'reminders', 'priority', 'recurrenceInterval', 'recurrenceConfig', 'recurrenceId']);
   const safeData: Partial<typeof tasks.$inferInsert> = {};
-  for (const key of Object.keys(data)) {
-    if (allowedKeys.has(key)) {
+
+  for (const key of ALLOWED_TASK_KEYS) {
+    if ((data as Record<string, any>)[key] !== undefined) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (safeData as Record<string, any>)[key] = (data as Record<string, any>)[key];
     }
@@ -127,7 +129,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
 
     hasChanges = true;
     tx.insert(activityLogs).values(logsToInsert).run();
-    tx.update(tasks).set({ ...data, updatedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss') }).where(eq(tasks.id, id)).run();
+    tx.update(tasks).set({ ...safeData, updatedAt: sql.raw('CURRENT_TIMESTAMP') }).where(eq(tasks.id, id)).run();
   });
 
   if (hasChanges) {

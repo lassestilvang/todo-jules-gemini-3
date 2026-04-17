@@ -28,3 +28,7 @@
 ## 2024-12-05 - Avoid Promise.all for synchronous SQLite queries
 **Learning:** The `better-sqlite3` driver relies on synchronous C++ bindings that block the Node.js main thread. Wrapping Drizzle ORM execution methods like `.all()`, `.get()`, or `.run()` in `await Promise.all` does not achieve true parallelization and instead introduces unnecessary promise scheduling overhead. Benchmarks show sequential awaits are consistently faster for multiple database queries.
 **Action:** Use sequential awaits instead of `Promise.all` when executing multiple queries with `better-sqlite3`.
+
+## 2026-04-17 - Fixed Field Iteration for Object Filtering
+**Learning:** Iterating over `Object.keys(data)` and checking against a `Set` of allowed keys is less efficient than iterating over a fixed array of allowed keys and checking if they exist in the input object, especially when the input object contains many extra fields. Benchmarks showed a ~36% performance improvement for larger objects.
+**Action:** Replace `Object.keys(data)` loops for data filtering/security sanitization with iteration over a constant array of allowed field names.
