@@ -14,3 +14,6 @@
 ## 2025-04-16 - Add confirmation dialogs to destructive actions
 **Learning:** Destructive actions like deleting a task should not happen immediately upon button click. Users need a chance to cancel the action to prevent accidental data loss. Using a native `window.confirm` dialog is a simple, accessible, and effective way to implement this safety net without requiring a complex custom modal.
 **Action:** Always wrap destructive actions (like deletions) in a confirmation dialog (`if (window.confirm('...'))`) to prevent accidental data loss and improve user confidence.
+## 2025-04-17 - Label linkage for Checkboxes and Empty States
+**Learning:** Standalone checkboxes inside item lists (like subtasks) often use adjacent `span` elements for text, meaning users must precisely click the small checkbox to toggle the item. Also, empty lists without placeholders leave users wondering if content failed to load.
+**Action:** Always link adjacent text to checkboxes using a `<label>` with `htmlFor` matching the checkbox's `id` to increase the clickable area. Additionally, always provide helpful empty states (e.g., "No items yet.") for empty list containers to improve clarity.
