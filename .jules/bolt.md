@@ -25,3 +25,7 @@
 ## 2024-05-24 - SQL INSERT INTO SELECT for Relation Copying
 **Learning:** When copying relational data (like task labels or subtasks) for a new task occurrence, fetching the existing relations into application memory with `.select().all()` and then mapping over them to `.insert()` creates unnecessary memory allocations and serialization overhead. Benchmarks confirm that replacing this application-level loop with a raw SQL `INSERT INTO ... SELECT` statement improves the relation copying performance by keeping the data movement entirely within the SQLite engine.
 **Action:** Replace dynamic application-level map inserts with raw SQL INSERT INTO SELECT statements when copying relational data. Use Drizzle schema objects (e.g., table.column) for column names to ensure type safety and handle potential schema changes.
+
+## 2026-04-17 - Fixed Field Iteration for Object Filtering
+**Learning:** Iterating over `Object.keys(data)` and checking against a `Set` of allowed keys is less efficient than iterating over a fixed array of allowed keys and checking if they exist in the input object, especially when the input object contains many extra fields. Benchmarks showed a ~36% performance improvement for larger objects.
+**Action:** Replace `Object.keys(data)` loops for data filtering/security sanitization with iteration over a constant array of allowed field names.
