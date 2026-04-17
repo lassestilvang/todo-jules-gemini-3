@@ -83,12 +83,14 @@ export async function createTask(data: {
   return result;
 }
 
+const ALLOWED_TASK_KEYS = ['name', 'description', 'listId', 'parentId', 'date', 'deadline', 'isCompleted', 'completedAt', 'estimate', 'actualTime', 'reminders', 'priority', 'recurrenceInterval', 'recurrenceConfig', 'recurrenceId'] as const;
+
 export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>, previousState?: Partial<typeof tasks.$inferInsert>) {
   // SECURE: Prevent mass assignment vulnerabilities by omitting protected fields
-  const allowedKeys = new Set(['name', 'description', 'listId', 'parentId', 'date', 'deadline', 'isCompleted', 'completedAt', 'estimate', 'actualTime', 'reminders', 'priority', 'recurrenceInterval', 'recurrenceConfig', 'recurrenceId']);
   const safeData: Partial<typeof tasks.$inferInsert> = {};
-  for (const key of Object.keys(data)) {
-    if (allowedKeys.has(key)) {
+
+  for (const key of ALLOWED_TASK_KEYS) {
+    if ((data as Record<string, any>)[key] !== undefined) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (safeData as Record<string, any>)[key] = (data as Record<string, any>)[key];
     }
