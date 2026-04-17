@@ -129,7 +129,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
 
     hasChanges = true;
     tx.insert(activityLogs).values(logsToInsert).run();
-    tx.update(tasks).set({ ...safeData, updatedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss') }).where(eq(tasks.id, id)).run();
+    tx.update(tasks).set({ ...safeData, updatedAt: sql.raw('CURRENT_TIMESTAMP') }).where(eq(tasks.id, id)).run();
   });
 
   if (hasChanges) {
