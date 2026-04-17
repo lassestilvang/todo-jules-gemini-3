@@ -25,6 +25,9 @@
 ## 2024-05-24 - SQL INSERT INTO SELECT for Relation Copying
 **Learning:** When copying relational data (like task labels or subtasks) for a new task occurrence, fetching the existing relations into application memory with `.select().all()` and then mapping over them to `.insert()` creates unnecessary memory allocations and serialization overhead. Benchmarks confirm that replacing this application-level loop with a raw SQL `INSERT INTO ... SELECT` statement improves the relation copying performance by keeping the data movement entirely within the SQLite engine.
 **Action:** Replace dynamic application-level map inserts with raw SQL INSERT INTO SELECT statements when copying relational data. Use Drizzle schema objects (e.g., table.column) for column names to ensure type safety and handle potential schema changes.
+## 2024-12-05 - Avoid Promise.all for synchronous SQLite queries
+**Learning:** The `better-sqlite3` driver relies on synchronous C++ bindings that block the Node.js main thread. Wrapping Drizzle ORM execution methods like `.all()`, `.get()`, or `.run()` in `await Promise.all` does not achieve true parallelization and instead introduces unnecessary promise scheduling overhead. Benchmarks show sequential awaits are consistently faster for multiple database queries.
+**Action:** Use sequential awaits instead of `Promise.all` when executing multiple queries with `better-sqlite3`.
 
 ## 2026-04-17 - Fixed Field Iteration for Object Filtering
 **Learning:** Iterating over `Object.keys(data)` and checking against a `Set` of allowed keys is less efficient than iterating over a fixed array of allowed keys and checking if they exist in the input object, especially when the input object contains many extra fields. Benchmarks showed a ~36% performance improvement for larger objects.

@@ -18,7 +18,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [lists, labels] = await Promise.all([getLists(), getLabels()]); // Parallelize data fetching for improved TTFB
+  // ⚡ Bolt: Use sequential awaits instead of Promise.all since better-sqlite3 queries block the thread
+  const lists = await getLists();
+  const labels = await getLabels();
 
   return (
     <html lang="en" suppressHydrationWarning>

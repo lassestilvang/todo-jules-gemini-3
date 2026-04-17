@@ -12,7 +12,8 @@ export default async function Next7DaysPage() {
   const next7DaysStr = format(next7Days, 'yyyy-MM-dd');
 
   // Optimized: Uses DB range query + index instead of fetching all tasks
-  const [tasks, labels] = await Promise.all([getTasksByDateRange(todayStr, next7DaysStr), getLabels()]);
+  const tasks = await getTasksByDateRange(todayStr, next7DaysStr);
+  const labels = await getLabels();
 
   return <TaskList tasks={tasks} title="Next 7 Days" labels={labels} />;
 }

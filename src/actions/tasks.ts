@@ -37,12 +37,10 @@ export const getTasksByDateRange = cache(async function getTasksByDateRange(star
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
 export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(taskId: number) {
-  const [assignedLabels, subtasks, attachmentsList, logs] = await Promise.all([
-    getTaskLabels(taskId),
-    db.select().from(tasks).where(eq(tasks.parentId, taskId)),
-    db.select().from(attachments).where(eq(attachments.taskId, taskId)),
-    db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).orderBy(desc(activityLogs.timestamp))
-  ]);
+  const assignedLabels = await getTaskLabels(taskId);
+  const subtasks = await db.select().from(tasks).where(eq(tasks.parentId, taskId));
+  const attachmentsList = await db.select().from(attachments).where(eq(attachments.taskId, taskId));
+  const logs = await db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).orderBy(desc(activityLogs.timestamp));
 
   return {
     assignedLabels,
