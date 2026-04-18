@@ -17,3 +17,8 @@
 **Vulnerability:** Server Actions receiving data objects directly passed them to Drizzle ORM inserts/updates (e.g., `db.insert().values(data)`). This allows attackers to inject and override protected fields like `id` or `createdAt`.
 **Learning:** Never pass raw, unvalidated input objects directly to database ORM methods. Next.js Server Actions expose endpoints that accept arbitrary JSON, and TypeScript types are stripped at runtime.
 **Prevention:** Always destructure or explicitly select allowed fields from the input object before passing them to the ORM.
+
+## 2024-05-28 - [Missing Rate Limit on Search Endpoint]
+**Vulnerability:** The search endpoint (`src/actions/search.ts`) was missing a rate limit. Because this endpoint performs `LIKE` operations on multiple text fields, it is computationally expensive for the database. An attacker could rapidly hit this endpoint with complex queries, causing high CPU load, locking the SQLite database, and leading to a Denial of Service (DoS).
+**Learning:** Database queries that use `LIKE` or fuzzy matching are significantly more expensive than primary key lookups. Any public-facing or easily triggered endpoint (like a command palette search) that executes these queries must be strictly rate-limited to prevent abuse.
+**Prevention:** Always implement IP-based rate limiting on search endpoints or any endpoint executing expensive database queries to ensure the application remains available under load.
