@@ -50,6 +50,13 @@
       "when": 1776077102927,
       "tag": "0006_overjoyed_sunfire",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1776507995686,
+      "tag": "0007_many_sally_floyd",
+      "breakpoints": true
     }
   ]
 }
