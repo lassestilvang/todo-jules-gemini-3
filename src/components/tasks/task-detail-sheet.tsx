@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { useState, useEffect, useMemo } from 'react';
 import { Task, Label as LabelType, Attachment, ActivityLogEntry } from '@/lib/types';
+import { toast } from 'sonner';
 
 interface TaskDetailSheetProps {
   task: Task | null;
@@ -86,6 +87,9 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
         try {
             await deleteTask(task.id);
             onOpenChange(false);
+            toast.success("Task deleted successfully");
+        } catch {
+            toast.error("Failed to delete task");
         } finally {
             setIsDeleting(false);
         }

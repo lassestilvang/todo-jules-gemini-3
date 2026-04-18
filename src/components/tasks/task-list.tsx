@@ -12,6 +12,7 @@ import { Plus, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label as LabelUI } from '@/components/ui/label';
 import { Task, Label } from '@/lib/types';
+import { toast } from 'sonner';
 
 interface TaskListProps {
   tasks: Task[];
@@ -33,6 +34,9 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
       try {
         await createTask({ name: newTaskName });
         setNewTaskName('');
+        toast.success("Task created successfully");
+      } catch {
+        toast.error("Failed to create task");
       } finally {
         setIsSubmitting(false);
       }

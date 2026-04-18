@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { createLabel } from '@/actions/labels';
 import { Plus, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export function CreateLabelDialog() {
   const [open, setOpen] = useState(false);
@@ -33,6 +34,9 @@ export function CreateLabelDialog() {
       setOpen(false);
       setName('');
       setColor('#EF4444');
+      toast.success("Label created successfully");
+    } catch {
+      toast.error("Failed to create label");
     } finally {
       setIsSubmitting(false);
     }
