@@ -31,8 +31,8 @@ export function CreateListDialog() {
       setName('');
       setOpen(false);
       toast.success("List created successfully");
-    } catch {
-      toast.error("Failed to create list");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to create list");
     } finally {
       setIsSubmitting(false);
     }
