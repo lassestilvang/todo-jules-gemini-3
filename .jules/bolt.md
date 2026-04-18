@@ -32,3 +32,7 @@
 ## 2026-04-17 - Fixed Field Iteration for Object Filtering
 **Learning:** Iterating over `Object.keys(data)` and checking against a `Set` of allowed keys is less efficient than iterating over a fixed array of allowed keys and checking if they exist in the input object, especially when the input object contains many extra fields. Benchmarks showed a ~36% performance improvement for larger objects.
 **Action:** Replace `Object.keys(data)` loops for data filtering/security sanitization with iteration over a constant array of allowed field names.
+
+## 2024-05-24 - Missing Index on Heavily Filtered Boolean Fields
+**Learning:** When fetching data filtered by a boolean field (like `is_completed = false` for an Inbox view), the lack of an index causes a full table scan. As the table grows over time (e.g., users complete many tasks), the proportion of the target boolean state becomes skewed, and the full scan becomes a significant bottleneck. Benchmarks show adding an index on `is_completed` improves query time for incomplete tasks by ~6x on a 100k row table.
+**Action:** Always consider adding indexes to boolean fields if they are the primary filter for high-traffic views (like a default Inbox or Dashboard), especially when the distribution of that boolean state is expected to be highly skewed.

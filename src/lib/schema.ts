@@ -47,6 +47,7 @@ export const tasks = sqliteTable('tasks', {
     parentIdIdx: index('parent_id_idx').on(table.parentId),
     listIdIdx: index('tasks_list_id_idx').on(table.listId),
     recurrenceIdIdx: index('tasks_recurrence_id_idx').on(table.recurrenceId),
+    isCompletedIdx: index('tasks_is_completed_idx').on(table.isCompleted).where(sql`${table.isCompleted} = 0`),
   };
 });
 

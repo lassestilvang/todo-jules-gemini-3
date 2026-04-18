@@ -88,6 +88,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
   const safeData: Partial<typeof tasks.$inferInsert> = {};
 
   for (const key of ALLOWED_TASK_KEYS) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((data as Record<string, any>)[key] !== undefined) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (safeData as Record<string, any>)[key] = (data as Record<string, any>)[key];
