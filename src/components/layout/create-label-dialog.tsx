@@ -35,8 +35,8 @@ export function CreateLabelDialog() {
       setName('');
       setColor('#EF4444');
       toast.success("Label created successfully");
-    } catch {
-      toast.error("Failed to create label");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to create label");
     } finally {
       setIsSubmitting(false);
     }
