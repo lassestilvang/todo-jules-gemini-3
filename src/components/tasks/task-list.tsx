@@ -35,8 +35,8 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
         await createTask({ name: newTaskName });
         setNewTaskName('');
         toast.success("Task created successfully");
-      } catch {
-        toast.error("Failed to create task");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Failed to create task");
       } finally {
         setIsSubmitting(false);
       }
