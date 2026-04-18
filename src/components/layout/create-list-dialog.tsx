@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Loader2 } from 'lucide-react';
 import { createList } from '@/actions/lists';
+import { toast } from 'sonner';
 
 export function CreateListDialog() {
   const [open, setOpen] = React.useState(false);
@@ -29,6 +30,9 @@ export function CreateListDialog() {
       await createList(name);
       setName('');
       setOpen(false);
+      toast.success("List created successfully");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to create list");
     } finally {
       setIsSubmitting(false);
     }

@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getLists } from "@/actions/lists";
 import { getLabels } from "@/actions/labels";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,6 +38,7 @@ export default async function RootLayout({
               {children}
             </main>
           </div>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
