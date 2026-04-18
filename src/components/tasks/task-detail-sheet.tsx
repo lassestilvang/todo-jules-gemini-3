@@ -88,8 +88,8 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
             await deleteTask(task.id);
             onOpenChange(false);
             toast.success("Task deleted successfully");
-        } catch {
-            toast.error("Failed to delete task");
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to delete task");
         } finally {
             setIsDeleting(false);
         }
