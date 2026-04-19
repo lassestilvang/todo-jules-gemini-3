@@ -22,3 +22,8 @@
 **Vulnerability:** The search endpoint (`src/actions/search.ts`) was missing a rate limit. Because this endpoint performs `LIKE` operations on multiple text fields, it is computationally expensive for the database. An attacker could rapidly hit this endpoint with complex queries, causing high CPU load, locking the SQLite database, and leading to a Denial of Service (DoS).
 **Learning:** Database queries that use `LIKE` or fuzzy matching are significantly more expensive than primary key lookups. Any public-facing or easily triggered endpoint (like a command palette search) that executes these queries must be strictly rate-limited to prevent abuse.
 **Prevention:** Always implement IP-based rate limiting on search endpoints or any endpoint executing expensive database queries to ensure the application remains available under load.
+
+## 2024-05-16 - Prevent Memory Exhaustion DoS in Rate Limiter
+**Vulnerability:** The in-memory rate limiter only performed occasional probabilistic cleanup of expired items (`Math.random() < 0.01`). An attacker could spam requests from many unique IPs faster than the probabilistic cleanup could clear them, causing unbounded Map growth and eventually crashing the Node.js process (OOM DoS).
+**Learning:** Purely probabilistic cleanup in in-memory caches or rate limiters is insufficient against targeted exhaustion attacks.
+**Prevention:** Always enforce a hard `MAX_STORE_SIZE` limit on in-memory collections and forcefully trigger cleanup or clearing when the limit is reached to ensure predictable memory usage.
