@@ -4,17 +4,23 @@
 type RateLimitStore = Map<string, { count: number; resetTime: number }>;
 
 const store: RateLimitStore = new Map();
+const MAX_STORE_SIZE = 10000;
 
 export function rateLimit(ip: string, limit: number, windowMs: number): boolean {
   const now = Date.now();
   const record = store.get(ip);
 
-  // Clean up expired records occasionally to prevent memory leaks in this simple implementation
-  if (Math.random() < 0.01) {
+  // Clean up expired records occasionally or when memory limit is reached to prevent DoS via memory exhaustion
+  if (store.size >= MAX_STORE_SIZE || Math.random() < 0.01) {
     for (const [key, val] of store.entries()) {
       if (val.resetTime < now) {
         store.delete(key);
       }
+    }
+
+    // Fallback: If still too large after cleanup, clear entirely to prevent OOM crash
+    if (store.size >= MAX_STORE_SIZE) {
+        store.clear();
     }
   }
 
