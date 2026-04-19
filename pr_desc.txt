@@ -1,5 +1,0 @@
-🚨 Severity: MEDIUM
-💡 Vulnerability: The in-memory rate limiter (`src/lib/rate-limit.ts`) previously used an unbounded `Map` and relied on probabilistic cleanup (`Math.random() < 0.01`). An attacker sending rapid requests from many unique IP addresses could outpace the cleanup routine, leading to uncontrolled memory growth and eventual Out-Of-Memory (OOM) crashes.
-🎯 Impact: An unauthenticated attacker could perform a resource exhaustion Denial-of-Service (DoS) attack, taking down the Next.js backend for all users.
-🔧 Fix: Enforced a hard limit `MAX_STORE_SIZE = 10000` on the `Map`. When the size limit is breached, it actively triggers cleanup of expired elements. If the collection remains over the limit (under severe attack), it forcibly clears the store as a fallback to prevent the Node.js process from crashing.
-✅ Verification: `pnpm build` and `bun test` complete successfully with no regressions. Code logic ensures the process survives sustained high-load DoS attempts against rate-limited endpoints.
