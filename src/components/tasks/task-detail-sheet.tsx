@@ -62,11 +62,25 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   if (!task) return null;
 
   const handleUpdate = async (data: Partial<Task>) => {
+      let hasChanges = false;
       const previousState: Partial<Task> = {};
+
       for (const key of Object.keys(data)) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (previousState as any)[key] = task[key as keyof Task];
+          const currentValue = task[key as keyof Task];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const newValue = (data as any)[key];
+
+          if (currentValue !== newValue) {
+              hasChanges = true;
+          }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (previousState as any)[key] = currentValue;
       }
+
+      // ⚡ Bolt: Early return to prevent unnecessary Server Action calls, DB updates, and cache invalidations
+      if (!hasChanges) return;
+
       await updateTask(task.id, data, previousState);
   };
 
