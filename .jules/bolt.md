@@ -36,3 +36,6 @@
 ## 2024-05-24 - Missing Index on Heavily Filtered Boolean Fields
 **Learning:** When fetching data filtered by a boolean field (like `is_completed = false` for an Inbox view), the lack of an index causes a full table scan. As the table grows over time (e.g., users complete many tasks), the proportion of the target boolean state becomes skewed, and the full scan becomes a significant bottleneck. Benchmarks show adding an index on `is_completed` improves query time for incomplete tasks by ~6x on a 100k row table.
 **Action:** Always consider adding indexes to boolean fields if they are the primary filter for high-traffic views (like a default Inbox or Dashboard), especially when the distribution of that boolean state is expected to be highly skewed.
+## 2024-04-20 - Prevent unnecessary Server Action network calls onBlur
+**Learning:** Next.js Server Actions triggered by UI events (like `onBlur`) can cause expensive router cache invalidations (e.g., `revalidatePath`) and unnecessary database updates if the input data hasn't actually changed.
+**Action:** Implement early returns in UI components by checking if the data has changed before invoking Server Actions to prevent these performance bottlenecks.
