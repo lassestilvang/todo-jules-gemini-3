@@ -72,6 +72,14 @@ export async function createTask(data: {
   // SECURE: Prevent mass assignment by explicitly selecting allowed fields
   const { name, description, listId, date, priority, recurrenceInterval } = data;
 
+  // SECURE: Enforce input length limits to prevent DoS via payload/database exhaustion
+  if (name && name.length > 255) {
+    throw new Error('Task name must be 255 characters or less.');
+  }
+  if (description && description.length > 10000) {
+    throw new Error('Task description is too long.');
+  }
+
   const result = (await db.insert(tasks).values({
     name, description, listId, date, recurrenceInterval,
     priority: priority || 'none',
@@ -86,6 +94,14 @@ const ALLOWED_TASK_KEYS = ['name', 'description', 'listId', 'parentId', 'date', 
 export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>, previousState?: Partial<typeof tasks.$inferInsert>) {
   // SECURE: Prevent mass assignment vulnerabilities by omitting protected fields
   const safeData: Partial<typeof tasks.$inferInsert> = {};
+
+  // SECURE: Enforce input length limits to prevent DoS via payload/database exhaustion
+  if (data.name && data.name.length > 255) {
+    throw new Error('Task name must be 255 characters or less.');
+  }
+  if (data.description && data.description.length > 10000) {
+    throw new Error('Task description is too long.');
+  }
 
   for (const key of ALLOWED_TASK_KEYS) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
