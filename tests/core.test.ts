@@ -29,19 +29,37 @@ import { updateTask } from '@/actions/tasks';
 
 describe('Core Logic', () => {
     beforeAll(async () => {
-        // Run migrations
+        // Run migrations manually to avoid DROP INDEX errors in bun test
         try {
             await migrate(testDb, { migrationsFolder: './drizzle' });
-        } catch (e) {
-            // Ignore migration errors during test setup
+        } catch {
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const fs = require('fs');
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const path = require('path');
+            const migrationFiles = fs.readdirSync('./drizzle').filter((f: string) => f.endsWith('.sql')).sort();
+            for (const file of migrationFiles) {
+                const queries = fs.readFileSync(path.join('./drizzle', file), 'utf8').split('--> statement-breakpoint');
+                for (const query of queries) {
+                    const stmt = query.trim();
+                    if (stmt) {
+                        try {
+                            testDb.run(sql.raw(stmt));
+                        } catch {
+                            // ignore errors like 'index already exists' or 'drop index failed'
+                        }
+                    }
+                }
+            }
         }
+
 
         // MANUALLY APPLY THE MISSING RECURRENCE ID COLUMN
         // It seems the migration might not be applying correctly in the test environment
         // or the test environment's migration runner is behaving differently.
         try {
             testDb.run(sql`ALTER TABLE tasks ADD COLUMN recurrence_id integer REFERENCES tasks(id)`);
-        } catch (e) {
+        } catch {
             // Ignore if it already exists (though the error suggests it doesn't)
         }
 

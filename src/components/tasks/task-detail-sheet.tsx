@@ -199,7 +199,9 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                     <div className="grid gap-2">
                         <Label htmlFor={`priority-${task.id}`}>Priority</Label>
                         <Select defaultValue={task.priority || 'none'} onValueChange={(val) => handleUpdate({ priority: val as Task['priority'] })}>
-                            <SelectTrigger id={`priority-${task.id}`}>
+
+                            <SelectTrigger id={`priority-${task.id}`} aria-label="Priority">
+
                                 <SelectValue placeholder="Select priority" />
                             </SelectTrigger>
                             <SelectContent>
@@ -214,7 +216,9 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                     <div className="grid gap-2">
                         <Label htmlFor={`recurrence-${task.id}`}>Recurrence</Label>
                         <Select defaultValue={task.recurrenceInterval || 'none'} onValueChange={(val) => handleUpdate({ recurrenceInterval: val === 'none' ? null : val })}>
-                            <SelectTrigger id={`recurrence-${task.id}`}>
+
+                            <SelectTrigger id={`recurrence-${task.id}`} aria-label="Recurrence">
+
                                 <Repeat className="w-4 h-4 mr-2" />
                                 <SelectValue placeholder="Repeat" />
                             </SelectTrigger>
@@ -257,8 +261,9 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                     </div>
 
                     <div className="grid gap-2">
-                        <Label>Deadline</Label>
+                        <Label htmlFor="deadline">Deadline</Label>
                         <Input
+                            id="deadline"
                             type="datetime-local"
                             defaultValue={task.deadline ? task.deadline : ''}
                             onBlur={(e) => handleUpdate({ deadline: e.target.value || null })}
