@@ -195,9 +195,9 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label>Priority</Label>
+                        <Label htmlFor="priority-select">Priority</Label>
                         <Select defaultValue={task.priority || 'none'} onValueChange={(val) => handleUpdate({ priority: val as Task['priority'] })}>
-                            <SelectTrigger>
+                            <SelectTrigger id="priority-select" aria-label="Select priority">
                                 <SelectValue placeholder="Select priority" />
                             </SelectTrigger>
                             <SelectContent>
@@ -210,9 +210,9 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                     </div>
 
                     <div className="grid gap-2">
-                        <Label>Recurrence</Label>
+                        <Label htmlFor="recurrence-select">Recurrence</Label>
                         <Select defaultValue={task.recurrenceInterval || 'none'} onValueChange={(val) => handleUpdate({ recurrenceInterval: val === 'none' ? null : val })}>
-                            <SelectTrigger>
+                            <SelectTrigger id="recurrence-select" aria-label="Select recurrence">
                                 <Repeat className="w-4 h-4 mr-2" />
                                 <SelectValue placeholder="Repeat" />
                             </SelectTrigger>
