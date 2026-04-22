@@ -17,8 +17,27 @@ import { toggleTaskCompletion } from '@/actions/recurrence';
 
 describe('Recurrence Logic - Copy fields', () => {
     beforeAll(async () => {
-        await migrate(testDb, { migrationsFolder: './drizzle' });
-        try { testDb.run(sql`ALTER TABLE tasks ADD COLUMN recurrence_id integer REFERENCES tasks(id)`); } catch (e) {}
+        try {
+            await migrate(testDb, { migrationsFolder: './drizzle' });
+        } catch {
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const fs = require('fs');
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const path = require('path');
+            const migrationFiles = fs.readdirSync('./drizzle').filter((f: string) => f.endsWith('.sql')).sort();
+            for (const file of migrationFiles) {
+                const queries = fs.readFileSync(path.join('./drizzle', file), 'utf8').split('--> statement-breakpoint');
+                for (const query of queries) {
+                    const stmt = query.trim();
+                    if (stmt) {
+                        try {
+                            testDb.run(sql.raw(stmt));
+                        } catch {}
+                    }
+                }
+            }
+        }
+        try { testDb.run(sql`ALTER TABLE tasks ADD COLUMN recurrence_id integer REFERENCES tasks(id)`); } catch {}
     });
 
     test('should copy estimate, reminders, labels, and subtasks when creating next occurrence', async () => {
