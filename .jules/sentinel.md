@@ -27,3 +27,8 @@
 **Vulnerability:** The in-memory rate limiter only performed occasional probabilistic cleanup of expired items (`Math.random() < 0.01`). An attacker could spam requests from many unique IPs faster than the probabilistic cleanup could clear them, causing unbounded Map growth and eventually crashing the Node.js process (OOM DoS).
 **Learning:** Purely probabilistic cleanup in in-memory caches or rate limiters is insufficient against targeted exhaustion attacks.
 **Prevention:** Always enforce a hard `MAX_STORE_SIZE` limit on in-memory collections and forcefully trigger cleanup or clearing when the limit is reached to ensure predictable memory usage.
+
+## 2024-05-29 - [Missing Input Length Limits]
+**Vulnerability:** The application was missing input length limits on task creation and updating (`src/actions/tasks.ts`). Malicious users could bypass client-side constraints and send arbitrarily large payloads for string fields (e.g., `name` or `description`), potentially leading to Database Exhaustion or Storage DoS.
+**Learning:** Next.js Server Actions execute natively and accept unbounded inputs unless explicitly validated. Since there's no native size limit on string fields in these inputs, explicit constraints must be put into place to prevent malicious users from saving extremely large strings to the database.
+**Prevention:** Always enforce explicit length limits on text inputs in Server Actions before inserting or updating data in the database.

@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { cache } from 'react';
 import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
+import { ALLOWED_TASK_KEYS } from '@/lib/types';
 
 export const getTasks = cache(async function getTasks() {
   return await db.select().from(tasks);
@@ -72,6 +73,14 @@ export async function createTask(data: {
   // SECURE: Prevent mass assignment by explicitly selecting allowed fields
   const { name, description, listId, date, priority, recurrenceInterval } = data;
 
+  // SECURE: Enforce input length limits to prevent DoS via payload/database exhaustion
+  if (name && name.length > 255) {
+    throw new Error('Task name must be 255 characters or less.');
+  }
+  if (description && description.length > 10000) {
+    throw new Error('Task description is too long.');
+  }
+
   const result = (await db.insert(tasks).values({
     name, description, listId, date, recurrenceInterval,
     priority: priority || 'none',
@@ -81,11 +90,26 @@ export async function createTask(data: {
   return result;
 }
 
-const ALLOWED_TASK_KEYS = ['name', 'description', 'listId', 'parentId', 'date', 'deadline', 'isCompleted', 'completedAt', 'estimate', 'actualTime', 'reminders', 'priority', 'recurrenceInterval', 'recurrenceConfig', 'recurrenceId'] as const;
-
 export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>, previousState?: Partial<typeof tasks.$inferInsert>) {
   // SECURE: Prevent mass assignment vulnerabilities by omitting protected fields
   const safeData: Partial<typeof tasks.$inferInsert> = {};
+
+  // SECURE: Enforce input length limits to prevent DoS via payload/database exhaustion
+  if (data.name && data.name.length > 255) {
+    throw new Error('Task name must be 255 characters or less.');
+  }
+  if (data.description && data.description.length > 10000) {
+    throw new Error('Task description is too long.');
+  }
+  if (data.recurrenceInterval && data.recurrenceInterval.length > 255) {
+    throw new Error('Recurrence interval is too long.');
+  }
+  if (data.reminders && data.reminders.length > 10000) {
+    throw new Error('Reminders payload is too long.');
+  }
+  if (data.recurrenceConfig && data.recurrenceConfig.length > 10000) {
+    throw new Error('Recurrence config is too long.');
+  }
 
   for (const key of ALLOWED_TASK_KEYS) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -108,9 +132,9 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
   db.transaction((tx: typeof db) => {
     const logsToInsert: (typeof activityLogs.$inferInsert)[] = [];
 
-    // Log changes - optimized for...in
-    for (const key of Object.keys(safeData)) {
-      if (key === 'updatedAt' || (safeData as Record<string, unknown>)[key] === undefined) continue;
+    // ⚡ Bolt: Iterate over fixed array of keys instead of Object.keys() to reduce array allocations and improve speed
+    for (const key of ALLOWED_TASK_KEYS) {
+      if ((safeData as Record<string, unknown>)[key] === undefined) continue;
 
       const newValue = (safeData as Record<string, unknown>)[key];
       const oldValue = (current as Record<string, unknown>)[key];

@@ -21,7 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { useState, useEffect, useMemo } from 'react';
-import { Task, Label as LabelType, Attachment, ActivityLogEntry } from '@/lib/types';
+import { Task, Label as LabelType, Attachment, ActivityLogEntry, ALLOWED_TASK_KEYS } from '@/lib/types';
 import { toast } from 'sonner';
 
 interface TaskDetailSheetProps {
@@ -44,7 +44,6 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   useEffect(() => {
     if (task) {
         // Reset state for new task to avoid ghosting
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setAssignedLabels([]);
         setSubtasks(null);
         setAttachments(null);
@@ -65,17 +64,20 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
       let hasChanges = false;
       const previousState: Partial<Task> = {};
 
-      for (const key of Object.keys(data)) {
+      // ⚡ Bolt: Iterate over fixed array of keys instead of Object.keys() to reduce array allocations and improve speed
+      for (const key of ALLOWED_TASK_KEYS) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const currentValue = task[key as keyof Task];
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const newValue = (data as any)[key];
+          if ((data as any)[key] !== undefined) {
+              const currentValue = task[key as keyof Task];
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const newValue = (data as any)[key];
 
-          if (currentValue !== newValue) {
-              hasChanges = true;
+              if (currentValue !== newValue) {
+                  hasChanges = true;
+              }
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (previousState as any)[key] = currentValue;
           }
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (previousState as any)[key] = currentValue;
       }
 
       // ⚡ Bolt: Early return to prevent unnecessary Server Action calls, DB updates, and cache invalidations
@@ -195,9 +197,11 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label>Priority</Label>
+                        <Label htmlFor={`priority-${task.id}`}>Priority</Label>
                         <Select defaultValue={task.priority || 'none'} onValueChange={(val) => handleUpdate({ priority: val as Task['priority'] })}>
-                            <SelectTrigger aria-label="Priority">
+
+                            <SelectTrigger id={`priority-${task.id}`} aria-label="Priority">
+
                                 <SelectValue placeholder="Select priority" />
                             </SelectTrigger>
                             <SelectContent>
@@ -210,9 +214,11 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                     </div>
 
                     <div className="grid gap-2">
-                        <Label>Recurrence</Label>
+                        <Label htmlFor={`recurrence-${task.id}`}>Recurrence</Label>
                         <Select defaultValue={task.recurrenceInterval || 'none'} onValueChange={(val) => handleUpdate({ recurrenceInterval: val === 'none' ? null : val })}>
-                            <SelectTrigger aria-label="Recurrence">
+
+                            <SelectTrigger id={`recurrence-${task.id}`} aria-label="Recurrence">
+
                                 <Repeat className="w-4 h-4 mr-2" />
                                 <SelectValue placeholder="Repeat" />
                             </SelectTrigger>

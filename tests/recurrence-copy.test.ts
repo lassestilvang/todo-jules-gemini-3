@@ -38,6 +38,7 @@ describe('Recurrence Logic - Copy fields', () => {
             }
         }
         try { testDb.run(sql`ALTER TABLE tasks ADD COLUMN recurrence_id integer REFERENCES tasks(id)`); } catch {}
+
     });
 
     test('should copy estimate, reminders, labels, and subtasks when creating next occurrence', async () => {
