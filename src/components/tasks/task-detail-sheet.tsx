@@ -197,7 +197,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                     <div className="grid gap-2">
                         <Label htmlFor="priority-select">Priority</Label>
                         <Select defaultValue={task.priority || 'none'} onValueChange={(val) => handleUpdate({ priority: val as Task['priority'] })}>
-                            <SelectTrigger id="priority-select" aria-label="Select priority">
+                            <SelectTrigger id={`priority-${task.id}`}>
                                 <SelectValue placeholder="Select priority" />
                             </SelectTrigger>
                             <SelectContent>
