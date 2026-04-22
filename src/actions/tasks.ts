@@ -102,6 +102,15 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
   if (data.description && data.description.length > 10000) {
     throw new Error('Task description is too long.');
   }
+  if (data.recurrenceInterval && data.recurrenceInterval.length > 255) {
+    throw new Error('Recurrence interval is too long.');
+  }
+  if (data.reminders && data.reminders.length > 10000) {
+    throw new Error('Reminders payload is too long.');
+  }
+  if (data.recurrenceConfig && data.recurrenceConfig.length > 10000) {
+    throw new Error('Recurrence config is too long.');
+  }
 
   for (const key of ALLOWED_TASK_KEYS) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
