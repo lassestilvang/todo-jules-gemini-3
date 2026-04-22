@@ -210,7 +210,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="recurrence-select">Recurrence</Label>
+                        <Label htmlFor={`recurrence-${task.id}`}>Recurrence</Label>
                         <Select defaultValue={task.recurrenceInterval || 'none'} onValueChange={(val) => handleUpdate({ recurrenceInterval: val === 'none' ? null : val })}>
                             <SelectTrigger id={`recurrence-${task.id}`}>
                                 <Repeat className="w-4 h-4 mr-2" />
