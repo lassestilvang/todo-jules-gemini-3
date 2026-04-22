@@ -19,4 +19,4 @@
 **Action:** Always link adjacent text to checkboxes using a `<label>` with `htmlFor` matching the checkbox's `id` to increase the clickable area. Additionally, always provide helpful empty states (e.g., "No items yet.") for empty list containers to improve clarity.
 ## 2025-05-20 - Add aria-labels to SelectTrigger components
 **Learning:** Custom UI components like Radix UI `<SelectTrigger>` are not always natively linked to adjacent `<Label>` elements via standard `htmlFor`/`id` pairs by screen readers unless explicitly configured or if the component internally wires it up.
-**Action:** Always provide explicit `aria-label` attributes to `<SelectTrigger>` and similar custom interactive components to ensure screen reader accessibility, even if a visual `<Label>` is present.
+**Action:** Always ensure `<SelectTrigger>` and similar custom interactive components are correctly linked to their visual `<Label>` using `htmlFor` and `id`. Use an explicit `aria-label` only when a visual label is not present.
