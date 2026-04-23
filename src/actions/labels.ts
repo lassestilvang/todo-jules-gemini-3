@@ -22,6 +22,13 @@ export async function createLabel(data: { name: string; color?: string }) {
 
   // SECURE: Prevent mass assignment
   const { name, color } = data;
+
+  if (name && name.length > 255) {
+    throw new Error('Label name must be 255 characters or less.');
+  }
+  if (color && color.length > 255) {
+    throw new Error('Label color must be 255 characters or less.');
+  }
   db.insert(labels).values({ name, color }).run();
   try { revalidatePath('/'); } catch { /* empty */ }
 }

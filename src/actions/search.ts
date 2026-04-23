@@ -9,6 +9,10 @@ import { rateLimit } from '@/lib/rate-limit';
 export async function searchTasks(query: string) {
   if (!query || !query.trim()) return [];
 
+  if (query.length > 255) {
+    throw new Error('Search query must be 255 characters or less.');
+  }
+
   // SECURE: Rate limit search queries to 30 per minute per IP to prevent DoS via expensive LIKE queries
   const headersList = await headers();
   const ip = (headersList.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0].trim();
