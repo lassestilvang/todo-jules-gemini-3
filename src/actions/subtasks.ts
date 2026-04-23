@@ -16,6 +16,10 @@ export async function createSubtask(parentId: number, name: string) {
     throw new Error('Too many requests. Please try again later.');
   }
 
+  if (name && name.length > 255) {
+    throw new Error('Subtask name must be 255 characters or less.');
+  }
+
   db.insert(tasks).values({
       name,
       parentId,

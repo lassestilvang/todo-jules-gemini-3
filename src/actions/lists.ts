@@ -18,6 +18,13 @@ export const getListById = cache(async function getListById(id: number) {
 });
 
 export async function createList(name: string, color: string = '#000000') {
+  if (name && name.length > 255) {
+    throw new Error('List name must be 255 characters or less.');
+  }
+  if (color && color.length > 255) {
+    throw new Error('List color must be 255 characters or less.');
+  }
+
   // SECURE: Rate limit list creation to prevent DoS/spam
   const headersList = await headers();
   const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';

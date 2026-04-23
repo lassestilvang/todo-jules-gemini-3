@@ -32,3 +32,8 @@
 **Vulnerability:** The application was missing input length limits on task creation and updating (`src/actions/tasks.ts`). Malicious users could bypass client-side constraints and send arbitrarily large payloads for string fields (e.g., `name` or `description`), potentially leading to Database Exhaustion or Storage DoS.
 **Learning:** Next.js Server Actions execute natively and accept unbounded inputs unless explicitly validated. Since there's no native size limit on string fields in these inputs, explicit constraints must be put into place to prevent malicious users from saving extremely large strings to the database.
 **Prevention:** Always enforce explicit length limits on text inputs in Server Actions before inserting or updating data in the database.
+
+## 2024-05-30 - [Missing Input Length Limits in Other Server Actions]
+**Vulnerability:** Similar to previous findings, Server Actions for lists, labels, subtasks, and searches were missing input length validation. A malicious user could send excessively long strings for fields like `name`, `color`, and `query`, potentially causing Database Exhaustion, Application Layer DoS via expensive LIKE operations (for search queries), or Storage DoS.
+**Learning:** Next.js Server Actions execute natively and accept unbounded inputs unless explicitly validated. Since there's no native size limit on string fields in these inputs, explicit constraints must be put into place across all server actions that accept user string inputs, not just the primary entity (tasks).
+**Prevention:** Always enforce explicit string length limits (e.g., maximum 255 characters) on text inputs in Server Actions before inserting data into the database or using it in queries.
