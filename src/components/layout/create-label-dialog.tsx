@@ -90,6 +90,7 @@ export function CreateLabelDialog() {
                     onChange={(e) => setColor(e.target.value)}
                     className="flex-1"
                     disabled={isSubmitting}
+                    aria-label="Color hex code"
                   />
               </div>
             </div>
