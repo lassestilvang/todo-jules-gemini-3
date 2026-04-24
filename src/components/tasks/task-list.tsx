@@ -92,9 +92,9 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
                 {tasks.length > 0 ? (
                     <div className="flex flex-col items-center justify-center space-y-3">
                         <div className="bg-primary/10 p-3 rounded-full">
-                            <CheckCircle2 className="w-8 h-8 text-primary" />
+                            <CheckCircle2 className="w-8 h-8 text-primary" aria-hidden="true" />
                         </div>
-                        <h3 className="font-semibold text-lg">You&apos;re all caught up!</h3>
+                        <h2 className="font-semibold text-lg">You&apos;re all caught up!</h2>
                         <p className="text-sm text-muted-foreground max-w-sm">No open tasks remaining. Enjoy your free time or add a new task above.</p>
                     </div>
                 ) : (
