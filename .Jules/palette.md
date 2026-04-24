@@ -20,3 +20,6 @@
 ## 2025-05-20 - Add aria-labels to SelectTrigger components
 **Learning:** Custom UI components like Radix UI `<SelectTrigger>` are not always natively linked to adjacent `<Label>` elements via standard `htmlFor`/`id` pairs by screen readers unless explicitly configured or if the component internally wires it up.
 **Action:** Always ensure `<SelectTrigger>` and similar custom interactive components are correctly linked to their visual `<Label>` using `htmlFor` and `id`. Use an explicit `aria-label` only when a visual label is not present.
+## 2024-04-24 - Task List Empty States
+**Learning:** Empty states present an excellent opportunity to improve UX by providing clear visual cues (icons) and encouraging actions when no data is present, rather than showing a generic text block. This provides a more polished and inviting experience.
+**Action:** Always consider empty states as a first-class citizen of the UI, and replace generic "No data" strings with specific, icon-accompanied guidance or congratulations when a user completes a list.
