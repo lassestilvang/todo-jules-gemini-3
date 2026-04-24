@@ -100,9 +100,9 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
                 ) : (
                     <div className="flex flex-col items-center justify-center space-y-3">
                         <div className="bg-muted p-3 rounded-full">
-                            <ListTodo className="w-8 h-8 text-muted-foreground" />
+                            <ListTodo className="w-8 h-8 text-muted-foreground" aria-hidden="true" />
                         </div>
-                        <h3 className="font-semibold text-lg">Nothing to do yet</h3>
+                        <h2 className="font-semibold text-lg">Nothing to do yet</h2>
                         <p className="text-sm text-muted-foreground max-w-sm">Create your first task using the input above to get started.</p>
                     </div>
                 )}
