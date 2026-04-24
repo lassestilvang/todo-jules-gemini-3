@@ -8,7 +8,7 @@ import { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { createTask } from '@/actions/tasks';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus, Loader2, CheckCircle2, ListTodo } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label as LabelUI } from '@/components/ui/label';
 import { Task, Label } from '@/lib/types';
@@ -88,8 +88,24 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
           ))}
         </AnimatePresence>
         {filteredTasks.length === 0 && (
-            <div className="text-center py-10 text-muted-foreground">
-                {tasks.length > 0 ? "No open tasks. Nice work!" : "No tasks found."}
+            <div className="text-center py-16 px-4 border-2 border-dashed rounded-lg bg-muted/30">
+                {tasks.length > 0 ? (
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                        <div className="bg-primary/10 p-3 rounded-full">
+                            <CheckCircle2 className="w-8 h-8 text-primary" aria-hidden="true" />
+                        </div>
+                        <h2 className="font-semibold text-lg">You&apos;re all caught up!</h2>
+                        <p className="text-sm text-muted-foreground max-w-sm">No open tasks remaining. Enjoy your free time or add a new task above.</p>
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                        <div className="bg-muted p-3 rounded-full">
+                            <ListTodo className="w-8 h-8 text-muted-foreground" aria-hidden="true" />
+                        </div>
+                        <h2 className="font-semibold text-lg">Nothing to do yet</h2>
+                        <p className="text-sm text-muted-foreground max-w-sm">Create your first task using the input above to get started.</p>
+                    </div>
+                )}
             </div>
         )}
       </div>
