@@ -1,5 +1,12 @@
 import { describe, test, expect, beforeAll } from "bun:test";
 import { mock } from "bun:test";
+
+mock.module("next/headers", () => {
+  return {
+    headers: async () => new Map([["x-forwarded-for", "127.0.0.1"]]),
+  };
+});
+
 import { tasks, activityLogs, taskLabels, labels } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 import { addDays, format } from 'date-fns';

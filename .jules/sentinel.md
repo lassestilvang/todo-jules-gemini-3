@@ -41,3 +41,7 @@
 **Vulnerability:** The `updateTask` server action was missing rate limiting, allowing unauthenticated attackers to send high volumes of requests to update a task.
 **Learning:** Because `updateTask` appends changes to the `activityLogs` table, lacking a rate limit exposes the application to DoS attacks via database storage exhaustion.
 **Prevention:** All data-mutating Server Actions, including update endpoints, must enforce rate limiting based on client IP.
+## 2024-04-24 - Missing Rate Limiting on Update Operations
+**Vulnerability:** The `updateTask` Server Action lacked rate limiting, while `createTask` was protected.
+**Learning:** Attackers can bypass creation rate limits by exploiting unprotected update endpoints to perform Denial of Service (DoS) attacks or exhaust database storage (especially when updates trigger append-only operations like activity logging).
+**Prevention:** Ensure all data-mutating Server Actions, not just creation endpoints, enforce rate limiting based on client IP.
