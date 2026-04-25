@@ -39,3 +39,6 @@
 ## 2024-04-20 - Prevent unnecessary Server Action network calls onBlur
 **Learning:** Next.js Server Actions triggered by UI events (like `onBlur`) can cause expensive router cache invalidations (e.g., `revalidatePath`) and unnecessary database updates if the input data hasn't actually changed.
 **Action:** Implement early returns in UI components by checking if the data has changed before invoking Server Actions to prevent these performance bottlenecks.
+## 2024-12-06 - Object.keys() for Partial Payloads
+**Learning:** While iterating over a constant array of allowed field names is efficient for filtering large objects (to avoid iterating over many unwanted properties), doing so for `Partial` update payloads containing very few modified fields is a de-optimization. Benchmarks confirm that for small partial objects, iterating over a large fixed array and constantly checking for `undefined` is slower than simply using V8's highly optimized `Object.keys(data)`.
+**Action:** Use `Object.keys()` when iterating over small `Partial` update payloads (e.g., checking what changed in a form submission), but retain constant array iteration for security sanitization/filtering of arbitrary payloads.
