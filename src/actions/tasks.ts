@@ -91,6 +91,13 @@ export async function createTask(data: {
 }
 
 export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>, previousState?: Partial<typeof tasks.$inferInsert>) {
+  // SECURE: Rate limit task updates to prevent DoS via payload/database exhaustion (activityLogs is append-only)
+  const headersList = await headers();
+  const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  if (!rateLimit(`updateTask:${ip}`, 30, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   // SECURE: Prevent mass assignment vulnerabilities by omitting protected fields
   const safeData: Partial<typeof tasks.$inferInsert> = {};
 

@@ -23,6 +23,13 @@ mock.module('next/cache', () => {
     };
 });
 
+// Mock next/headers
+mock.module('next/headers', () => {
+    return {
+        headers: async () => new Map([['x-forwarded-for', '127.0.0.1']])
+    };
+});
+
 // Import the action AFTER mocking
 import { toggleTaskCompletion } from '@/actions/recurrence';
 import { updateTask } from '@/actions/tasks';
