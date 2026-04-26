@@ -289,7 +289,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                             type="number"
                             defaultValue={task.actualTime || undefined}
                             onBlur={(e) => handleUpdate({ actualTime: parseInt(e.target.value) || null })}
-                            onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+                            onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) e.currentTarget.blur(); }}
                         />
                     </div>
                 </div>
