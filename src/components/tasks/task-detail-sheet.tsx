@@ -130,6 +130,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                         id="name"
                         defaultValue={task.name}
                         onBlur={(e) => handleUpdate({ name: e.target.value })}
+                        onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
                     />
                 </div>
 
@@ -265,6 +266,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                             type="datetime-local"
                             defaultValue={task.deadline ? task.deadline : ''}
                             onBlur={(e) => handleUpdate({ deadline: e.target.value || null })}
+                            onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
                         />
                     </div>
                 </div>
@@ -277,6 +279,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                             type="number"
                             defaultValue={task.estimate || undefined}
                             onBlur={(e) => handleUpdate({ estimate: parseInt(e.target.value) || null })}
+                            onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
                         />
                     </div>
                     <div className="grid gap-2">
@@ -286,6 +289,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                             type="number"
                             defaultValue={task.actualTime || undefined}
                             onBlur={(e) => handleUpdate({ actualTime: parseInt(e.target.value) || null })}
+                            onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
                         />
                     </div>
                 </div>
@@ -297,6 +301,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                         placeholder="e.g. 10m before"
                         defaultValue={task.reminders || ''}
                         onBlur={(e) => handleUpdate({ reminders: e.target.value })}
+                        onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
                     />
                 </div>
 
