@@ -266,7 +266,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                             type="datetime-local"
                             defaultValue={task.deadline ? task.deadline : ''}
                             onBlur={(e) => handleUpdate({ deadline: e.target.value || null })}
-                            onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+                            onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) e.currentTarget.blur(); }}
                         />
                     </div>
                 </div>
