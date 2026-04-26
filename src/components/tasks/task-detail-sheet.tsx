@@ -301,7 +301,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                         placeholder="e.g. 10m before"
                         defaultValue={task.reminders || ''}
                         onBlur={(e) => handleUpdate({ reminders: e.target.value })}
-                        onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) e.currentTarget.blur(); }}
                     />
                 </div>
 
