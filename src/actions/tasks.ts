@@ -11,37 +11,37 @@ import { rateLimit } from '@/lib/rate-limit';
 import { ALLOWED_TASK_KEYS } from '@/lib/types';
 
 export const getTasks = cache(async function getTasks() {
-  return await db.select().from(tasks);
+  return db.select().from(tasks).all();
 });
 
 export const getIncompleteTasks = cache(async function getIncompleteTasks() {
-  return await db.select().from(tasks).where(eq(tasks.isCompleted, false));
+  return db.select().from(tasks).where(eq(tasks.isCompleted, false)).all();
 });
 export const getUpcomingTasks = cache(async function getUpcomingTasks() {
   const today = format(new Date(), "yyyy-MM-dd");
-  return await db.select().from(tasks)
-    .where(sql`${tasks.date} > ${today}`);
+  return db.select().from(tasks)
+    .where(sql`${tasks.date} > ${today}`).all();
 });
 export const getTasksByListId = cache(async function getTasksByListId(listId: number) {
-  return await db.select().from(tasks).where(eq(tasks.listId, listId));
+  return db.select().from(tasks).where(eq(tasks.listId, listId)).all();
 });
 
 export const getTasksByDateRange = cache(async function getTasksByDateRange(startDate: string, endDate: string) {
-  return await db.select().from(tasks)
+  return db.select().from(tasks)
     .where(
       and(
         sql`${tasks.date} >= ${startDate}`,
         sql`${tasks.date} <= ${endDate}`
       )
-    );
+    ).all();
 });
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
 export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(taskId: number) {
   const assignedLabels = await getTaskLabels(taskId);
-  const subtasks = await db.select().from(tasks).where(eq(tasks.parentId, taskId));
-  const attachmentsList = await db.select().from(attachments).where(eq(attachments.taskId, taskId));
-  const logs = await db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).orderBy(desc(activityLogs.timestamp));
+  const subtasks = db.select().from(tasks).where(eq(tasks.parentId, taskId)).all();
+  const attachmentsList = db.select().from(attachments).where(eq(attachments.taskId, taskId)).all();
+  const logs = db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).orderBy(desc(activityLogs.timestamp)).all();
 
   return {
     assignedLabels,
@@ -52,7 +52,7 @@ export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(task
 });
 
 export const getTasksForDate = cache(async function getTasksForDate(date: string) {
-  return await db.select().from(tasks).where(eq(tasks.date, date));
+  return db.select().from(tasks).where(eq(tasks.date, date)).all();
 });
 
 export async function createTask(data: {
@@ -130,7 +130,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
   let current = previousState;
 
   if (!current) {
-      current = (await db.select().from(tasks).where(eq(tasks.id, id)).limit(1))[0];
+      current = db.select().from(tasks).where(eq(tasks.id, id)).get();
       if (!current) throw new Error("Task not found");
   }
 
@@ -174,24 +174,24 @@ export async function deleteTask(id: number) {
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
 export const getActivityLogs = cache(async function getActivityLogs(taskId: number) {
-    return await db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId));
+    return db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).all();
 });
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
 export const getTaskLabels = cache(async function getTaskLabels(taskId: number) {
-    return await db.select({
+    return db.select({
         id: labels.id,
         name: labels.name, createdAt: labels.createdAt,
         color: labels.color
     })
     .from(labels)
     .innerJoin(taskLabels, eq(labels.id, taskLabels.labelId))
-    .where(eq(taskLabels.taskId, taskId));
+    .where(eq(taskLabels.taskId, taskId)).all();
 });
 
 export async function toggleTaskLabel(taskId: number, labelId: number, selected: boolean) {
     if (selected) {
-        const exists = (await db.select().from(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).limit(1))[0];
+        const exists = db.select().from(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).get();
         if (!exists) {
             await db.insert(taskLabels).values({ taskId, labelId });
         }
@@ -202,8 +202,8 @@ export async function toggleTaskLabel(taskId: number, labelId: number, selected:
 }
 
 export const getTasksAfterDate = cache(async function getTasksAfterDate(startDate: string) {
-  return await db.select().from(tasks)
+  return db.select().from(tasks)
     .where(
         sql`${tasks.date} > ${startDate}`
-    );
+    ).all();
 });
