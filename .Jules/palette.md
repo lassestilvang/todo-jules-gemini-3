@@ -23,3 +23,6 @@
 ## 2024-04-24 - Task List Empty States
 **Learning:** Empty states present an excellent opportunity to improve UX by providing clear visual cues (icons) and encouraging actions when no data is present, rather than showing a generic text block. This provides a more polished and inviting experience.
 **Action:** Always consider empty states as a first-class citizen of the UI, and replace generic "No data" strings with specific, icon-accompanied guidance or congratulations when a user completes a list.
+## 2025-05-21 - Add Enter key support for inline edit inputs
+**Learning:** In this app, many text inputs (like task detail properties) use `onBlur` to automatically save changes to the database. However, users naturally expect to press the 'Enter' key to commit changes in a form field. Without explicitly handling 'Enter', keyboard users are forced to tab away or click outside the input, creating a confusing and inaccessible experience.
+**Action:** Always add an onKeyDown handler ((e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) e.currentTarget.blur(); }) to inputs that save on blur to provide intuitive keyboard-driven submission.
