@@ -45,3 +45,8 @@
 **Vulnerability:** The `updateTask` Server Action lacked rate limiting, while `createTask` was protected.
 **Learning:** Attackers can bypass creation rate limits by exploiting unprotected update endpoints to perform Denial of Service (DoS) attacks or exhaust database storage (especially when updates trigger append-only operations like activity logging).
 **Prevention:** Ensure all data-mutating Server Actions, not just creation endpoints, enforce rate limiting based on client IP.
+
+## $(date +%Y-%m-%d) - Rate Limiting Mocking in Bun Tests
+**Vulnerability:** Not a vulnerability directly, but a testing issue where mocking Next.js `headers` via `mock.module` failed in Bun.
+**Learning:** When mocking modules in Bun tests (e.g., using `mock.module(...)`), ensure the `import { mock } from 'bun:test';` statement strictly precedes any `mock.module(...)` calls to avoid `TypeError: undefined is not an object (evaluating 'mock.module')` errors.
+**Prevention:** Always place `mock.module` calls after all `bun:test` imports.

@@ -5,8 +5,17 @@ import { tasks, taskLabels } from '@/lib/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { addDays, addWeeks, addMonths, addYears, format } from 'date-fns';
 import { revalidatePath } from 'next/cache';
+import { headers } from 'next/headers';
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function toggleTaskCompletion(taskId: number, isCompleted: boolean) {
+  // SECURE: Rate limit task toggling to prevent DoS via payload/database exhaustion
+  const headersList = await headers();
+  const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  if (!rateLimit(`toggleTaskCompletion:${ip}`, 30, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   const task = db.select().from(tasks).where(eq(tasks.id, taskId)).get();
   if (!task) throw new Error("Task not found");
 

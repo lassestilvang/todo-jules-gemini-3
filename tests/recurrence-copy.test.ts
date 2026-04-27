@@ -9,7 +9,7 @@ import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
 
 const sqlite = new Database(':memory:');
 const testDb = drizzle(sqlite);
-
+mock.module('next/headers', () => ({ headers: async () => new Map([['x-forwarded-for', '127.0.0.1']]) }));
 mock.module('@/lib/db', () => ({ db: testDb }));
 mock.module('next/cache', () => ({ revalidatePath: () => {} }));
 
