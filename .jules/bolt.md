@@ -45,3 +45,6 @@
 ## 2024-05-24 - Removing Promise Overhead from better-sqlite3 Reads
 **Learning:** The `better-sqlite3` driver relies on synchronous C++ bindings. Wrapping Drizzle ORM queries in `await` (which uses an internal `Thenable` wrapper) introduces unnecessary Promise resolution (microtask) overhead without achieving true parallelization.
 **Action:** For optimal performance with `better-sqlite3`, remove `await` entirely from Drizzle read queries and execute them natively synchronously using `.all()`, `.get()`, or `.run()`. This bypasses Promise instantiation overhead and executes significantly faster, even inside Server Actions that are themselves defined as async.
+## 2024-06-25 - better-sqlite3 Async Overhead
+**Learning:** In Drizzle ORM with the `better-sqlite3` driver, SQLite is synchronous via native C++ bindings. Wrapping Drizzle DB queries with `await` doesn't provide parallelization but actually adds microtask overhead (Promise resolution).
+**Action:** Remove `await` for database write queries in `src/actions/tasks.ts` and use synchronous methods like `.run()` or `.get()`.
