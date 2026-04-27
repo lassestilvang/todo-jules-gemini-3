@@ -81,10 +81,10 @@ export async function createTask(data: {
     throw new Error('Task description is too long.');
   }
 
-  const result = (await db.insert(tasks).values({
+  const result = db.insert(tasks).values({
     name, description, listId, date, recurrenceInterval,
     priority: priority || 'none',
-  }).returning({ id: tasks.id }))[0];
+  }).returning({ id: tasks.id }).get();
 
   try { revalidatePath('/'); } catch { /* empty */ }
   return result;
@@ -168,7 +168,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
 }
 
 export async function deleteTask(id: number) {
-  await db.delete(tasks).where(eq(tasks.id, id));
+  db.delete(tasks).where(eq(tasks.id, id)).run();
   try { revalidatePath('/'); } catch { /* empty */ }
 }
 
@@ -193,10 +193,10 @@ export async function toggleTaskLabel(taskId: number, labelId: number, selected:
     if (selected) {
         const exists = db.select().from(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).get();
         if (!exists) {
-            await db.insert(taskLabels).values({ taskId, labelId });
+            db.insert(taskLabels).values({ taskId, labelId }).run();
         }
     } else {
-        await db.delete(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId)));
+        db.delete(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).run();
     }
     try { revalidatePath('/'); } catch { /* empty */ }
 }
