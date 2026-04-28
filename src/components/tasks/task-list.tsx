@@ -20,10 +20,9 @@ interface TaskListProps {
   labels: Label[];
 }
 
-export function TaskList({ tasks, title, labels }: TaskListProps) {
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+// ⚡ Bolt: Extracted CreateTaskForm to isolate state and prevent the entire TaskList from re-rendering on every keystroke
+function CreateTaskForm() {
   const [newTaskName, setNewTaskName] = useState('');
-  const [showCompleted, setShowCompleted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -41,6 +40,27 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
         setIsSubmitting(false);
       }
   };
+
+  return (
+    <form onSubmit={handleCreate} className="flex gap-2 mb-6">
+        <Input
+          placeholder="Add a new task..."
+          value={newTaskName}
+          onChange={(e) => setNewTaskName(e.target.value)}
+          className="flex-1"
+          aria-label="New task name"
+          disabled={isSubmitting}
+        />
+        <Button type="submit" size="icon" disabled={!newTaskName.trim() || isSubmitting} aria-label="Add task">
+            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+        </Button>
+    </form>
+  );
+}
+
+export function TaskList({ tasks, title, labels }: TaskListProps) {
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [showCompleted, setShowCompleted] = useState(false);
 
   const filteredTasks = useMemo(
     () => tasks.filter(task => showCompleted || !task.isCompleted),
@@ -63,19 +83,7 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
           </div>
       </div>
 
-      <form onSubmit={handleCreate} className="flex gap-2 mb-6">
-          <Input
-            placeholder="Add a new task..."
-            value={newTaskName}
-            onChange={(e) => setNewTaskName(e.target.value)}
-            className="flex-1"
-            aria-label="New task name"
-            disabled={isSubmitting}
-          />
-          <Button type="submit" size="icon" disabled={!newTaskName.trim() || isSubmitting} aria-label="Add task">
-              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-          </Button>
-      </form>
+      <CreateTaskForm />
 
       <div className="space-y-1">
         <AnimatePresence>
