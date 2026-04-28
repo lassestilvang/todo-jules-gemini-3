@@ -29,3 +29,6 @@
 ## 2024-05-18 - Missing Screen-Reader Context for Visual Indicators
 **Learning:** Visual indicators like red text for overdue dates provide important context to sighted users, but leave screen-reader users completely unaware of the status if not accompanied by hidden text.
 **Action:** Always wrap visual status indicators with a conditionally rendered `<span className="sr-only">` element to provide parity for assistive technologies.
+## 2024-05-18 - Inline Empty States
+**Learning:** Plain text empty states in inline lists (like subtasks, attachments, or logs) look unpolished and do not guide the user effectively.
+**Action:** Always replace simple italicized "No items" text with styled containers (e.g., `bg-muted/30 border-dashed`), a relevant icon, and helpful sub-text to improve visual polish and user guidance.
