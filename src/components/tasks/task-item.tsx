@@ -65,7 +65,7 @@ export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }
             {task.date && (
                 <span className={cn("flex items-center", isOverdue && "text-destructive font-bold")}>
                     <Calendar className="w-3 h-3 mr-1" aria-hidden="true" />
-                    <span className="sr-only">Date: </span>
+                    <span className="sr-only">Due date: </span>
                     {isOverdue && <span className="sr-only">Overdue: </span>}
                     {format(new Date(task.date), 'MMM d')}
                 </span>
