@@ -55,7 +55,10 @@ export function AttachmentsList({ taskId, initialAttachments = null }: Attachmen
 
       <div className="space-y-2">
           {files.length === 0 && (
-              <p className="text-sm text-muted-foreground italic">No attachments yet.</p>
+              <div className="flex flex-col items-center justify-center p-4 bg-muted/30 border border-dashed rounded-md text-center space-y-2">
+                  <Paperclip className="w-6 h-6 text-muted-foreground opacity-50" aria-hidden="true" />
+                  <p className="text-sm text-muted-foreground">No attachments yet.<br/><span className="text-xs">Add files relevant to this task.</span></p>
+              </div>
           )}
           {files.map(file => (
               <a

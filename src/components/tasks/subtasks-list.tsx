@@ -5,7 +5,7 @@ import { getSubtasks, createSubtask } from '@/actions/subtasks';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus, Loader2, ListTodo } from 'lucide-react';
 import { updateTask } from '@/actions/tasks';
 import { cn } from '@/lib/utils';
 import { Task } from '@/lib/types';
@@ -62,7 +62,10 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
       <h3 className="text-sm font-medium mb-2">Subtasks</h3>
       <div className="space-y-2">
         {subtasks.length === 0 && (
-          <p className="text-sm text-muted-foreground italic">No subtasks yet.</p>
+          <div className="flex flex-col items-center justify-center p-4 bg-muted/30 border border-dashed rounded-md text-center space-y-2">
+            <ListTodo className="w-6 h-6 text-muted-foreground opacity-50" aria-hidden="true" />
+            <p className="text-sm text-muted-foreground">No subtasks yet.<br/><span className="text-xs">Break this task down into smaller steps.</span></p>
+          </div>
         )}
         {subtasks.map(t => (
           <div key={t.id} className="flex items-center space-x-2 group">
