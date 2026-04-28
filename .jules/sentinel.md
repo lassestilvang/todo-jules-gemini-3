@@ -50,3 +50,8 @@
 **Vulnerability:** Not a vulnerability directly, but a testing issue where mocking Next.js `headers` via `mock.module` failed in Bun.
 **Learning:** When mocking modules in Bun tests (e.g., using `mock.module(...)`), ensure the `import { mock } from 'bun:test';` statement strictly precedes any `mock.module(...)` calls to avoid `TypeError: undefined is not an object (evaluating 'mock.module')` errors.
 **Prevention:** Always place `mock.module` calls after all `bun:test` imports.
+
+## 2024-04-28 - Missing Security Headers
+**Vulnerability:** Missing Security Headers
+**Learning:** Next.js applications do not include crucial security headers (like X-Frame-Options and X-Content-Type-Options) by default, leaving them exposed to Clickjacking and MIME-sniffing vulnerabilities.
+**Prevention:** Always implement a `next.config.mjs` with an `async headers()` configuration to enforce baseline defense-in-depth security headers across all application routes.
