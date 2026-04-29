@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Paperclip, FileIcon, Loader2 } from 'lucide-react';
 import { Attachment } from '@/lib/types';
+import { toast } from 'sonner';
 
 interface AttachmentsListProps {
   taskId: number;
@@ -42,8 +43,9 @@ export function AttachmentsList({ taskId, initialAttachments = null }: Attachmen
           await uploadFile(taskId, formData);
           await loadFiles();
           if (fileInputRef.current) fileInputRef.current.value = '';
+          toast.success("Attachment uploaded successfully");
       } catch (error) {
-          console.error("Upload failed", error);
+          toast.error(error instanceof Error ? error.message : ((error as any)?.message || "Upload failed"));
       } finally {
           setIsUploading(false);
       }
@@ -66,9 +68,9 @@ export function AttachmentsList({ taskId, initialAttachments = null }: Attachmen
                 href={file.filePath}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center p-2 rounded-md border bg-muted/50 hover:bg-muted transition-colors text-sm"
+                className="flex items-center p-2 rounded-md border bg-muted/50 hover:bg-muted transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                  <FileIcon className="w-4 h-4 mr-2" />
+                  <FileIcon className="w-4 h-4 mr-2" aria-hidden="true" />
                   {file.fileName}
               </a>
           ))}
@@ -88,7 +90,7 @@ export function AttachmentsList({ taskId, initialAttachments = null }: Attachmen
             disabled={isUploading}
             className="w-full"
           >
-              {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Paperclip className="w-4 h-4 mr-2" />}
+              {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" aria-hidden="true" /> : <Paperclip className="w-4 h-4 mr-2" aria-hidden="true" />}
               {isUploading ? "Uploading..." : "Add Attachment"}
           </Button>
       </div>
