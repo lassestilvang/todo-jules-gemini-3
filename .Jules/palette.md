@@ -32,3 +32,6 @@
 ## 2024-05-18 - Inline Empty States
 **Learning:** Plain text empty states in inline lists (like subtasks, attachments, or logs) look unpolished and do not guide the user effectively.
 **Action:** Always replace simple italicized "No items" text with styled containers (e.g., `bg-muted/30 border-dashed`), a relevant icon, and helpful sub-text to improve visual polish and user guidance.
+## 2025-05-22 - Async Upload Feedback and File Focus
+**Learning:** For asynchronous file uploads (like attachments), missing immediate visual success/error feedback (toast notifications) leaves users unsure if the action succeeded. Furthermore, custom `<a>` tags representing files often lack keyboard focus indicators (`focus-visible`), hindering accessibility.
+**Action:** Always provide explicit success and error toast notifications for async file operations, and ensure custom links include focus ring classes (`focus-visible:ring-2`).
