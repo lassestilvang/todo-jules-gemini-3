@@ -48,3 +48,6 @@
 ## 2024-06-25 - better-sqlite3 Async Overhead
 **Learning:** In Drizzle ORM with the `better-sqlite3` driver, SQLite is synchronous via native C++ bindings. Wrapping Drizzle DB queries with `await` doesn't provide parallelization but actually adds microtask overhead (Promise resolution).
 **Action:** Remove `await` for database write queries in `src/actions/tasks.ts` and use synchronous methods like `.run()` or `.get()`.
+## 2024-05-24 - React.memo and State Isolation on Subtask Lists
+**Learning:** Similar to root task lists, typing in a subtask creation input located within the parent `SubtasksList` component triggers a re-render of the entire subtasks array on every keystroke, resulting in O(N) rendering overhead.
+**Action:** Always isolate text input state (`newSubtaskName`, `isSubmitting`) by extracting the form into its own component (e.g., `CreateSubtaskForm`). This ensures that only the input itself re-renders during typing, preventing sibling list items from needlessly re-rendering.
