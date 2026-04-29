@@ -55,3 +55,8 @@
 **Vulnerability:** Missing Security Headers
 **Learning:** Next.js applications do not include crucial security headers (like X-Frame-Options and X-Content-Type-Options) by default, leaving them exposed to Clickjacking and MIME-sniffing vulnerabilities.
 **Prevention:** Always implement a `next.config.mjs` with an `async headers()` configuration to enforce baseline defense-in-depth security headers across all application routes.
+
+## 2024-04-29 - Missing Rate Limiting on Database Delete Actions
+**Vulnerability:** Database deletion endpoints (e.g., `deleteTask`, `deleteList`) lacked rate limiting.
+**Learning:** Even though creation endpoints were rate-limited, destructive actions were left unbounded, potentially allowing an attacker to perform Denial of Service (DoS) by spamming delete requests, leading to database exhaustion.
+**Prevention:** Ensure all data-mutating Server Actions (create, update, delete, toggle) enforce IP-based rate limiting.

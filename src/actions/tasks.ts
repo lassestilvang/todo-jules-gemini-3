@@ -168,6 +168,13 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
 }
 
 export async function deleteTask(id: number) {
+  // SECURE: Rate limit task deletion to prevent DoS
+  const headersList = await headers();
+  const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  if (!rateLimit(`deleteTask:${ip}`, 30, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   db.delete(tasks).where(eq(tasks.id, id)).run();
   try { revalidatePath('/'); } catch { /* empty */ }
 }
@@ -190,6 +197,13 @@ export const getTaskLabels = cache(async function getTaskLabels(taskId: number) 
 });
 
 export async function toggleTaskLabel(taskId: number, labelId: number, selected: boolean) {
+    // SECURE: Rate limit task label toggling to prevent DoS
+    const headersList = await headers();
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+    if (!rateLimit(`toggleTaskLabel:${ip}`, 30, 60 * 1000)) {
+      throw new Error('Too many requests. Please try again later.');
+    }
+
     if (selected) {
         const exists = db.select().from(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).get();
         if (!exists) {
