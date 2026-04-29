@@ -15,10 +15,44 @@ interface SubtasksListProps {
   initialSubtasks?: Task[] | null;
 }
 
-export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListProps) {
-  const [subtasks, setSubtasks] = React.useState<Task[]>(initialSubtasks || []);
+// ⚡ Bolt: Extracted CreateSubtaskForm to isolate state and prevent the entire SubtasksList from re-rendering on every keystroke
+function CreateSubtaskForm({ taskId, onCreated }: { taskId: number; onCreated: () => void }) {
   const [newSubtaskName, setNewSubtaskName] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const handleAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSubtaskName.trim() || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      await createSubtask(taskId, newSubtaskName);
+      setNewSubtaskName('');
+      onCreated();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleAdd} className="flex items-center space-x-2 mt-2">
+      <Input
+        className="h-8 text-sm"
+        placeholder="Add subtask..."
+        value={newSubtaskName}
+        onChange={(e) => setNewSubtaskName(e.target.value)}
+        aria-label="New subtask name"
+        disabled={isSubmitting}
+      />
+      <Button size="sm" variant="ghost" type="submit" disabled={!newSubtaskName.trim() || isSubmitting} aria-label="Add subtask">
+        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+      </Button>
+    </form>
+  );
+}
+
+export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListProps) {
+  const [subtasks, setSubtasks] = React.useState<Task[]>(initialSubtasks || []);
 
   const loadSubtasks = React.useCallback(async () => {
     const data = await getSubtasks(taskId);
@@ -32,20 +66,6 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
         loadSubtasks();
     }
   }, [taskId, initialSubtasks, loadSubtasks]);
-
-  const handleAdd = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newSubtaskName.trim() || isSubmitting) return;
-
-    setIsSubmitting(true);
-    try {
-      await createSubtask(taskId, newSubtaskName);
-      setNewSubtaskName('');
-      loadSubtasks();
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const handleToggle = async (id: number, checked: boolean) => {
     const task = subtasks.find(t => t.id === id);
@@ -82,19 +102,7 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
         ))}
       </div>
 
-      <form onSubmit={handleAdd} className="flex items-center space-x-2 mt-2">
-        <Input
-          className="h-8 text-sm"
-          placeholder="Add subtask..."
-          value={newSubtaskName}
-          onChange={(e) => setNewSubtaskName(e.target.value)}
-          aria-label="New subtask name"
-          disabled={isSubmitting}
-        />
-        <Button size="sm" variant="ghost" type="submit" disabled={!newSubtaskName.trim() || isSubmitting} aria-label="Add subtask">
-          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-        </Button>
-      </form>
+      <CreateSubtaskForm taskId={taskId} onCreated={loadSubtasks} />
     </div>
   );
 }
