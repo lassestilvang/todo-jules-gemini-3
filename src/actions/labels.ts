@@ -34,6 +34,13 @@ export async function createLabel(data: { name: string; color?: string }) {
 }
 
 export async function deleteLabel(id: number) {
+  // SECURE: Rate limit label deletion to prevent DoS
+  const headersList = await headers();
+  const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  if (!rateLimit(`deleteLabel:${ip}`, 30, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   db.delete(labels).where(eq(labels.id, id)).run();
   try { revalidatePath('/'); } catch { /* empty */ }
 }

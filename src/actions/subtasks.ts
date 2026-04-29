@@ -34,6 +34,13 @@ export const getSubtasks = cache(async function getSubtasks(parentId: number) {
 });
 
 export async function deleteSubtask(id: number) {
+    // SECURE: Rate limit subtask deletion to prevent DoS
+    const headersList = await headers();
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+    if (!rateLimit(`deleteSubtask:${ip}`, 30, 60 * 1000)) {
+        throw new Error('Too many requests. Please try again later.');
+    }
+
     db.delete(tasks).where(eq(tasks.id, id)).run();
     try { revalidatePath('/'); } catch { /* empty */ }
 }
