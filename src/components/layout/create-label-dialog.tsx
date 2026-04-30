@@ -46,7 +46,7 @@ export function CreateLabelDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" className="w-full justify-start text-muted-foreground">
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
           Create Label
         </Button>
       </DialogTrigger>
@@ -97,7 +97,7 @@ export function CreateLabelDialog() {
           </div>
           <DialogFooter>
             <Button type="submit" disabled={!name.trim() || isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
               Create Label
             </Button>
           </DialogFooter>

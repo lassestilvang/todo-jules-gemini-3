@@ -35,3 +35,6 @@
 ## 2025-05-22 - Async Upload Feedback and File Focus
 **Learning:** For asynchronous file uploads (like attachments), missing immediate visual success/error feedback (toast notifications) leaves users unsure if the action succeeded. Furthermore, custom `<a>` tags representing files often lack keyboard focus indicators (`focus-visible`), hindering accessibility.
 **Action:** Always provide explicit success and error toast notifications for async file operations, ensure custom links include focus ring classes (`focus-visible:ring-2`), and hide decorative icons from screen readers using `aria-hidden="true"`.
+## 2026-04-30 - Error Handling Fallbacks in Toasts
+**Learning:** When refactoring error fallbacks to avoid TypeScript 'any' casts (like `(error as any)?.message`), avoid using `String(error)` as a generic fallback, as plain objects might evaluate to strings like `[object Object]`, resulting in unhelpful user-facing toast notifications.
+**Action:** Always use `error instanceof Error ? error.message : "Fallback user-friendly string"` for toast error messages to ensure strict typing while providing clear feedback.
