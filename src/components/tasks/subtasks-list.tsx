@@ -9,6 +9,7 @@ import { Plus, Loader2, ListTodo } from 'lucide-react';
 import { updateTask } from '@/actions/tasks';
 import { cn } from '@/lib/utils';
 import { Task } from '@/lib/types';
+import { toast } from 'sonner';
 
 interface SubtasksListProps {
   taskId: number;
@@ -29,6 +30,9 @@ function CreateSubtaskForm({ taskId, onCreated }: { taskId: number; onCreated: (
       await createSubtask(taskId, newSubtaskName);
       setNewSubtaskName('');
       onCreated();
+      toast.success("Subtask created successfully");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : (typeof error === 'string' ? error : "Failed to create subtask"));
     } finally {
       setIsSubmitting(false);
     }
@@ -45,7 +49,7 @@ function CreateSubtaskForm({ taskId, onCreated }: { taskId: number; onCreated: (
         disabled={isSubmitting}
       />
       <Button size="sm" variant="ghost" type="submit" disabled={!newSubtaskName.trim() || isSubmitting} aria-label="Add subtask">
-        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Plus className="h-4 w-4" aria-hidden="true" />}
       </Button>
     </form>
   );
@@ -69,12 +73,22 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
 
   const handleToggle = async (id: number, checked: boolean) => {
     const task = subtasks.find(t => t.id === id);
-    if (task) {
-        await updateTask(id, { isCompleted: checked }, { isCompleted: task.isCompleted });
-    } else {
-        await updateTask(id, { isCompleted: checked });
-    }
+    const previousState = task?.isCompleted ?? !checked;
+
+    // Optimistic update
     setSubtasks(prev => prev.map(t => t.id === id ? { ...t, isCompleted: checked } : t));
+
+    try {
+        if (task) {
+            await updateTask(id, { isCompleted: checked }, { isCompleted: task.isCompleted });
+        } else {
+            await updateTask(id, { isCompleted: checked });
+        }
+    } catch (error) {
+        // Revert on error
+        setSubtasks(prev => prev.map(t => t.id === id ? { ...t, isCompleted: previousState } : t));
+        toast.error(error instanceof Error ? error.message : (typeof error === 'string' ? error : "Failed to update subtask"));
+    }
   };
 
   return (
