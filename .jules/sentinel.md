@@ -60,3 +60,7 @@
 **Vulnerability:** Database deletion endpoints (e.g., `deleteTask`, `deleteList`) lacked rate limiting.
 **Learning:** Even though creation endpoints were rate-limited, destructive actions were left unbounded, potentially allowing an attacker to perform Denial of Service (DoS) by spamming delete requests, leading to database exhaustion.
 **Prevention:** Ensure all data-mutating Server Actions (create, update, delete, toggle) enforce IP-based rate limiting.
+## 2026-05-01 - [Content Security Policy (CSP)]
+**Vulnerability:** Missing Content Security Policy (CSP) headers, specifically `object-src 'none'`.
+**Learning:** Allowed file uploads like .pdf can execute embedded JavaScript if rendered inline. A CSP with `object-src 'none'` prevents execution of plugins or embedded objects, providing a layer of defense. For full XSS protection, a stricter CSP without `unsafe-inline` or `unsafe-eval` is required.
+**Prevention:** Enforce a CSP in `next.config.mjs`. Aim for a strong policy by avoiding `unsafe-inline` and `unsafe-eval` to effectively sandbox application behavior and restrict executable resources.
