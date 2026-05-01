@@ -87,7 +87,7 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
     } catch (error) {
         // Revert on error
         setSubtasks(prev => prev.map(t => t.id === id ? { ...t, isCompleted: previousState } : t));
-        toast.error(error instanceof Error ? error.message : "Failed to update subtask");
+        toast.error(error instanceof Error ? error.message : (typeof error === 'string' ? error : "Failed to update subtask"));
     }
   };
 
