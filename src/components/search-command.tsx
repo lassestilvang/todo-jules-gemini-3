@@ -12,11 +12,13 @@ import {
 import { searchTasks } from '@/actions/search';
 import { Circle, CheckCircle } from 'lucide-react';
 import { Task } from '@/lib/types';
+import { useDebounce } from '@/lib/hooks';
 
 export function SearchCommand() {
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
   const [results, setResults] = React.useState<Task[]>([]);
+  const debouncedQuery = useDebounce(query, 300);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -31,39 +33,35 @@ export function SearchCommand() {
 
   React.useEffect(() => {
     let isCancelled = false;
-    // eslint-disable-next-line prefer-const
-    let timer: ReturnType<typeof setTimeout> | undefined;
 
     if (!open) {
-      if (query.length > 0) {
+      if (debouncedQuery.length > 0) {
         setResults([]);
       }
       return () => {
         isCancelled = true;
-        if (timer) clearTimeout(timer);
       };
     }
 
-    if (query.length === 0) {
+    if (debouncedQuery.length === 0) {
       setResults([]);
       return () => {
         isCancelled = true;
-        if (timer) clearTimeout(timer);
       };
     }
 
-    timer = setTimeout(async () => {
-      const data = await searchTasks(query);
+    const fetchResults = async () => {
+      const data = await searchTasks(debouncedQuery);
       if (!isCancelled) {
         setResults(data);
       }
-    }, 300);
+    };
+    fetchResults();
 
     return () => {
       isCancelled = true;
-      if (timer) clearTimeout(timer);
     };
-  }, [query, open]);
+  }, [debouncedQuery, open]);
 
   return (
     <>
