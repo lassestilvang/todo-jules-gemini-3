@@ -32,7 +32,7 @@ function CreateSubtaskForm({ taskId, onCreated }: { taskId: number; onCreated: (
       onCreated();
       toast.success("Subtask created successfully");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to create subtask");
+      toast.error(error instanceof Error ? error.message : (typeof error === 'string' ? error : "Failed to create subtask"));
     } finally {
       setIsSubmitting(false);
     }
