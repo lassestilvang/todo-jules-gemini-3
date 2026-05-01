@@ -9,6 +9,7 @@ import { Plus, Loader2, ListTodo } from 'lucide-react';
 import { updateTask } from '@/actions/tasks';
 import { cn } from '@/lib/utils';
 import { Task } from '@/lib/types';
+import { toast } from 'sonner';
 
 interface SubtasksListProps {
   taskId: number;
@@ -29,6 +30,9 @@ function CreateSubtaskForm({ taskId, onCreated }: { taskId: number; onCreated: (
       await createSubtask(taskId, newSubtaskName);
       setNewSubtaskName('');
       onCreated();
+      toast.success("Subtask created successfully");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : (typeof error === 'string' ? error : "Failed to create subtask"));
     } finally {
       setIsSubmitting(false);
     }
@@ -45,11 +49,30 @@ function CreateSubtaskForm({ taskId, onCreated }: { taskId: number; onCreated: (
         disabled={isSubmitting}
       />
       <Button size="sm" variant="ghost" type="submit" disabled={!newSubtaskName.trim() || isSubmitting} aria-label="Add subtask">
-        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Plus className="h-4 w-4" aria-hidden="true" />}
       </Button>
     </form>
   );
 }
+
+// ⚡ Bolt: Extracted and memoized SubtaskItem to prevent O(N) re-renders when toggling a single subtask
+const SubtaskItem = React.memo(({ task, onToggle }: { task: Task, onToggle: (id: number, checked: boolean, currentCompleted: boolean) => void }) => {
+  return (
+    <div className="flex items-center space-x-2 group">
+      <Checkbox
+        id={`subtask-${task.id}`}
+        aria-label={`Mark subtask "${task.name}" as ${task.isCompleted ? 'incomplete' : 'complete'}`}
+        checked={!!task.isCompleted}
+        onCheckedChange={(c) => onToggle(task.id, c as boolean, !!task.isCompleted)}
+      />
+      <label htmlFor={`subtask-${task.id}`} className={cn("text-sm flex-1 cursor-pointer", task.isCompleted && "line-through text-muted-foreground")}>
+        {task.name}
+      </label>
+    </div>
+  );
+});
+
+SubtaskItem.displayName = 'SubtaskItem';
 
 export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListProps) {
   const [subtasks, setSubtasks] = React.useState<Task[]>(initialSubtasks || []);
@@ -67,15 +90,14 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
     }
   }, [taskId, initialSubtasks, loadSubtasks]);
 
-  const handleToggle = async (id: number, checked: boolean) => {
-    const task = subtasks.find(t => t.id === id);
-    if (task) {
-        await updateTask(id, { isCompleted: checked }, { isCompleted: task.isCompleted });
-    } else {
-        await updateTask(id, { isCompleted: checked });
-    }
+  // ⚡ Bolt: Memoized handleToggle with useCallback to provide a stable reference to SubtaskItem children
+  const handleToggle = React.useCallback(async (id: number, checked: boolean, currentCompleted: boolean) => {
+    // Optimistic update
     setSubtasks(prev => prev.map(t => t.id === id ? { ...t, isCompleted: checked } : t));
-  };
+
+    // Server action
+    await updateTask(id, { isCompleted: checked }, { isCompleted: currentCompleted });
+  }, []);
 
   return (
     <div className="space-y-2 mt-4">
@@ -88,17 +110,7 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
           </div>
         )}
         {subtasks.map(t => (
-          <div key={t.id} className="flex items-center space-x-2 group">
-            <Checkbox
-              id={`subtask-${t.id}`}
-              aria-label={`Mark subtask "${t.name}" as ${t.isCompleted ? 'incomplete' : 'complete'}`}
-              checked={!!t.isCompleted}
-              onCheckedChange={(c) => handleToggle(t.id, c as boolean)}
-            />
-            <label htmlFor={`subtask-${t.id}`} className={cn("text-sm flex-1 cursor-pointer", t.isCompleted && "line-through text-muted-foreground")}>
-              {t.name}
-            </label>
-          </div>
+          <SubtaskItem key={t.id} task={t} onToggle={handleToggle} />
         ))}
       </div>
 

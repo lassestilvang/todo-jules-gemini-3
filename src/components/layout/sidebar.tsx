@@ -54,7 +54,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                 asChild
               >
                 <Link href={link.href}>
-                  <link.icon className="mr-2 h-4 w-4" />
+                  <link.icon className="mr-2 h-4 w-4" aria-hidden="true" />
                   {link.name}
                 </Link>
               </Button>
@@ -74,7 +74,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                 asChild
               >
                 <Link href={`/lists/${list.id}`}>
-                  <ListIcon className="mr-2 h-4 w-4" />
+                  <ListIcon className="mr-2 h-4 w-4" aria-hidden="true" />
                   {list.name}
                 </Link>
               </Button>
@@ -93,7 +93,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                 variant="ghost"
                 className="w-full justify-start"
                >
-                  <Tag className="mr-2 h-4 w-4" style={{ color: label.color || '#000000' }} />
+                  <Tag className="mr-2 h-4 w-4" style={{ color: label.color || '#000000' }} aria-hidden="true" />
                   {label.name}
                </Button>
              ))}
