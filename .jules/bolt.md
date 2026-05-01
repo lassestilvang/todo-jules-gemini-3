@@ -51,3 +51,6 @@
 ## 2024-05-24 - React.memo and State Isolation on Subtask Lists
 **Learning:** Similar to root task lists, typing in a subtask creation input located within the parent `SubtasksList` component triggers a re-render of the entire subtasks array on every keystroke, resulting in O(N) rendering overhead.
 **Action:** Always isolate text input state (`newSubtaskName`, `isSubmitting`) by extracting the form into its own component (e.g., `CreateSubtaskForm`). This ensures that only the input itself re-renders during typing, preventing sibling list items from needlessly re-rendering.
+## 2026-05-01 - React.memo and State Isolation on Subtask Lists
+**Learning:** Similar to root task lists, typing in a subtask creation input located within the parent `SubtasksList` component or toggling a subtask triggers a re-render of the entire subtasks array, resulting in O(N) rendering overhead.
+**Action:** Always extract the individual subtask list item into its own component (e.g., `SubtaskItem`) and wrap it in `React.memo()` with stable callback references to prevent sibling list items from needlessly re-rendering during state updates.
