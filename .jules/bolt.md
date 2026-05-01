@@ -51,3 +51,6 @@
 ## 2024-05-24 - React.memo and State Isolation on Subtask Lists
 **Learning:** Similar to root task lists, typing in a subtask creation input located within the parent `SubtasksList` component triggers a re-render of the entire subtasks array on every keystroke, resulting in O(N) rendering overhead.
 **Action:** Always isolate text input state (`newSubtaskName`, `isSubmitting`) by extracting the form into its own component (e.g., `CreateSubtaskForm`). This ensures that only the input itself re-renders during typing, preventing sibling list items from needlessly re-rendering.
+## 2026-05-01 - Extract debounce timeout to hook
+**Learning:** Recreating `setTimeout` within a component's `useEffect` can become difficult to maintain and introduces subtle bugs if cancellation conditions are missed, especially on search inputs.
+**Action:** Always extract debounce logic into a generic `useDebounce` hook to improve component readability, abstract away cleanup logic, and make state management more robust.
