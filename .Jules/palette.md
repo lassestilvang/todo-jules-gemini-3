@@ -38,3 +38,6 @@
 ## 2026-04-30 - Error Handling Fallbacks in Toasts
 **Learning:** When refactoring error fallbacks to avoid TypeScript 'any' casts (like `(error as any)?.message`), avoid using `String(error)` as a generic fallback, as plain objects might evaluate to strings like `[object Object]`, resulting in unhelpful user-facing toast notifications.
 Always use `error instanceof Error ? error.message : (typeof error === 'string' ? error : "Fallback user-friendly string")` for toast error messages to ensure strict typing while providing clear feedback.
+## 2026-05-01 - Optimistic Subtask Updates
+**Learning:** Implementing optimistic UI updates for inline list toggles (like subtasks) provides immediate visual feedback, significantly improving the perceived performance of the app.
+**Action:** Use optimistic state updates with try/catch rollbacks for fast-paced interactive elements.
