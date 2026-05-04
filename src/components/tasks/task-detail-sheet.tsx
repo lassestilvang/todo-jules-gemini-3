@@ -80,7 +80,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
       // ⚡ Bolt: Early return to prevent unnecessary Server Action calls, DB updates, and cache invalidations
       if (!hasChanges) return;
 
-      await updateTask(task.id, data, previousState);
+      await updateTask(task.id, data);
   };
 
   const handleToggleLabel = async (labelId: number) => {
@@ -155,7 +155,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button variant="outline" size="sm" className="h-6 border-dashed">
-                                    <Plus className="w-3 h-3 mr-1" />
+                                    <Plus className="w-3 h-3 mr-1" aria-hidden="true" />
                                     Add Label
                                 </Button>
                             </PopoverTrigger>
@@ -172,7 +172,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                                         <div className="flex items-center gap-2 w-full cursor-pointer">
                                                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: label.color || '#000' }} />
                                                             <span>{label.name}</span>
-                                                            {isAssigned && <Check className="ml-auto w-4 h-4" />}
+                                                            {isAssigned && <Check className="ml-auto w-4 h-4" aria-hidden="true" />}
                                                         </div>
                                                     </CommandItem>
                                                 );
@@ -217,7 +217,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
 
                             <SelectTrigger id={`recurrence-${task.id}`}>
 
-                                <Repeat className="w-4 h-4 mr-2" />
+                                <Repeat className="w-4 h-4 mr-2" aria-hidden="true" />
                                 <SelectValue placeholder="Repeat" />
                             </SelectTrigger>
                             <SelectContent>
@@ -244,7 +244,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                         !task.date && "text-muted-foreground"
                                     )}
                                 >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
                                     {task.date ? format(new Date(task.date), "PPP") : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
@@ -307,7 +307,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
 
                 <div className="pt-4 mt-4 border-t">
                     <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="w-full sm:w-auto">
-                        {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                        {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />}
                         Delete Task
                     </Button>
                 </div>
