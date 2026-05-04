@@ -89,7 +89,17 @@ export function SearchCommand() {
                       setOpen(false);
                     }}
                   >
-                    {task.isCompleted ? <CheckCircle className="mr-2 h-4 w-4" /> : <Circle className="mr-2 h-4 w-4" />}
+                    {task.isCompleted ? (
+                      <>
+                        <CheckCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+                        <span className="sr-only">Completed</span>
+                      </>
+                    ) : (
+                      <>
+                        <Circle className="mr-2 h-4 w-4" aria-hidden="true" />
+                        <span className="sr-only">Incomplete</span>
+                      </>
+                    )}
                     <span>{task.name}</span>
                   </CommandItem>
                 ))}

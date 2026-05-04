@@ -41,3 +41,4 @@ Always use `error instanceof Error ? error.message : (typeof error === 'string' 
 ## 2026-05-01 - Optimistic Subtask Updates
 **Learning:** Implementing optimistic UI updates for inline list toggles (like subtasks) provides immediate visual feedback, significantly improving the perceived performance of the app.
 **Action:** Use optimistic state updates with try/catch rollbacks for fast-paced interactive elements.
+## 2024-05-25 - Provide Screen-Reader Fallbacks for Hidden Stateful Icons\n**Learning:** When hiding stateful icons (like `CheckCircle` or `Circle` indicating task completion) with `aria-hidden="true"`, screen readers lose critical context if a fallback isn't provided.\n**Action:** Always pair `aria-hidden="true"` on stateful icons with a visually hidden `<span className="sr-only">[State]</span>` sibling to explicitly announce the state (e.g., "Completed" or "Incomplete") to screen reader users.
