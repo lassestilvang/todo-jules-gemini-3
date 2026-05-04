@@ -64,6 +64,10 @@
 **Vulnerability:** Missing Content Security Policy (CSP) headers, specifically `object-src 'none'`.
 **Learning:** Allowed file uploads like .pdf can execute embedded JavaScript if rendered inline. A CSP with `object-src 'none'` prevents execution of plugins or embedded objects, providing a layer of defense. For full XSS protection, a stricter CSP without `unsafe-inline` or `unsafe-eval` is required.
 **Prevention:** Enforce a CSP in `next.config.mjs`. Aim for a strong policy by avoiding `unsafe-inline` and `unsafe-eval` to effectively sandbox application behavior and restrict executable resources.
+## 2024-05-31 - [Orphaned File Storage DoS and Data Leak on Deletion]
+**Vulnerability:** When a task or subtask is deleted (`deleteTask`, `deleteSubtask`), the application deletes the row from the `tasks` table but fails to cascade-delete associated records from `activityLogs`, `taskLabels`, and `attachments`. Crucially, it does not delete the physical uploaded files from the filesystem. This can lead to massive storage accumulation (Storage DoS) and potentially leak sensitive data if the files remain accessible via direct URL after the parent task is conceptually deleted.
+**Learning:** SQLite does not enable `PRAGMA foreign_keys` by default, meaning `ON DELETE CASCADE` constraints are often ignored at the database engine level unless explicitly enabled on every connection. Furthermore, database-level cascading deletes do not trigger application-level side effects (like deleting physical files from the `public/uploads` directory).
+**Prevention:** Always implement explicit cleanup logic in Server Actions when deleting entities that have physical file dependencies. Delete the physical files first (or simultaneously) using `fs.unlink`, and use explicit database transactions to delete all dependent rows to ensure database integrity when foreign keys are disabled.
 
 ## 2024-05-03 - [Audit Log Spoofing via Client State]
 **Vulnerability:** The `updateTask` Server Action accepted a `previousState` object from the client and used it directly to generate audit log diffs.

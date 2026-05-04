@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db';
 import { tasks, activityLogs, taskLabels, labels, attachments } from '@/lib/schema';
-import { eq, and, sql, desc } from 'drizzle-orm';
+import { eq, and, sql, desc, inArray } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { format } from 'date-fns';
 import { cache } from 'react';
@@ -171,7 +171,26 @@ export async function deleteTask(id: number) {
     throw new Error('Too many requests. Please try again later.');
   }
 
-  db.delete(tasks).where(eq(tasks.id, id)).run();
+  const subtasks = db.select({ id: tasks.id }).from(tasks).where(eq(tasks.parentId, id)).all();
+  const taskIds = [id, ...subtasks.map((t: { id: number }) => t.id)];
+  const taskAttachments = db.select().from(attachments).where(inArray(attachments.taskId, taskIds)).all();
+
+  db.transaction((tx: typeof db) => {
+    tx.delete(taskLabels).where(inArray(taskLabels.taskId, taskIds)).run();
+    tx.delete(activityLogs).where(inArray(activityLogs.taskId, taskIds)).run();
+    tx.delete(attachments).where(inArray(attachments.taskId, taskIds)).run();
+    tx.delete(tasks).where(inArray(tasks.id, taskIds)).run();
+  });
+
+  const { unlink } = await import('fs/promises');
+  const { join } = await import('path');
+  for (const att of taskAttachments) {
+    try {
+        const fileName = att.filePath.split('/').pop() || '';
+        if (fileName) await unlink(join(process.cwd(), 'public', 'uploads', fileName));
+    } catch { /* ignore missing file errors */ }
+  }
+
   try { revalidatePath('/'); } catch { /* empty */ }
 }
 
