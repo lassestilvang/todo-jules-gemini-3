@@ -126,7 +126,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
     }
   }
 
-  // SECURE: Never trust client-provided previous state for audit logging to prevent spoofing
+  // SECURE: Always fetch current state from the database to prevent clients from spoofing audit logs
   const current = db.select().from(tasks).where(eq(tasks.id, id)).get();
   if (!current) throw new Error("Task not found");
 
