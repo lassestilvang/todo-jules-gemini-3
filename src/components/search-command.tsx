@@ -20,6 +20,10 @@ export function SearchCommand() {
   const [results, setResults] = React.useState<Task[]>([]);
   const debouncedQuery = useDebounce(query, 300);
 
+  // ⚡ Bolt: Local cache to prevent redundant network requests during typos/backspacing
+  const cacheRef = React.useRef<Map<string, Task[]>>(new Map());
+  const CACHE_MAX_SIZE = 50;
+
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
@@ -38,6 +42,8 @@ export function SearchCommand() {
       if (debouncedQuery.length > 0) {
         setResults([]);
       }
+      // Invalidate cache when dialog closes to prevent stale data on next open
+      cacheRef.current.clear();
       return () => {
         isCancelled = true;
       };
@@ -51,8 +57,22 @@ export function SearchCommand() {
     }
 
     const fetchResults = async () => {
-      const data = await searchTasks(debouncedQuery);
+      const trimmedQuery = debouncedQuery.trim();
+
+      // ⚡ Bolt: Check in-memory cache first
+      if (cacheRef.current.has(trimmedQuery)) {
+          if (!isCancelled) setResults(cacheRef.current.get(trimmedQuery)!);
+          return;
+      }
+
+      const data = await searchTasks(trimmedQuery);
       if (!isCancelled) {
+        // Enforce max cache size
+        if (cacheRef.current.size >= CACHE_MAX_SIZE) {
+          const oldestKey = cacheRef.current.keys().next().value;
+          if (oldestKey !== undefined) cacheRef.current.delete(oldestKey);
+        }
+        cacheRef.current.set(trimmedQuery, data);
         setResults(data);
       }
     };
