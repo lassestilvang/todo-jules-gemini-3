@@ -56,14 +56,14 @@ function CreateSubtaskForm({ taskId, onCreated }: { taskId: number; onCreated: (
 }
 
 // ⚡ Bolt: Extracted and memoized SubtaskItem to prevent O(N) re-renders when toggling a single subtask
-const SubtaskItem = React.memo(({ task, onToggle }: { task: Task, onToggle: (id: number, checked: boolean, currentCompleted: boolean) => void }) => {
+const SubtaskItem = React.memo(({ task, onToggle }: { task: Task, onToggle: (id: number, checked: boolean) => void }) => {
   return (
     <div className="flex items-center space-x-2 group">
       <Checkbox
         id={`subtask-${task.id}`}
         aria-label={`Mark subtask "${task.name}" as ${task.isCompleted ? 'incomplete' : 'complete'}`}
         checked={!!task.isCompleted}
-        onCheckedChange={(c) => onToggle(task.id, c as boolean, !!task.isCompleted)}
+        onCheckedChange={(c) => onToggle(task.id, c as boolean)}
       />
       <label htmlFor={`subtask-${task.id}`} className={cn("text-sm flex-1 cursor-pointer", task.isCompleted && "line-through text-muted-foreground")}>
         {task.name}
@@ -91,12 +91,12 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
   }, [taskId, initialSubtasks, loadSubtasks]);
 
   // ⚡ Bolt: Memoized handleToggle with useCallback to provide a stable reference to SubtaskItem children
-  const handleToggle = React.useCallback(async (id: number, checked: boolean, currentCompleted: boolean) => {
+  const handleToggle = React.useCallback(async (id: number, checked: boolean) => {
     // Optimistic update
     setSubtasks(prev => prev.map(t => t.id === id ? { ...t, isCompleted: checked } : t));
 
     // Server action
-    await updateTask(id, { isCompleted: checked }, { isCompleted: currentCompleted });
+    await updateTask(id, { isCompleted: checked });
   }, []);
 
   return (
