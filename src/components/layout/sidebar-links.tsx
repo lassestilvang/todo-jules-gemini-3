@@ -27,7 +27,7 @@ export function SidebarLinks({ links }: SidebarLinksProps) {
               asChild
             >
               <Link href={link.href}>
-                <link.icon className="mr-2 h-4 w-4" />
+                <link.icon className="mr-2 h-4 w-4" aria-hidden="true" />
                 {link.name}
               </Link>
             </Button>
