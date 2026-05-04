@@ -80,7 +80,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
       // ⚡ Bolt: Early return to prevent unnecessary Server Action calls, DB updates, and cache invalidations
       if (!hasChanges) return;
 
-      await updateTask(task.id, data, previousState);
+      await updateTask(task.id, data);
   };
 
   const handleToggleLabel = async (labelId: number) => {

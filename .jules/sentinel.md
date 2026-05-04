@@ -64,3 +64,8 @@
 **Vulnerability:** Missing Content Security Policy (CSP) headers, specifically `object-src 'none'`.
 **Learning:** Allowed file uploads like .pdf can execute embedded JavaScript if rendered inline. A CSP with `object-src 'none'` prevents execution of plugins or embedded objects, providing a layer of defense. For full XSS protection, a stricter CSP without `unsafe-inline` or `unsafe-eval` is required.
 **Prevention:** Enforce a CSP in `next.config.mjs`. Aim for a strong policy by avoiding `unsafe-inline` and `unsafe-eval` to effectively sandbox application behavior and restrict executable resources.
+
+## 2024-05-03 - [Audit Log Spoofing via Client State]
+**Vulnerability:** The `updateTask` Server Action accepted a `previousState` object from the client and used it directly to generate audit log diffs.
+**Learning:** Server Actions must treat all client inputs as untrusted, even arguments that seem like harmless cache-optimizations. A malicious client could provide a fabricated `previousState` to spoof the "oldValue" in the audit log, masking their true actions.
+**Prevention:** Never trust client-provided state for generating audit logs or performing security-sensitive comparisons. Always fetch the authoritative current state directly from the database prior to the update.
