@@ -45,7 +45,7 @@ export function AttachmentsList({ taskId, initialAttachments = null }: Attachmen
           if (fileInputRef.current) fileInputRef.current.value = '';
           toast.success("Attachment uploaded successfully");
       } catch (error) {
-          toast.error(error instanceof Error ? error.message : ((error as { message?: string })?.message || "Upload failed"));
+          toast.error(error instanceof Error ? error.message : (typeof error === 'object' && error !== null && 'message' in error ? String((error as { message?: unknown }).message) : "Upload failed"));
       } finally {
           setIsUploading(false);
       }

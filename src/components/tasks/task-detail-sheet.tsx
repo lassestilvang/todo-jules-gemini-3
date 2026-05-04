@@ -172,7 +172,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                                         <div className="flex items-center gap-2 w-full cursor-pointer">
                                                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: label.color || '#000' }} />
                                                             <span>{label.name}</span>
-                                                            {isAssigned && <Check className="ml-auto w-4 h-4" aria-label="Assigned" role="img" />}
+                                                            {isAssigned && <Check className="ml-auto w-4 h-4" aria-hidden="true" />}
                                                         </div>
                                                     </CommandItem>
                                                 );
