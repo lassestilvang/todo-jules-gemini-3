@@ -57,3 +57,7 @@
 ## 2026-05-01 - React.memo and State Isolation on Subtask Lists
 **Learning:** Similar to root task lists, typing in a subtask creation input located within the parent `SubtasksList` component or toggling a subtask triggers a re-render of the entire subtasks array, resulting in O(N) rendering overhead.
 **Action:** Always extract the individual subtask list item into its own component (e.g., `SubtaskItem`) and wrap it in `React.memo()` with stable callback references to prevent sibling list items from needlessly re-rendering during state updates.
+
+## 2024-05-03 - Client-Side Search Caching
+**Learning:** Frequent debounced typing or backspacing in a search component (like `SearchCommand`) triggers redundant Server Action calls (`searchTasks`), unnecessarily hitting the database and consuming bandwidth, even for recently queried identical strings.
+**Action:** Implement an in-memory client-side cache (`Map` stored in a `useRef`) for search components to store and instantly retrieve results for previously typed queries within the same session. Ensure the cache size is bounded and invalidated appropriately (e.g., when the search dialog closes) to prevent memory leaks and stale data.
