@@ -69,7 +69,8 @@ export function SearchCommand() {
       if (!isCancelled) {
         // Enforce max cache size
         if (cacheRef.current.size >= CACHE_MAX_SIZE) {
-            cacheRef.current.clear();
+          const oldestKey = cacheRef.current.keys().next().value;
+          if (oldestKey !== undefined) cacheRef.current.delete(oldestKey);
         }
         cacheRef.current.set(trimmedQuery, data);
         setResults(data);
