@@ -90,7 +90,7 @@ export async function createTask(data: {
   return result;
 }
 
-export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>, previousState?: Partial<typeof tasks.$inferInsert>) {
+export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>) {
   // SECURE: Rate limit task updates to prevent DoS via payload/database exhaustion (activityLogs is append-only)
   const headersList = await headers();
   const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
@@ -126,13 +126,9 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
     }
   }
 
-  // Try to use provided state, otherwise fallback to fetching
-  let current = previousState;
-
-  if (!current) {
-      current = db.select().from(tasks).where(eq(tasks.id, id)).get();
-      if (!current) throw new Error("Task not found");
-  }
+  // SECURE: Never trust client-provided previous state for audit logging to prevent spoofing
+  const current = db.select().from(tasks).where(eq(tasks.id, id)).get();
+  if (!current) throw new Error("Task not found");
 
   let hasChanges = false;
 

@@ -91,12 +91,12 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
   }, [taskId, initialSubtasks, loadSubtasks]);
 
   // ⚡ Bolt: Memoized handleToggle with useCallback to provide a stable reference to SubtaskItem children
-  const handleToggle = React.useCallback(async (id: number, checked: boolean, currentCompleted: boolean) => {
+  const handleToggle = React.useCallback(async (id: number, checked: boolean) => {
     // Optimistic update
     setSubtasks(prev => prev.map(t => t.id === id ? { ...t, isCompleted: checked } : t));
 
     // Server action
-    await updateTask(id, { isCompleted: checked }, { isCompleted: currentCompleted });
+    await updateTask(id, { isCompleted: checked });
   }, []);
 
   return (
