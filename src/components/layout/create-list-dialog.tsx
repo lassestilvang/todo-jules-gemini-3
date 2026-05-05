@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
@@ -49,6 +50,9 @@ export function CreateListDialog() {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create New List</DialogTitle>
+          <DialogDescription>
+            Organize your tasks into a new custom list.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
           <div className="grid gap-2">
@@ -59,6 +63,7 @@ export function CreateListDialog() {
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Work, Personal"
               disabled={isSubmitting}
+              autoFocus
             />
           </div>
           <DialogFooter>
