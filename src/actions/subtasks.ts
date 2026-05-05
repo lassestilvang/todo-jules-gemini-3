@@ -20,12 +20,13 @@ export async function createSubtask(parentId: number, name: string) {
     throw new Error('Subtask name must be 255 characters or less.');
   }
 
-  db.insert(tasks).values({
+  const result = db.insert(tasks).values({
       name,
       parentId,
       listId: undefined // Subtasks might not belong to a list directly, or inherit?
-  }).run();
+  }).returning().get();
   try { revalidatePath('/'); } catch { /* empty */ }
+  return result;
 }
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
