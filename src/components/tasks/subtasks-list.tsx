@@ -17,7 +17,7 @@ interface SubtasksListProps {
 }
 
 // ⚡ Bolt: Extracted CreateSubtaskForm to isolate state and prevent the entire SubtasksList from re-rendering on every keystroke
-function CreateSubtaskForm({ taskId, onCreated }: { taskId: number; onCreated: () => void }) {
+function CreateSubtaskForm({ taskId, onCreated }: { taskId: number; onCreated: (task: Task) => void }) {
   const [newSubtaskName, setNewSubtaskName] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -27,9 +27,10 @@ function CreateSubtaskForm({ taskId, onCreated }: { taskId: number; onCreated: (
 
     setIsSubmitting(true);
     try {
-      await createSubtask(taskId, newSubtaskName);
+      const newTask = await createSubtask(taskId, newSubtaskName);
       setNewSubtaskName('');
-      onCreated();
+      // ⚡ Bolt: Eliminate redundant network request by passing the server response directly to state
+      onCreated(newTask);
       toast.success("Subtask created successfully");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : (typeof error === 'string' ? error : "Failed to create subtask"));
@@ -114,7 +115,7 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
         ))}
       </div>
 
-      <CreateSubtaskForm taskId={taskId} onCreated={loadSubtasks} />
+      <CreateSubtaskForm taskId={taskId} onCreated={(newTask) => setSubtasks(prev => [...(prev || []), newTask])} />
     </div>
   );
 }

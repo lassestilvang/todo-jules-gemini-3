@@ -61,3 +61,6 @@
 ## 2024-05-03 - Client-Side Search Caching
 **Learning:** Frequent debounced typing or backspacing in a search component (like `SearchCommand`) triggers redundant Server Action calls (`searchTasks`), unnecessarily hitting the database and consuming bandwidth, even for recently queried identical strings.
 **Action:** Implement an in-memory client-side cache (`Map` stored in a `useRef`) for search components to store and instantly retrieve results for previously typed queries within the same session. Ensure the cache size is bounded and invalidated appropriately (e.g., when the search dialog closes) to prevent memory leaks and stale data.
+## 2026-05-05 - Eliminate Redundant API calls on Subtask Creation
+**Learning:** After creating a subtask via a Server Action, triggering a completely separate API fetch (`loadSubtasks`) to re-load all subtasks introduces a redundant network request and database query, degrading UI responsiveness.
+**Action:** Always return the newly inserted database row directly from the Server Action (using `.returning().get()`) and optimistically append it to the client's local React state (handling potential `null` arrays) to eliminate the extra network round-trip.
