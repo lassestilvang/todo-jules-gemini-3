@@ -11,7 +11,7 @@ import { rateLimit } from '@/lib/rate-limit';
 export async function toggleTaskCompletion(taskId: number, isCompleted: boolean) {
   // SECURE: Rate limit task toggling to prevent DoS via payload/database exhaustion
   const headersList = await headers();
-  const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  const ip = headersList.get('x-forwarded-for')?.split(',').pop()?.trim() || '127.0.0.1';
   if (!rateLimit(`toggleTaskCompletion:${ip}`, 30, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
