@@ -73,3 +73,8 @@
 **Vulnerability:** The `updateTask` Server Action accepted a `previousState` object from the client and used it directly to generate audit log diffs.
 **Learning:** Server Actions must treat all client inputs as untrusted, even arguments that seem like harmless cache-optimizations. A malicious client could provide a fabricated `previousState` to spoof the "oldValue" in the audit log, masking their true actions.
 **Prevention:** Never trust client-provided state for generating audit logs or performing security-sensitive comparisons. Always fetch the authoritative current state directly from the database prior to the update.
+
+## 2024-06-01 - [Rate Limit IP Spoofing via X-Forwarded-For Bypass]
+**Vulnerability:** The application extracted the client IP for rate limiting using `headersList.get('x-forwarded-for')?.split(',')[0].trim()`. In an `X-Forwarded-For` chain (e.g., `Client-IP, Proxy1, Proxy2`), the first IP is completely user-controlled. An attacker could trivially bypass rate limits by sending random spoofed IPs in the `X-Forwarded-For` header.
+**Learning:** Never trust the first IP in the `X-Forwarded-For` header for security enforcement (like rate limits) because it can be injected by the client. The last IP in the chain is appended by the application's trusted reverse proxy (like Nginx or a cloud provider), making it the only reliable identifier.
+**Prevention:** Always extract the last IP in the `X-Forwarded-For` chain using `.split(',').pop()?.trim()` instead of `[0]`, or rely on a platform-specific verified IP header (like `X-Real-IP`) if the reverse proxy guarantees it cannot be spoofed by the client.

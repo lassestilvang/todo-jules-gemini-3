@@ -65,7 +65,7 @@ export async function createTask(data: {
 }) {
   // SECURE: Rate limit task creation to 20 per minute per IP to prevent DoS/spam
   const headersList = await headers();
-  const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  const ip = headersList.get('x-forwarded-for')?.split(',').pop()?.trim() || '127.0.0.1';
   if (!rateLimit(`createTask:${ip}`, 20, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
@@ -93,7 +93,7 @@ export async function createTask(data: {
 export async function updateTask(id: number, data: Partial<typeof tasks.$inferInsert>) {
   // SECURE: Rate limit task updates to prevent DoS via payload/database exhaustion (activityLogs is append-only)
   const headersList = await headers();
-  const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  const ip = headersList.get('x-forwarded-for')?.split(',').pop()?.trim() || '127.0.0.1';
   if (!rateLimit(`updateTask:${ip}`, 30, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
@@ -166,7 +166,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
 export async function deleteTask(id: number) {
   // SECURE: Rate limit task deletion to prevent DoS
   const headersList = await headers();
-  const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  const ip = headersList.get('x-forwarded-for')?.split(',').pop()?.trim() || '127.0.0.1';
   if (!rateLimit(`deleteTask:${ip}`, 30, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
@@ -214,7 +214,7 @@ export const getTaskLabels = cache(async function getTaskLabels(taskId: number) 
 export async function toggleTaskLabel(taskId: number, labelId: number, selected: boolean) {
     // SECURE: Rate limit task label toggling to prevent DoS
     const headersList = await headers();
-    const ip = headersList.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+    const ip = headersList.get('x-forwarded-for')?.split(',').pop()?.trim() || '127.0.0.1';
     if (!rateLimit(`toggleTaskLabel:${ip}`, 30, 60 * 1000)) {
       throw new Error('Too many requests. Please try again later.');
     }
