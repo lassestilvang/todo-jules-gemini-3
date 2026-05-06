@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -114,6 +114,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
       <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Task Details</SheetTitle>
+          <SheetDescription className="sr-only">View and manage details, subtasks, and attachments for this task.</SheetDescription>
         </SheetHeader>
 
         <Tabs defaultValue="details" className="w-full mt-4">
