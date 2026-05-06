@@ -40,8 +40,10 @@ export function AttachmentsList({ taskId, initialAttachments = null }: Attachmen
       formData.append('file', file);
 
       try {
-          await uploadFile(taskId, formData);
-          await loadFiles();
+          const newAttachment = await uploadFile(taskId, formData);
+          if (newAttachment) {
+              setFiles(prev => [...(prev || []), newAttachment]);
+          }
           if (fileInputRef.current) fileInputRef.current.value = '';
           toast.success("Attachment uploaded successfully");
       } catch (error) {
