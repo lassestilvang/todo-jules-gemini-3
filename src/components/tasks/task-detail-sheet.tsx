@@ -114,7 +114,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
       <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Task Details</SheetTitle>
-          <SheetDescription className="sr-only">View and manage details, subtasks, and attachments for this task.</SheetDescription>
+          <SheetDescription className="sr-only">View and manage details, subtasks, attachments, and activity history for {task.name}.</SheetDescription>
         </SheetHeader>
 
         <Tabs defaultValue="details" className="w-full mt-4">
