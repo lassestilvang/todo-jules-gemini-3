@@ -66,14 +66,14 @@ export async function uploadFile(taskId: number, formData: FormData) {
 
   const webPath = `/uploads/${filename}`;
 
-  db.insert(attachments).values({
+  const newAttachment = db.insert(attachments).values({
       taskId,
       fileName: safeName,
       filePath: webPath
-  }).run();
+  }).returning().get();
 
   try { revalidatePath('/'); } catch { /* empty */ }
-  return { success: true, path: webPath };
+  return newAttachment;
 }
 
 export async function getAttachments(taskId: number) {
