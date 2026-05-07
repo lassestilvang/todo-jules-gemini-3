@@ -13,7 +13,7 @@ interface AttachmentsListProps {
   initialAttachments?: Attachment[] | null;
 }
 
-export function AttachmentsList({ taskId, initialAttachments = null }: AttachmentsListProps) {
+export function AttachmentsList({ taskId, initialAttachments }: AttachmentsListProps) {
   const [files, setFiles] = React.useState<Attachment[]>(initialAttachments || []);
   const [isUploading, setIsUploading] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -24,10 +24,10 @@ export function AttachmentsList({ taskId, initialAttachments = null }: Attachmen
   }, [taskId]);
 
   React.useEffect(() => {
-    if (initialAttachments !== null) {
-        setFiles(initialAttachments);
-    } else {
+    if (initialAttachments === undefined) {
         loadFiles();
+    } else if (initialAttachments !== null) {
+        setFiles(initialAttachments);
     }
   }, [taskId, initialAttachments, loadFiles]);
 

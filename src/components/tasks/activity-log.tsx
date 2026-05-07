@@ -11,20 +11,22 @@ interface ActivityLogProps {
   initialLogs?: ActivityLogEntry[] | null;
 }
 
-export function ActivityLog({ taskId, initialLogs = null }: ActivityLogProps) {
+export function ActivityLog({ taskId, initialLogs }: ActivityLogProps) {
   const [logs, setLogs] = React.useState<ActivityLogEntry[]>(initialLogs || []);
   const [loading, setLoading] = React.useState(!initialLogs);
 
   React.useEffect(() => {
-    if (initialLogs !== null) {
-        setLogs(initialLogs);
-        setLoading(false);
-    } else {
+    if (initialLogs === undefined) {
         setLoading(true);
         getLogs(taskId).then((data) => {
             setLogs(data);
             setLoading(false);
         });
+    } else if (initialLogs !== null) {
+        setLogs(initialLogs);
+        setLoading(false);
+    } else {
+        setLoading(true);
     }
   }, [taskId, initialLogs]);
 
