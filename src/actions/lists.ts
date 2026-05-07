@@ -44,7 +44,7 @@ export async function deleteList(id: number) {
     throw new Error('Too many requests. Please try again later.');
   }
 
-  await db.transaction((tx: typeof db) => {
+  await db.transaction((tx) => {
     tx.update(tasks).set({ listId: null }).where(eq(tasks.listId, id)).run();
     tx.delete(lists).where(eq(lists.id, id)).run();
   });
