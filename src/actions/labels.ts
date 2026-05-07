@@ -41,7 +41,7 @@ export async function deleteLabel(id: number) {
     throw new Error('Too many requests. Please try again later.');
   }
 
-  db.transaction((tx: any) => {
+  await db.transaction((tx) => {
     tx.delete(taskLabels).where(eq(taskLabels.labelId, id)).run();
     tx.delete(labels).where(eq(labels.id, id)).run();
   });
