@@ -75,7 +75,7 @@ const SubtaskItem = React.memo(({ task, onToggle }: { task: Task, onToggle: (id:
 
 SubtaskItem.displayName = 'SubtaskItem';
 
-export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListProps) {
+export function SubtasksList({ taskId, initialSubtasks }: SubtasksListProps) {
   const [subtasks, setSubtasks] = React.useState<Task[]>(initialSubtasks || []);
 
   const loadSubtasks = React.useCallback(async () => {
@@ -84,10 +84,10 @@ export function SubtasksList({ taskId, initialSubtasks = null }: SubtasksListPro
   }, [taskId]);
 
   React.useEffect(() => {
-    if (initialSubtasks !== null) {
-        setSubtasks(initialSubtasks);
-    } else {
+    if (initialSubtasks === undefined) {
         loadSubtasks();
+    } else if (initialSubtasks !== null) {
+        setSubtasks(initialSubtasks);
     }
   }, [taskId, initialSubtasks, loadSubtasks]);
 
