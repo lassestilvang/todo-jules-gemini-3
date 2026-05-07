@@ -3,7 +3,7 @@
 import { writeFile, mkdir } from 'fs/promises';
 import { join, basename } from 'path';
 import { db } from '@/lib/db';
-import { attachments } from '@/lib/schema';
+import { attachments, tasks } from '@/lib/schema';
 import { revalidatePath } from 'next/cache';
 import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
@@ -26,6 +26,12 @@ export async function uploadFile(taskId: number, formData: FormData) {
     throw new Error('Invalid file upload');
   }
 
+  // SECURE: Verify that the task exists before uploading to prevent permanently orphaned files and Storage DoS
+  const taskExists = db.select({ id: tasks.id }).from(tasks).where(eq(tasks.id, taskId)).get();
+  if (!taskExists) {
+    throw new Error('Task not found');
+  }
+
   // SECURE: Limit file size to 5MB to prevent DoS attacks via disk/memory exhaustion
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
   if (file.size > MAX_FILE_SIZE) {
@@ -40,6 +46,11 @@ export async function uploadFile(taskId: number, formData: FormData) {
     throw new Error('Invalid file upload');
   }
   const safeName = basename(file.name);
+
+  // SECURE: Enforce length limit to prevent database/filesystem errors
+  if (safeName.length > 255) {
+    throw new Error('File name must be 255 characters or less');
+  }
 
   // SECURE: Validate file extension to prevent uploading dangerous files (e.g., Stored XSS via .html, .svg)
   const parts = safeName.split('.');
