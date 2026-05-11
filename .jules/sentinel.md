@@ -82,3 +82,7 @@
 **Vulnerability:** When a list or label was deleted, the application failed to remove or update related records (e.g., `tasks.listId` or `taskLabels`). Because SQLite does not enable `PRAGMA foreign_keys` by default, this leads to orphaned many-to-many relationship records or foreign key constraint violations, risking Database Storage DoS.
 **Learning:** Database-level cascading deletes (`ON DELETE CASCADE`) are often ignored in SQLite unless explicitly enabled on every connection. You cannot rely on them implicitly.
 **Prevention:** Always implement explicit cleanup logic using `db.transaction()` blocks to manually delete dependent records or nullify foreign keys prior to deleting the parent record.
+## 2024-05-11 - [SQL Wildcard Unescaped]
+**Vulnerability:** SQL wildcard characters `%` and `_` were not escaped in a `LIKE` search query, allowing an attacker to pass `%` as a query and cause an expensive full table scan that expands the search result space, leading to DB exhaustion and Denial of Service.
+**Learning:** `drizzle-orm`'s `like()` function does not automatically escape user-provided SQL wildcards (`%`, `_`). It only parameterizes the whole string, making wildcard expansion a silent performance attack vector.
+**Prevention:** Always manually escape `\`, `%`, and `_` in user inputs intended for `LIKE` queries (e.g., using `query.replace(/[\\%_]/g, '\\$&')`) and construct the query using `sql\`... LIKE \${pattern} ESCAPE '\\'\``.
