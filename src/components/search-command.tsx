@@ -10,7 +10,7 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { searchTasks } from '@/actions/search';
-import { Circle, CheckCircle } from 'lucide-react';
+import { Circle, CheckCircle, Search } from 'lucide-react';
 import { Task } from '@/lib/types';
 import { useDebounce } from '@/lib/hooks';
 
@@ -99,7 +99,14 @@ export function SearchCommand() {
             onValueChange={setQuery}
         />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>
+            <div className="flex flex-col items-center justify-center py-6 space-y-3">
+              <Search className="w-8 h-8 text-muted-foreground/50" aria-hidden="true" />
+              <p className="text-sm text-muted-foreground">
+                {query.length === 0 ? "Start typing to search tasks..." : "No tasks found matching your search."}
+              </p>
+            </div>
+          </CommandEmpty>
           {results.length > 0 && (
               <CommandGroup heading="Tasks">
                 {results.map((task) => (
