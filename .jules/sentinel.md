@@ -86,3 +86,8 @@
 **Vulnerability:** SQL wildcard characters `%` and `_` were not escaped in a `LIKE` search query, allowing an attacker to pass `%` as a query and cause an expensive full table scan that expands the search result space, leading to DB exhaustion and Denial of Service.
 **Learning:** `drizzle-orm`'s `like()` function does not automatically escape user-provided SQL wildcards (`%`, `_`). It only parameterizes the whole string, making wildcard expansion a silent performance attack vector.
 **Prevention:** Always manually escape `\`, `%`, and `_` in user inputs intended for `LIKE` queries (e.g., using `query.replace(/[\\%_]/g, '\\$&')`) and construct the query using `sql\`... LIKE \${pattern} ESCAPE '\\'\``.
+
+## 2026-05-12 - Prevent DoS via SQL LIKE wildcard exhaustion
+**Vulnerability:** Drizzle ORM's `like()` helper does not escape wildcards (`%`, `_`) in user input, allowing attackers to cause database exhaustion via massive wildcard expansion.
+**Learning:** Always manually escape wildcard characters and construct raw SQL templates with `ESCAPE '\\'` when passing user input to `LIKE` queries.
+**Prevention:** Use .replace(/[\\%_]/g, '\\$&') and sql\`... LIKE \${pattern} ESCAPE '\\'" instead of like().
