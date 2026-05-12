@@ -82,3 +82,8 @@
 **Vulnerability:** When a list or label was deleted, the application failed to remove or update related records (e.g., `tasks.listId` or `taskLabels`). Because SQLite does not enable `PRAGMA foreign_keys` by default, this leads to orphaned many-to-many relationship records or foreign key constraint violations, risking Database Storage DoS.
 **Learning:** Database-level cascading deletes (`ON DELETE CASCADE`) are often ignored in SQLite unless explicitly enabled on every connection. You cannot rely on them implicitly.
 **Prevention:** Always implement explicit cleanup logic using `db.transaction()` blocks to manually delete dependent records or nullify foreign keys prior to deleting the parent record.
+
+## 2026-05-12 - Prevent DoS via SQL LIKE wildcard exhaustion
+**Vulnerability:** Drizzle ORM's `like()` helper does not escape wildcards (`%`, `_`) in user input, allowing attackers to cause database exhaustion via massive wildcard expansion.
+**Learning:** Always manually escape wildcard characters and construct raw SQL templates with `ESCAPE '\\'` when passing user input to `LIKE` queries.
+**Prevention:** Use `.replace(/[\\%_]/g, '\\$&')` and `sql\`... LIKE \${pattern} ESCAPE '\\\\'` instead of `like()`.

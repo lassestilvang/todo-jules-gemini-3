@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db';
 import { tasks } from '@/lib/schema';
-import { like, or } from 'drizzle-orm';
+import { or, sql } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
 
@@ -20,11 +20,13 @@ export async function searchTasks(query: string) {
     throw new Error('Too many search requests. Please try again later.');
   }
 
-  const searchPattern = `%${query}%`;
+  // SECURE: Escape wildcard characters to prevent ReDoS/database exhaustion via massive wildcard expansion
+  const escapedQuery = query.replace(/[\\%_]/g, '\\$&');
+  const searchPattern = `%${escapedQuery}%`;
   return db.select().from(tasks).where(
     or(
-        like(tasks.name, searchPattern),
-        like(tasks.description, searchPattern)
+        sql`${tasks.name} LIKE ${searchPattern} ESCAPE '\\'`,
+        sql`${tasks.description} LIKE ${searchPattern} ESCAPE '\\'`
     )
   ).limit(10).all();
 }
