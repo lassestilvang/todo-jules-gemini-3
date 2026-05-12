@@ -86,4 +86,4 @@
 ## 2026-05-12 - Prevent DoS via SQL LIKE wildcard exhaustion
 **Vulnerability:** Drizzle ORM's `like()` helper does not escape wildcards (`%`, `_`) in user input, allowing attackers to cause database exhaustion via massive wildcard expansion.
 **Learning:** Always manually escape wildcard characters and construct raw SQL templates with `ESCAPE '\\'` when passing user input to `LIKE` queries.
-**Prevention:** Use `.replace(/[\\%_]/g, '\\$&')` and `sql\`... LIKE \${pattern} ESCAPE '\\\\'` instead of `like()`.
+**Prevention:** Use .replace(/[\\%_]/g, '\\$&') and sql\`... LIKE \${pattern} ESCAPE '\\'" instead of like().
