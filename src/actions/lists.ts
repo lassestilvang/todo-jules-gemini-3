@@ -8,12 +8,12 @@ import { cache } from 'react';
 import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
 
-export const getLists = cache(async function getLists() {
+export const getLists = cache(function getLists() {
   // Optimized: Cache the lists query to prevent redundant database calls in a single render pass
   return db.select().from(lists).all();
 });
 
-export const getListById = cache(async function getListById(id: number) {
+export const getListById = cache(function getListById(id: number) {
   return db.select().from(lists).where(eq(lists.id, id)).get();
 });
 

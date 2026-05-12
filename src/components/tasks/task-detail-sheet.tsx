@@ -49,12 +49,11 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
         setAttachments(null);
         setLogs(null);
 
-        getTaskDetailedInfo(task.id).then(data => {
-            setAssignedLabels(data.assignedLabels);
-            setSubtasks(data.subtasks);
-            setAttachments(data.attachments);
-            setLogs(data.logs);
-        });
+        const data = getTaskDetailedInfo(task.id);
+        setAssignedLabels(data.assignedLabels);
+        setSubtasks(data.subtasks);
+        setAttachments(data.attachments);
+        setLogs(data.logs);
     }
   }, [task]);
 
