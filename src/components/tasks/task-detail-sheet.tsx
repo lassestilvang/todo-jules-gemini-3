@@ -332,7 +332,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
-            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting}>
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} autoFocus>
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
