@@ -20,7 +20,7 @@ export async function searchTasks(query: string) {
     throw new Error('Too many search requests. Please try again later.');
   }
 
-  // SECURE: Escape wildcard characters to prevent ReDoS/database exhaustion via massive wildcard expansion
+  // SECURE: Escape SQL wildcards to prevent malicious search patterns from causing DB exhaustion DoS
   const escapedQuery = query.replace(/[\\%_]/g, '\\$&');
   const searchPattern = `%${escapedQuery}%`;
   return db.select().from(tasks).where(
