@@ -30,7 +30,7 @@ export async function createSubtask(parentId: number, name: string) {
 }
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
-export const getSubtasks = cache(async function getSubtasks(parentId: number) {
+export const getSubtasks = cache(function getSubtasks(parentId: number) {
     return db.select().from(tasks).where(eq(tasks.parentId, parentId)).all();
 });
 
