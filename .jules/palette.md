@@ -11,6 +11,9 @@
 ## 2024-05-24 - Add missing SheetDescription to TaskDetailSheet
 **Learning:** Radix UI Dialog and Sheet components require a visually hidden or visible Description element when a Title is present to satisfy screen reader accessibility requirements and prevent console warnings. Adding `<SheetDescription className="sr-only">...</SheetDescription>` effectively resolves this without altering the visual design.
 **Action:** Always ensure that any `<Sheet>` or `<Dialog>` component includes both a Title and a Description.
+## 2026-05-12 - Replacing window.confirm with accessible custom Dialogs
+**Learning:** Destructive actions using native window.confirm block the UI thread and lack accessible focus management, causing jarring UX. Radix UI Dialogs provide a polished, keyboard-accessible alternative but require correctly configured open/onOpenChange state lifting.
+**Action:** Always replace window.confirm dialogs with custom accessible <Dialog> components and pass autoFocus to the primary destructive action (e.g. Delete) to optimize keyboard usability.
 
 ## 2026-05-10 - Avoid window.confirm for Destructive Actions
 **Learning:** Native `window.confirm()` dialogs pause script execution, look jarring, and lack accessible focus management compared to native React components. They are also difficult to style consistently with the rest of the application.
