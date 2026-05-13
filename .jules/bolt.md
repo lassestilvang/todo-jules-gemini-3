@@ -69,3 +69,7 @@
 ## 2024-12-05 - Avoid Component Unmounting for Data Fetching
 **Learning:** Implementing `isLoading` checks to hide and entirely unmount child components during data fetching is an anti-pattern. It causes severe DOM thrashing by forcing components to unmount and remount, which hurts performance and creates jarring visual flickering. Better to pass null/undefined data and let the child components render loading skeletons or empty states.
 **Action:** Never use `!isLoading && <Component/>` to hide child components purely to avoid them making redundant API calls if they already handle null initial data. Optimize the data loading strategy (e.g., fetch in parent and pass down) instead of thrashing the DOM.
+
+## 2024-05-24 - Removing Promise Overhead from better-sqlite3 Transactions
+**Learning:** The better-sqlite3 driver relies on synchronous C++ bindings. Wrapping Drizzle ORM transactions in `await` introduces unnecessary Promise resolution (microtask) overhead without achieving true parallelization.
+**Action:** For optimal performance with better-sqlite3, remove `await` entirely from Drizzle transactions and execute them synchronously.
