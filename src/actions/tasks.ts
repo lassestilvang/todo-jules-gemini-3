@@ -10,23 +10,23 @@ import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
 import { ALLOWED_TASK_KEYS } from '@/lib/types';
 
-export const getTasks = cache(async function getTasks() {
+export const getTasks = cache(function getTasks() {
   return db.select().from(tasks).all();
 });
 
-export const getIncompleteTasks = cache(async function getIncompleteTasks() {
+export const getIncompleteTasks = cache(function getIncompleteTasks() {
   return db.select().from(tasks).where(eq(tasks.isCompleted, false)).all();
 });
-export const getUpcomingTasks = cache(async function getUpcomingTasks() {
+export const getUpcomingTasks = cache(function getUpcomingTasks() {
   const today = format(new Date(), "yyyy-MM-dd");
   return db.select().from(tasks)
     .where(sql`${tasks.date} > ${today}`).all();
 });
-export const getTasksByListId = cache(async function getTasksByListId(listId: number) {
+export const getTasksByListId = cache(function getTasksByListId(listId: number) {
   return db.select().from(tasks).where(eq(tasks.listId, listId)).all();
 });
 
-export const getTasksByDateRange = cache(async function getTasksByDateRange(startDate: string, endDate: string) {
+export const getTasksByDateRange = cache(function getTasksByDateRange(startDate: string, endDate: string) {
   return db.select().from(tasks)
     .where(
       and(
@@ -38,7 +38,7 @@ export const getTasksByDateRange = cache(async function getTasksByDateRange(star
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
 export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(taskId: number) {
-  const assignedLabels = await getTaskLabels(taskId);
+  const assignedLabels = getTaskLabels(taskId);
   const subtasks = db.select().from(tasks).where(eq(tasks.parentId, taskId)).all();
   const attachmentsList = db.select().from(attachments).where(eq(attachments.taskId, taskId)).all();
   const logs = db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).orderBy(desc(activityLogs.timestamp)).all();
@@ -51,7 +51,7 @@ export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(task
   };
 });
 
-export const getTasksForDate = cache(async function getTasksForDate(date: string) {
+export const getTasksForDate = cache(function getTasksForDate(date: string) {
   return db.select().from(tasks).where(eq(tasks.date, date)).all();
 });
 
@@ -198,12 +198,12 @@ export async function deleteTask(id: number) {
 }
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
-export const getActivityLogs = cache(async function getActivityLogs(taskId: number) {
+export const getActivityLogs = cache(function getActivityLogs(taskId: number) {
     return db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).all();
 });
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
-export const getTaskLabels = cache(async function getTaskLabels(taskId: number) {
+export const getTaskLabels = cache(function getTaskLabels(taskId: number) {
     return db.select({
         id: labels.id,
         name: labels.name, createdAt: labels.createdAt,
@@ -233,7 +233,7 @@ export async function toggleTaskLabel(taskId: number, labelId: number, selected:
     try { revalidatePath('/'); } catch { /* empty */ }
 }
 
-export const getTasksAfterDate = cache(async function getTasksAfterDate(startDate: string) {
+export const getTasksAfterDate = cache(function getTasksAfterDate(startDate: string) {
   return db.select().from(tasks)
     .where(
         sql`${tasks.date} > ${startDate}`
