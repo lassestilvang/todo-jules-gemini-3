@@ -184,12 +184,15 @@ export async function deleteTask(id: number) {
 
   const { unlink } = await import('fs/promises');
   const { join } = await import('path');
-  for (const att of taskAttachments) {
+
+  // ⚡ Bolt: Parallelize independent IO-bound file system operations to prevent O(N) latency,
+  // contrasting with synchronous better-sqlite3 queries which do not benefit from Promise.all
+  await Promise.all(taskAttachments.map(async (att) => {
     try {
         const fileName = att.filePath.split('/').pop() || '';
         if (fileName) await unlink(join(process.cwd(), 'public', 'uploads', fileName));
     } catch { /* ignore missing file errors */ }
-  }
+  }));
 
   try { revalidatePath('/'); } catch { /* empty */ }
 }
