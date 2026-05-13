@@ -37,7 +37,7 @@ export const getTasksByDateRange = cache(function getTasksByDateRange(startDate:
 });
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
-export const getTaskDetailedInfo = cache(function getTaskDetailedInfo(taskId: number) {
+export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(taskId: number) {
   const assignedLabels = getTaskLabels(taskId);
   const subtasks = db.select().from(tasks).where(eq(tasks.parentId, taskId)).all();
   const attachmentsList = db.select().from(attachments).where(eq(attachments.taskId, taskId)).all();
