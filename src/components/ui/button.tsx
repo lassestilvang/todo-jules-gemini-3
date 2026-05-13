@@ -46,10 +46,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ref={ref as any}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        {...(props as any)}
+        // @ts-expect-error - Radix UI Slot compatibility with React 19
+        ref={ref}
+        // @ts-expect-error - Radix UI Slot compatibility with React 19
+        {...props}
       />
     )
   }
