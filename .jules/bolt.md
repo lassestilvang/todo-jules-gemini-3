@@ -72,3 +72,7 @@
 ## 2026-05-12 - Removing async/await from Server Action internal functions
 **Learning:** While I initially thought removing `async/await` entirely from synchronous server actions that only read from `better-sqlite3` would be a pure performance win, I learned that Next.js Server Actions *must* remain `async` when they are exported and imported into Client Components. The network RPC boundary inherently requires promises. However, for *internal* helper functions (like `getTaskDetailedInfo`) that are NOT directly called from Client Components, or for Server Component data fetching, removing the `async/await` from `better-sqlite3` queries does remove microtask overhead safely.
 **Action:** Remove `async/await` from pure server-side helper functions and database queries in Next.js Server Components when using `better-sqlite3` to avoid microtask scheduling overhead. Ensure exported Server Actions (those containing "use server" mutations called from the client) remain `async` to satisfy Next.js RPC constraints.
+
+## 2024-05-24 - Removing Promise Overhead from better-sqlite3 Transactions
+**Learning:** The better-sqlite3 driver relies on synchronous C++ bindings. Wrapping Drizzle ORM transactions in `await` introduces unnecessary Promise resolution (microtask) overhead without achieving true parallelization.
+**Action:** For optimal performance with better-sqlite3, remove `await` entirely from Drizzle transactions and execute them synchronously.
