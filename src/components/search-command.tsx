@@ -103,7 +103,7 @@ export function SearchCommand() {
             <div className="flex flex-col items-center space-y-3">
               <Search className="w-8 h-8 text-muted-foreground/50" aria-hidden="true" />
               <p className="text-sm text-muted-foreground">
-                {query.length === 0 ? "Start typing to search tasks..." : "No tasks found matching your search."}
+                {debouncedQuery.trim().length === 0 ? "Start typing to search tasks..." : "No tasks found matching your search."}
               </p>
             </div>
           </CommandEmpty>
