@@ -21,3 +21,6 @@
 ## 2026-05-10 - Avoid window.confirm for Destructive Actions
 **Learning:** Native `window.confirm()` dialogs pause script execution, look jarring, and lack accessible focus management compared to native React components. They are also difficult to style consistently with the rest of the application.
 **Action:** For destructive actions like deletions, always use the project's existing design system (e.g. `@/components/ui/dialog`) to create custom confirmation modals. This ensures visual consistency, better accessibility via native Radix focus management, and a smoother user experience without blocking the thread.
+## 2026-05-14 - Improve empty states inside Command components
+**Learning:** Command components nested inside Popovers/Selects (like the labels dropdown) need a consistent empty state. Plain text empty states in a search context look unfinished compared to the rest of the application.
+**Action:** When adding empty states to `<CommandEmpty>` components, replace the default plain text with a styled container (e.g., flex-col, centered) containing a relevant icon with `aria-hidden='true'` and descriptive sub-text to ensure a polished visual experience.
