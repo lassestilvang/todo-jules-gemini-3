@@ -91,3 +91,8 @@
 **Vulnerability:** Drizzle ORM's `like()` helper does not escape wildcards (`%`, `_`) in user input, allowing attackers to cause database exhaustion via massive wildcard expansion.
 **Learning:** Always manually escape wildcard characters and construct raw SQL templates with `ESCAPE '\\'` when passing user input to `LIKE` queries.
 **Prevention:** Use .replace(/[\\%_]/g, '\\$&') and sql\`... LIKE \${pattern} ESCAPE '\\'" instead of like().
+
+## 2024-06-05 - [Path Traversal Bypass via Backslash in File Uploads]
+**Vulnerability:** The application used `path.basename(file.name)` to sanitize uploaded filenames. However, on Linux systems (where Node.js often runs), `path.basename` treats backslashes `\` as regular characters, not path separators. An attacker could upload a file with a name like `..\..\malicious.pdf`, which would bypass the `basename` check and allow them to upload files outside the intended directory (Path Traversal), potentially overwriting critical system files or planting executable scripts.
+**Learning:** You cannot trust `path.basename()` alone when dealing with user-provided filenames across different operating systems, because client OS (Windows) path separators might be treated differently by the server OS (Linux).
+**Prevention:** Always explicitly normalize path separators (e.g., replacing backslashes with forward slashes) before relying on `path.basename()` to ensure consistent sanitation behavior regardless of the host operating system.
