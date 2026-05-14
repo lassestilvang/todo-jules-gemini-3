@@ -79,3 +79,6 @@
 ## 2024-05-24 - Removing Promise Overhead from better-sqlite3 Transactions
 **Learning:** The better-sqlite3 driver relies on synchronous C++ bindings. Wrapping Drizzle ORM transactions in `await` introduces unnecessary Promise resolution (microtask) overhead without achieving true parallelization.
 **Action:** For optimal performance with better-sqlite3, remove `await` entirely from Drizzle transactions and execute them synchronously.
+## 2024-12-06 - Awaiting Exported Server Actions in Client Components
+**Learning:** While removing `async/await` from `better-sqlite3` read queries eliminates microtask overhead on the server, exported Next.js Server Actions inherently return a Promise across the RPC boundary when invoked from Client Components. If a Client Component (like `TaskDetailSheet`) incorrectly assumes an imported Server Action is synchronous, it will set state to a pending Promise or undefined. This can cause severe performance issues, such as child components interpreting the undefined state as an initial mount and triggering their own redundant fallback network requests.
+**Action:** Always correctly `await` or chain `.then()` on Next.js Server Actions when invoking them from Client Components, even if the underlying server-side code was optimized to run synchronously.
