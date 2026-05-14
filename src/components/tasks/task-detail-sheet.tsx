@@ -58,7 +58,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
           setLogs(data.logs);
         });
     }
-  }, [task]);
+  }, [task?.id]);
 
   if (!task) return null;
 
