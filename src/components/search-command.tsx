@@ -100,11 +100,9 @@ export function SearchCommand() {
         />
         <CommandList>
           <CommandEmpty>
-            <div className="flex flex-col items-center space-y-3">
-              <Search className="w-8 h-8 text-muted-foreground/50" aria-hidden="true" />
-              <p className="text-sm text-muted-foreground">
-                {debouncedQuery.trim().length === 0 ? "Start typing to search tasks..." : "No tasks found matching your search."}
-              </p>
+            <div className="flex flex-col items-center justify-center space-y-2 p-4">
+              <Search className="h-6 w-6 text-muted-foreground opacity-50" aria-hidden="true" />
+              <p className="text-sm text-muted-foreground">No tasks found.<br/><span className="text-xs">Try searching for a different keyword.</span></p>
             </div>
           </CommandEmpty>
           {results.length > 0 && (
