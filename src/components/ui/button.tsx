@@ -46,7 +46,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
+        // @ts-expect-error - Radix UI Slot compatibility with React 19
         ref={ref}
+        // @ts-expect-error - Radix UI Slot compatibility with React 19
         {...props}
       />
     )

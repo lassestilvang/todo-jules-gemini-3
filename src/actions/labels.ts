@@ -8,7 +8,7 @@ import { cache } from 'react';
 import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
 
-export const getLabels = cache(async function getLabels() {
+export const getLabels = cache(function getLabels() {
   return db.select().from(labels).all();
 });
 
@@ -41,7 +41,7 @@ export async function deleteLabel(id: number) {
     throw new Error('Too many requests. Please try again later.');
   }
 
-  await db.transaction((tx: typeof db) => {
+  db.transaction((tx: typeof db) => {
     tx.delete(taskLabels).where(eq(taskLabels.labelId, id)).run();
     tx.delete(labels).where(eq(labels.id, id)).run();
   });
