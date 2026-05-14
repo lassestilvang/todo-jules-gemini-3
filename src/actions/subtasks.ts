@@ -57,7 +57,7 @@ export async function deleteSubtask(id: number) {
 
     // ⚡ Bolt: Parallelize independent IO-bound file system operations to prevent O(N) latency,
     // contrasting with synchronous better-sqlite3 queries which do not benefit from Promise.all
-    await Promise.all(taskAttachments.map(async (att) => {
+    await Promise.all(taskAttachments.map(async (att: { filePath: string }) => {
         try {
             const fileName = att.filePath.split('/').pop() || '';
             if (fileName) await unlink(join(process.cwd(), 'public', 'uploads', fileName));
