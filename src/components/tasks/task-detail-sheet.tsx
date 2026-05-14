@@ -11,7 +11,7 @@ import { updateTask, toggleTaskLabel, getTaskDetailedInfo, deleteTask } from '@/
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, Repeat, Plus, Check, Trash2, Loader2 } from 'lucide-react';
+import { CalendarIcon, Repeat, Plus, Check, Trash2, Loader2, Tag } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { SubtasksList } from './subtasks-list';
@@ -165,7 +165,12 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                 <Command>
                                     <CommandInput placeholder="Search label..." />
                                     <CommandList>
-                                        <CommandEmpty>No label found.</CommandEmpty>
+                                        <CommandEmpty>
+                                            <div className="flex flex-col items-center justify-center space-y-2 p-4">
+                                                <Tag className="h-6 w-6 text-muted-foreground opacity-50" aria-hidden="true" />
+                                                <p className="text-sm text-muted-foreground">No labels found.<br/><span className="text-xs">Try searching for a different name.</span></p>
+                                            </div>
+                                        </CommandEmpty>
                                         <CommandGroup>
                                             {labels.map(label => {
                                                 const isAssigned = assignedLabelIds.has(label.id);

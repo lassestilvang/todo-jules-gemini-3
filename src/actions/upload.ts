@@ -45,7 +45,8 @@ export async function uploadFile(taskId: number, formData: FormData) {
   if (!(file instanceof File)) {
     throw new Error('Invalid file upload');
   }
-  const safeName = basename(file.name);
+  // SECURE: Normalize backslashes to forward slashes before calling basename to prevent traversal bypass on Linux runtimes
+  const safeName = basename(file.name.replace(/\\/g, '/'));
 
   // SECURE: Enforce length limit to prevent database/filesystem errors
   if (safeName.length > 255) {
