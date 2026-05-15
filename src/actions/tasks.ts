@@ -81,6 +81,21 @@ export async function createTask(data: {
     throw new Error('Task description is too long.');
   }
 
+  // SECURE: Validate priority enum to prevent unexpected behavior
+  if (priority && !['high', 'medium', 'low', 'none'].includes(priority)) {
+    throw new Error('Invalid priority value.');
+  }
+
+  // SECURE: Validate date format to prevent Stored DoS via invalid date parsing in UI
+  if (date !== undefined && date !== null) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      throw new Error('Invalid date format. Expected YYYY-MM-DD.');
+    }
+    if (isNaN(Date.parse(date))) {
+      throw new Error('Invalid date value.');
+    }
+  }
+
   const result = db.insert(tasks).values({
     name, description, listId, date, recurrenceInterval,
     priority: priority || 'none',
@@ -116,6 +131,23 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
   }
   if (data.recurrenceConfig && data.recurrenceConfig.length > 10000) {
     throw new Error('Recurrence config is too long.');
+  }
+
+  // SECURE: Validate priority enum to prevent unexpected behavior
+  if (data.priority !== undefined && data.priority !== null) {
+    if (!['high', 'medium', 'low', 'none'].includes(data.priority)) {
+      throw new Error('Invalid priority value.');
+    }
+  }
+
+  // SECURE: Validate date format to prevent Stored DoS via invalid date parsing in UI
+  if (data.date !== undefined && data.date !== null) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(data.date)) {
+      throw new Error('Invalid date format. Expected YYYY-MM-DD.');
+    }
+    if (isNaN(Date.parse(data.date))) {
+      throw new Error('Invalid date value.');
+    }
   }
 
   for (const key of ALLOWED_TASK_KEYS) {
