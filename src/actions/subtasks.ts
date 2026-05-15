@@ -30,7 +30,7 @@ export async function createSubtask(parentId: number, name: string) {
 }
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
-export const getSubtasks = cache(async function getSubtasks(parentId: number) {
+export const getSubtasks = cache(function getSubtasks(parentId: number) {
     return db.select().from(tasks).where(eq(tasks.parentId, parentId)).all();
 });
 
@@ -54,12 +54,15 @@ export async function deleteSubtask(id: number) {
 
     const { unlink } = await import('fs/promises');
     const { join } = await import('path');
-    for (const att of taskAttachments) {
+
+    // ⚡ Bolt: Parallelize independent IO-bound file system operations to prevent O(N) latency,
+    // contrasting with synchronous better-sqlite3 queries which do not benefit from Promise.all
+    await Promise.all(taskAttachments.map(async (att: { filePath: string }) => {
         try {
             const fileName = att.filePath.split('/').pop() || '';
             if (fileName) await unlink(join(process.cwd(), 'public', 'uploads', fileName));
         } catch { /* ignore missing file errors */ }
-    }
+    }));
 
     try { revalidatePath('/'); } catch { /* empty */ }
 }

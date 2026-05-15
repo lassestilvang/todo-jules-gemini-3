@@ -100,9 +100,9 @@ export function SearchCommand() {
         />
         <CommandList>
           <CommandEmpty>
-            <div className="flex flex-col items-center justify-center space-y-2">
+            <div className="flex flex-col items-center justify-center space-y-2 p-4">
               <Search className="h-6 w-6 text-muted-foreground opacity-50" aria-hidden="true" />
-              <p className="text-muted-foreground">No tasks found.</p>
+              <p className="text-sm text-muted-foreground">No tasks found.<br/><span className="text-xs">Try searching for a different keyword.</span></p>
             </div>
           </CommandEmpty>
           {results.length > 0 && (

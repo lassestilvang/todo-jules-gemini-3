@@ -20,6 +20,7 @@ import { ActivityLog } from './activity-log';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useState, useEffect, useMemo } from 'react';
 import { Task, Label as LabelType, Attachment, ActivityLogEntry } from '@/lib/types';
 import { toast } from 'sonner';
@@ -37,6 +38,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   const [attachments, setAttachments] = useState<Attachment[] | null>(null);
   const [logs, setLogs] = useState<ActivityLogEntry[] | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const labelsMap = useMemo(() => new Map(labels.map(l => [l.id, l])), [labels]);
   const assignedLabelIds = useMemo(() => new Set(assignedLabels.map(l => l.id)), [assignedLabels]);
@@ -49,14 +51,14 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
         setAttachments(null);
         setLogs(null);
 
-        getTaskDetailedInfo(task.id).then(data => {
-            setAssignedLabels(data.assignedLabels);
-            setSubtasks(data.subtasks);
-            setAttachments(data.attachments);
-            setLogs(data.logs);
+        getTaskDetailedInfo(task.id).then((data) => {
+          setAssignedLabels(data.assignedLabels);
+          setSubtasks(data.subtasks);
+          setAttachments(data.attachments);
+          setLogs(data.logs);
         });
     }
-  }, [task]);
+  }, [task?.id]);
 
   if (!task) return null;
 
@@ -95,17 +97,16 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-        setIsDeleting(true);
-        try {
-            await deleteTask(task.id);
-            onOpenChange(false);
-            toast.success("Task deleted successfully");
-        } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Failed to delete task");
-        } finally {
-            setIsDeleting(false);
-        }
+    setIsDeleting(true);
+    try {
+        await deleteTask(task.id);
+        setShowDeleteConfirm(false);
+        onOpenChange(false);
+        toast.success("Task deleted successfully");
+    } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Failed to delete task");
+    } finally {
+        setIsDeleting(false);
     }
   };
 
@@ -165,8 +166,8 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                     <CommandInput placeholder="Search label..." />
                                     <CommandList>
                                         <CommandEmpty>
-                                            <div className="flex flex-col items-center justify-center space-y-2">
-                                                <Tag className="h-4 w-4 text-muted-foreground opacity-50" aria-hidden="true" />
+                                            <div className="flex flex-col items-center space-y-2">
+                                                <Tag className="w-6 h-6 text-muted-foreground opacity-50" aria-hidden="true" />
                                                 <p className="text-muted-foreground">No label found.</p>
                                             </div>
                                         </CommandEmpty>
@@ -312,7 +313,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                 </div>
 
                 <div className="pt-4 mt-4 border-t">
-                    <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="w-full sm:w-auto">
+                    <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)} disabled={isDeleting} className="w-full sm:w-auto">
                         {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />}
                         Delete Task
                     </Button>
@@ -326,6 +327,26 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
             </TabsContent>
         </Tabs>
       </SheetContent>
+
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Delete Task</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this task? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0 mt-4">
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} autoFocus>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />}
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Sheet>
   );
 }
