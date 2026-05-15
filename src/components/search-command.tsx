@@ -99,7 +99,7 @@ export function SearchCommand() {
             onValueChange={setQuery}
         />
         <CommandList>
-          <CommandEmpty className="py-6 text-center text-sm">
+          <CommandEmpty>
             <div className="flex flex-col items-center justify-center space-y-2">
               <Search className="h-6 w-6 text-muted-foreground opacity-50" aria-hidden="true" />
               <p className="text-muted-foreground">No tasks found.</p>
