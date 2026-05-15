@@ -82,3 +82,11 @@
 ## 2024-12-06 - Awaiting Exported Server Actions in Client Components
 **Learning:** While removing `async/await` from `better-sqlite3` read queries eliminates microtask overhead on the server, exported Next.js Server Actions inherently return a Promise across the RPC boundary when invoked from Client Components. If a Client Component (like `TaskDetailSheet`) incorrectly assumes an imported Server Action is synchronous, it will set state to a pending Promise or undefined. This can cause severe performance issues, such as child components interpreting the undefined state as an initial mount and triggering their own redundant fallback network requests.
 **Action:** Always correctly `await` or chain `.then()` on Next.js Server Actions when invoking them from Client Components, even if the underlying server-side code was optimized to run synchronously.
+
+## 2024-05-24 - Do not remove await from Next.js Server Actions
+**Learning:** Exported Next.js Server Actions automatically return Promises across the RPC boundary when imported, even if the underlying logic (like `better-sqlite3` queries) is strictly synchronous. Attempting to optimize performance by removing `await` from these calls inside Server Components will pass unresolved Promise objects directly into React elements, resulting in catastrophic rendering failures.
+**Action:** Never remove `await` from exported Next.js Server Actions when they are imported and called within Server Components.
+
+## 2024-05-24 - Early Returns in Next.js Server Action State Updates
+**Learning:** Next.js Server Actions that toggle boolean states (like task completion) or perform partial updates often omit a strict equality check against the existing database state. If an action is triggered redundantly (e.g., rapid clicking or scripts), this omission results in unnecessary database transactions and expensive, full-route invalidations (`revalidatePath`).
+**Action:** Always implement a strict early return (e.g., `if (task.isCompleted === isCompleted) return;`) immediately after fetching the current state in Server Actions to definitively prevent redundant writes and cache purging.
