@@ -140,13 +140,13 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
     }
   }
 
-  // SECURE: Validate date format to prevent Stored DoS via invalid date parsing in UI
-  if (data.date !== undefined && data.date !== null) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(data.date)) {
-      throw new Error('Invalid date format. Expected YYYY-MM-DD.');
-    }
-    if (isNaN(Date.parse(data.date))) {
-      throw new Error('Invalid date value.');
+  // SECURE: Validate date fields to prevent Stored DoS via invalid date parsing in UI
+  for (const field of ['date', 'deadline'] as const) {
+    const val = data[field];
+    if (val !== undefined && val !== null) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(val) || isNaN(Date.parse(val))) {
+        throw new Error(`Invalid ${field} format or value. Expected YYYY-MM-DD.`);
+      }
     }
   }
 
