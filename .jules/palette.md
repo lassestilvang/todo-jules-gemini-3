@@ -11,3 +11,6 @@
 ## 2024-05-24 - Add missing SheetDescription to TaskDetailSheet
 **Learning:** Radix UI Dialog and Sheet components require a visually hidden or visible Description element when a Title is present to satisfy screen reader accessibility requirements and prevent console warnings. Adding `<SheetDescription className="sr-only">...</SheetDescription>` effectively resolves this without altering the visual design.
 **Action:** Always ensure that any `<Sheet>` or `<Dialog>` component includes both a Title and a Description.
+## 2026-05-15 - Enhance empty states with styled containers
+**Learning:** Replaced plain text empty states with visually polished styled containers containing icons and descriptive text for better UX and consistency.
+**Action:** Always avoid plain text for empty states. Use styled containers with relevant icons to guide the user.
