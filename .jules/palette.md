@@ -30,3 +30,6 @@
 ## 2026-05-14 - Improve empty states inside Command components
 **Learning:** Command components nested inside Popovers/Selects (like the labels dropdown) need a consistent empty state. Plain text empty states in a search context look unfinished compared to the rest of the application.
 **Action:** When adding empty states to `<CommandEmpty>` components, replace the default plain text with a styled container (e.g., flex-col, centered) containing a relevant icon with `aria-hidden='true'` and descriptive sub-text to ensure a polished visual experience.
+## 2026-05-15 - Accessible and Polished Value Change Logs
+**Learning:** Purely visual value change logs (e.g., `OldValue -> NewValue`) are poorly communicated by screen readers, often reading as confusing disjointed text. Additionally, when a field is empty, the lack of visual feedback (just a blank space or stray arrow) is confusing for sighted users.
+**Action:** When displaying changed values, always use a conditionally rendered `.sr-only` span to provide full sentence context (e.g., `Changed from A to B`), and wrap the visual representation in `aria-hidden="true"`. Use fallback text (like `<span className="italic opacity-50">empty</span>`) to visually indicate null or empty string states instead of rendering blank spaces.
