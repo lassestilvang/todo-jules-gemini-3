@@ -47,11 +47,12 @@ export function ActivityLog({ taskId, initialLogs }: ActivityLogProps) {
             <div className="font-medium capitalize">{log.field} changed</div>
             <div className="text-muted-foreground text-xs flex justify-between">
                 <span>
-                    <span className="sr-only">Changed from {log.oldValue || 'empty'} to {log.newValue || 'empty'}</span>
+                    <span className="sr-only">Changed from {(log.oldValue ?? '') === '' ? 'empty' : String(log.oldValue)} to {(log.newValue ?? '') === '' ? 'empty' : String(log.newValue)}</span>
                     <span aria-hidden="true">
-                        <span className="line-through">{log.oldValue || <span className="italic opacity-50">empty</span>}</span>{' '}
+                        <span className="line-through">{(log.oldValue ?? '') === '' ? <span className="italic opacity-50">empty</span> : String(log.oldValue)}</span>{' '}
                         →{' '}
-                        <span className="text-foreground">{log.newValue || <span className="italic opacity-50">empty</span>}</span>
+                        <span className="text-foreground">{(log.newValue ?? '') === '' ? <span className="italic opacity-50">empty</span> : String(log.newValue)}</span>
+                    </span>
                     </span>
                 </span>
                 <span>{log.timestamp ? format(new Date(log.timestamp), 'MMM d, HH:mm') : ''}</span>
