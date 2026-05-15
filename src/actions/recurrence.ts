@@ -19,6 +19,9 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
   const task = db.select().from(tasks).where(eq(tasks.id, taskId)).get();
   if (!task) throw new Error("Task not found");
 
+  // ⚡ Bolt: Early return to prevent unnecessary DB writes and expensive router cache invalidations
+  if (task.isCompleted === isCompleted) return;
+
   db.transaction((tx: typeof db) => {
     // Update original task
     tx.update(tasks).set({
