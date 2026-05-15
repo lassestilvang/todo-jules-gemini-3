@@ -11,6 +11,9 @@
 ## 2024-05-24 - Add missing SheetDescription to TaskDetailSheet
 **Learning:** Radix UI Dialog and Sheet components require a visually hidden or visible Description element when a Title is present to satisfy screen reader accessibility requirements and prevent console warnings. Adding `<SheetDescription className="sr-only">...</SheetDescription>` effectively resolves this without altering the visual design.
 **Action:** Always ensure that any `<Sheet>` or `<Dialog>` component includes both a Title and a Description.
+## 2024-05-24 - Empty States Should Provide Visual Polish and Guidance
+**Learning:** Discovered that inline command menus (like search tasks or label search) lack styled empty states. Plain text is used instead of styled containers with informative sub-text and context-relevant icons.
+**Action:** When updating or creating command lists with empty states, use styled containers (`flex flex-col items-center justify-center`), a relevant Lucide icon (e.g., `Search`, `Tag`), and descriptive sub-text to guide users.
 ## 2026-05-07 - Improved Empty State for Search Command
 **Learning:** Found that the default `shadcn/ui` Command component defaults to simple text for its empty state ("No results found."). In a global search bar, the UI is empty as soon as it's opened (before any query is entered), making "No results found" inaccurate and jarring.
 **Action:** When working with search command dialogs, always create a styled `<CommandEmpty>` layout that uses a descriptive icon with `aria-hidden="true"` and conditionally renders its text to differentiate between "no query entered" and "no matching results".
