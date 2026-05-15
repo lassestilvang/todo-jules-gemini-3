@@ -165,9 +165,9 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                     <CommandInput placeholder="Search label..." />
                                     <CommandList>
                                         <CommandEmpty>
-                                            <div className="flex flex-col items-center justify-center py-4 text-center space-y-2">
+                                            <div className="flex flex-col items-center space-y-2">
                                                 <Tag className="w-6 h-6 text-muted-foreground opacity-50" aria-hidden="true" />
-                                                <p className="text-sm text-muted-foreground">No label found.</p>
+                                                <p className="text-muted-foreground">No label found.</p>
                                             </div>
                                         </CommandEmpty>
                                         <CommandGroup>
