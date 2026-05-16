@@ -254,15 +254,23 @@ export async function toggleTaskLabel(taskId: number, labelId: number, selected:
       throw new Error('Too many requests. Please try again later.');
     }
 
+    let hasChanges = false;
+
     if (selected) {
         const exists = db.select().from(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).get();
         if (!exists) {
             db.insert(taskLabels).values({ taskId, labelId }).run();
+            hasChanges = true;
         }
     } else {
-        db.delete(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).run();
+        const result = db.delete(taskLabels).where(and(eq(taskLabels.taskId, taskId), eq(taskLabels.labelId, labelId))).run();
+        if (result.changes > 0) hasChanges = true;
     }
-    try { revalidatePath('/'); } catch { /* empty */ }
+
+    // ⚡ Bolt: Early return to prevent unnecessary cache invalidations
+    if (hasChanges) {
+        try { revalidatePath('/'); } catch { /* empty */ }
+    }
 }
 
 export const getTasksAfterDate = cache(function getTasksAfterDate(startDate: string) {
