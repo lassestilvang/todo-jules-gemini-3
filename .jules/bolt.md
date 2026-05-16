@@ -90,3 +90,6 @@
 ## 2024-05-24 - Early Returns in Next.js Server Action State Updates
 **Learning:** Next.js Server Actions that toggle boolean states (like task completion) or perform partial updates often omit a strict equality check against the existing database state. If an action is triggered redundantly (e.g., rapid clicking or scripts), this omission results in unnecessary database transactions and expensive, full-route invalidations (`revalidatePath`).
 **Action:** Always implement a strict early return (e.g., `if (task.isCompleted === isCompleted) return;`) immediately after fetching the current state in Server Actions to definitively prevent redundant writes and cache purging.
+## 2026-05-16 - Inspecting better-sqlite3 Write Results
+**Learning:** When deleting or updating rows with Drizzle ORM and `better-sqlite3`, it is unnecessary to perform a separate SELECT query to verify if the row existed prior. The native `.run()` method directly returns an object containing a `.changes` property (indicating the number of rows affected).
+**Action:** Use `const result = db.delete(...).run(); if (result.changes > 0) { ... }` to accurately detect if an operation modified data, which allows for safe early returns and skips expensive framework operations like `revalidatePath`.
