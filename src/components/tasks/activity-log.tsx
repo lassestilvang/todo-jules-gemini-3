@@ -53,7 +53,6 @@ export function ActivityLog({ taskId, initialLogs }: ActivityLogProps) {
                         →{' '}
                         <span className="text-foreground">{(log.newValue ?? '') === '' ? <span className="italic opacity-50">empty</span> : String(log.newValue)}</span>
                     </span>
-                    </span>
                 </span>
                 <span>{log.timestamp ? format(new Date(log.timestamp), 'MMM d, HH:mm') : ''}</span>
             </div>
