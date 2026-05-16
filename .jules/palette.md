@@ -33,3 +33,6 @@
 ## 2026-05-15 - Accessible and Polished Value Change Logs
 **Learning:** Purely visual value change logs (e.g., `OldValue -> NewValue`) are poorly communicated by screen readers, often reading as confusing disjointed text. Additionally, when a field is empty, the lack of visual feedback (just a blank space or stray arrow) is confusing for sighted users.
 **Action:** When displaying changed values, always use a conditionally rendered `.sr-only` span to provide full sentence context (e.g., `Changed from A to B`), and wrap the visual representation in `aria-hidden="true"`. Use fallback text (like `<span className="italic opacity-50">empty</span>`) to visually indicate null or empty string states instead of rendering blank spaces.
+## 2024-05-24 - Improve Search Command Empty State
+**Learning:** Found that the global search command had a static "No tasks found" message when opened, which is confusing before any query is typed. Command palettes should differentiate between "waiting for input" and "no results found".
+**Action:** When implementing search dialogs (like `<CommandEmpty>`), conditionally render the content based on whether the query is empty. Display a helpful prompt like "Search tasks..." when empty, and "No tasks found" only when a query yields no results.
