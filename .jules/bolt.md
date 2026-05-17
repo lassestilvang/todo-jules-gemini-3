@@ -93,3 +93,11 @@
 ## 2026-05-16 - Inspecting better-sqlite3 Write Results
 **Learning:** When deleting or updating rows with Drizzle ORM and `better-sqlite3`, it is unnecessary to perform a separate SELECT query to verify if the row existed prior. The native `.run()` method directly returns an object containing a `.changes` property (indicating the number of rows affected).
 **Action:** Use `const result = db.delete(...).run(); if (result.changes > 0) { ... }` to accurately detect if an operation modified data, which allows for safe early returns and skips expensive framework operations like `revalidatePath`.
+
+## 2024-06-25 - SQLite WAL Mode & .gitignore
+**Learning:** Enabling SQLite Write-Ahead Logging (WAL) mode via `sqlite.pragma('journal_mode = WAL');` significantly improves database concurrency by allowing simultaneous readers and a writer. However, it generates local binary files `sqlite.db-shm` and `sqlite.db-wal` alongside the main database file.
+**Action:** When enabling WAL mode, always immediately add `sqlite.db-shm` and `sqlite.db-wal` to `.gitignore` to prevent these temporary binary files from being committed and causing merge conflicts.
+
+## 2024-06-25 - Date Manipulation Micro-Optimizations
+**Learning:** Attempting to replace standard date libraries (like `date-fns`) with manual string manipulation or lexicographical string comparisons (e.g., `task.date < todayStr`) for micro-optimizations easily introduces severe functional regressions and timezone bugs. For example, comparing ISO strings can fail for tasks that become overdue on the same day if time components vary, and manual substring slicing ignores local timezone offsets.
+**Action:** Never replace robust date parsing and formatting logic with naive string manipulation just to save a few milliseconds. Speed without correctness is useless.

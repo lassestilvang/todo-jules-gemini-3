@@ -19,6 +19,9 @@ if (isBunTest) {
     const Database = require('better-sqlite3');
     const dbPath = process.env.DB_FILE || 'sqlite.db';
     const sqlite = new Database(dbPath);
+    // ⚡ Bolt: Enable WAL mode and optimize synchronization for better concurrency and performance
+    sqlite.pragma('journal_mode = WAL');
+    sqlite.pragma('synchronous = NORMAL');
     sqlite.pragma('foreign_keys = ON');
     dbInstance = drizzle(sqlite);
 }
