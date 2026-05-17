@@ -21,6 +21,7 @@ if (isBunTest) {
     const sqlite = new Database(dbPath);
     // ⚡ Bolt: Enable WAL mode to dramatically improve concurrency and read/write performance
     sqlite.pragma('journal_mode = WAL');
+    sqlite.pragma('foreign_keys = ON');
     dbInstance = drizzle(sqlite);
 }
 

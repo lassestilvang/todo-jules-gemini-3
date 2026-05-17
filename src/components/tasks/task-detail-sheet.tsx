@@ -166,9 +166,9 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                     <CommandInput placeholder="Search label..." />
                                     <CommandList>
                                         <CommandEmpty>
-                                            <div className="flex flex-col items-center space-y-2">
+                                            <div className="flex flex-col items-center justify-center space-y-2 bg-muted/30 border border-dashed rounded-md p-4 m-2">
                                                 <Tag className="w-6 h-6 text-muted-foreground opacity-50" aria-hidden="true" />
-                                                <p className="text-muted-foreground">No label found.</p>
+                                                <p className="text-sm text-muted-foreground">No label found.<br/><span className="text-xs">Create a new label in the sidebar.</span></p>
                                             </div>
                                         </CommandEmpty>
                                         <CommandGroup>
@@ -179,7 +179,12 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                                         <div className="flex items-center gap-2 w-full cursor-pointer">
                                                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: label.color || '#000' }} />
                                                             <span>{label.name}</span>
-                                                            {isAssigned && <Check className="ml-auto w-4 h-4" aria-hidden="true" />}
+                                                            {isAssigned && (
+                                                                <>
+                                                                    <Check className="ml-auto w-4 h-4" aria-hidden="true" />
+                                                                    <span className="sr-only">Assigned</span>
+                                                                </>
+                                                            )}
                                                         </div>
                                                     </CommandItem>
                                                 );

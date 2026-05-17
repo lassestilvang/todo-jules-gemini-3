@@ -45,3 +45,6 @@ Always use `error instanceof Error ? error.message : (typeof error === 'string' 
 ## 2025-05-24 - Plain Text Empty States
 **Learning:** Radix UI / cmdk <CommandEmpty> states and similar inline UI components often default to plain text (e.g., 'No results found.'), which provides a poor user experience and breaks visual consistency with other polished empty states in the application.
 **Action:** Always replace plain text empty states with styled containers (e.g., `bg-muted/30 border-dashed`), including a relevant, accessible icon (`aria-hidden="true"`) and helpful secondary guidance text.
+## 2025-05-25 - CommandEmpty Polish and Screen Reader Context
+**Learning:** CommandEmpty components often default to plain UI without borders/backgrounds, and dynamic command items (like labels) using purely visual icons to indicate selection state (like an Assigned checkmark) hide vital context from screen readers if a fallback isn't added.
+**Action:** Always wrap `<CommandEmpty>` inner content with a styled empty state container (e.g., `bg-muted/30 border border-dashed rounded-md p-4 m-2`) and always pair assigned/checked icons with visually hidden `<span className="sr-only">Assigned</span>` elements.
