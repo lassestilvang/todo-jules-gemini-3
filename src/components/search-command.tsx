@@ -100,7 +100,7 @@ export function SearchCommand() {
         />
         <CommandList>
           <CommandEmpty>
-            <div className="flex flex-col items-center justify-center space-y-2 p-4">
+            <div className="flex flex-col items-center justify-center space-y-2 p-4 bg-muted/30 border border-dashed rounded-md m-2">
               <Search className="h-6 w-6 text-muted-foreground opacity-50" aria-hidden="true" />
               {query.trim().length === 0 || debouncedQuery.trim().length === 0 ? (
                 <p className="text-sm text-muted-foreground">Search tasks...<br/><span className="text-xs">Type a keyword to find tasks.</span></p>
