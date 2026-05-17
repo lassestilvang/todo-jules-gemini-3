@@ -19,6 +19,7 @@ if (isBunTest) {
     const Database = require('better-sqlite3');
     const dbPath = process.env.DB_FILE || 'sqlite.db';
     const sqlite = new Database(dbPath);
+    sqlite.pragma('foreign_keys = ON');
     dbInstance = drizzle(sqlite);
 }
 

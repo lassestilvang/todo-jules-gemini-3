@@ -101,3 +101,8 @@
 **Vulnerability:** The application stored unvalidated user strings into the `date` field. When the frontend `date-fns` library attempted to format an invalid date string, it threw an unhandled exception (`RangeError: Invalid time value`), leading to a Stored Denial of Service (DoS) that crashed the entire list view for users.
 **Learning:** Even though SQL injection is prevented, unsanitized runtime state can still cause severe crashes in React if components blindly assume correct data types and formatting. Next.js server actions must strictly validate input types and formats before persisting them to the database.
 **Prevention:** Always enforce strict runtime type and format validation (e.g., regex `^\d{4}-\d{2}-\d{2}$` and `!isNaN(Date.parse(date))`) on incoming user data payload boundaries (Server Actions) to guarantee valid application state for the client layer.
+
+## 2024-10-27 - [Enable SQLite Foreign Key Constraints]
+**Vulnerability:** SQLite does not enforce foreign key constraints by default, making the application vulnerable to database integrity issues and orphaned records if application-level cascading deletes fail or miss something.
+**Learning:** Relying solely on application-level transactions for data integrity without enabling database-level foreign keys leaves a gap in the defense-in-depth strategy.
+**Prevention:** Always enable PRAGMA foreign_keys = ON; at the database connection level in SQLite to ensure the engine enforces constraints and prevents orphaned data.
