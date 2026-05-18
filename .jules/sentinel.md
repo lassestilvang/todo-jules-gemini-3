@@ -106,3 +106,8 @@
 **Vulnerability:** SQLite does not enforce foreign key constraints by default, making the application vulnerable to database integrity issues and orphaned records if application-level cascading deletes fail or miss something.
 **Learning:** Relying solely on application-level transactions for data integrity without enabling database-level foreign keys leaves a gap in the defense-in-depth strategy.
 **Prevention:** Always enable PRAGMA foreign_keys = ON; at the database connection level in SQLite to ensure the engine enforces constraints and prevents orphaned data.
+
+## 2026-05-18 - Prevent Information Leakage in File Upload Error Handling
+**Vulnerability:** Raw Node.js file system errors (e.g., `EACCES`, `ENOENT`) were being thrown from Server Actions and leaked to the frontend UI, exposing internal server file paths and stack traces to clients.
+**Learning:** Next.js Server Actions automatically serialize thrown error messages. If raw OS-level exceptions are not explicitly caught, they bubble across the RPC boundary and become visible to the end user (e.g., in UI toast notifications).
+**Prevention:** Always catch and sanitize low-level OS or database exceptions within Server Actions. Log the raw error internally using `console.error` for debugging, and throw a generic, sanitized error message (e.g., 'File upload failed due to a server error') to the client.

@@ -72,7 +72,9 @@ export async function uploadFile(taskId: number, formData: FormData) {
           await mkdir(uploadDir, { recursive: true });
           await writeFile(path, buffer);
       } else {
-          throw err;
+          // SECURE: Do not leak raw Node.js error objects (like stack traces or internal paths) to the frontend
+          console.error('File upload error:', err);
+          throw new Error('File upload failed due to a server error.');
       }
   }
 
