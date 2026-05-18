@@ -36,3 +36,7 @@
 ## 2024-05-24 - Improve Search Command Empty State
 **Learning:** Found that the global search command had a static "No tasks found" message when opened, which is confusing before any query is typed. Command palettes should differentiate between "waiting for input" and "no results found".
 **Action:** When implementing search dialogs (like `<CommandEmpty>`), conditionally render the content based on whether the query is empty. Display a helpful prompt like "Search tasks..." when empty, and "No tasks found" only when a query yields no results.
+
+## 2026-05-18 - Explicit Cancel buttons in modal forms
+**Learning:** Users need explicit, accessible exit paths in modal forms. Relying solely on the background overlay click or the 'Esc' key to cancel an action degrades keyboard usability and confidence, especially during asynchronous submissions.
+**Action:** When building forms inside modal dialogs (e.g., using Shadcn UI Dialog), always include an explicit 'Cancel' button within the DialogFooter. Use DialogClose asChild with type='button' and variant='outline' (or ghost) to provide a clear exit path. Place it before the submit button to ensure correct stacking and tab order.
