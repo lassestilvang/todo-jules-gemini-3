@@ -101,3 +101,7 @@
 ## 2024-06-25 - Date Manipulation Micro-Optimizations
 **Learning:** Attempting to replace standard date libraries (like `date-fns`) with manual string manipulation or lexicographical string comparisons (e.g., `task.date < todayStr`) for micro-optimizations easily introduces severe functional regressions and timezone bugs. For example, comparing ISO strings can fail for tasks that become overdue on the same day if time components vary, and manual substring slicing ignores local timezone offsets.
 **Action:** Never replace robust date parsing and formatting logic with naive string manipulation just to save a few milliseconds. Speed without correctness is useless.
+
+## 2026-05-18 - Prevent over-fetching subtasks in main queries
+**Learning:** Root-level list queries were fetching all tasks including subtasks, unnecessarily transferring and rendering data that is already handled within the task detail view.
+**Action:** Always filter root-level queries with `sql\`${tasks.parentId} IS NULL\`` to prevent over-fetching and render bloat.

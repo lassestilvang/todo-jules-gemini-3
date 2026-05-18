@@ -10,28 +10,36 @@ import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
 import { ALLOWED_TASK_KEYS } from '@/lib/types';
 
+// ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
 export const getTasks = cache(function getTasks() {
-  return db.select().from(tasks).all();
+  return db.select().from(tasks).where(sql`${tasks.parentId} IS NULL`).all();
 });
 
+// ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
 export const getIncompleteTasks = cache(function getIncompleteTasks() {
-  return db.select().from(tasks).where(eq(tasks.isCompleted, false)).all();
+  return db.select().from(tasks).where(and(eq(tasks.isCompleted, false), sql`${tasks.parentId} IS NULL`)).all();
 });
+
+// ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
 export const getUpcomingTasks = cache(function getUpcomingTasks() {
   const today = format(new Date(), "yyyy-MM-dd");
   return db.select().from(tasks)
-    .where(sql`${tasks.date} > ${today}`).all();
-});
-export const getTasksByListId = cache(function getTasksByListId(listId: number) {
-  return db.select().from(tasks).where(eq(tasks.listId, listId)).all();
+    .where(and(sql`${tasks.date} > ${today}`, sql`${tasks.parentId} IS NULL`)).all();
 });
 
+// ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
+export const getTasksByListId = cache(function getTasksByListId(listId: number) {
+  return db.select().from(tasks).where(and(eq(tasks.listId, listId), sql`${tasks.parentId} IS NULL`)).all();
+});
+
+// ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
 export const getTasksByDateRange = cache(function getTasksByDateRange(startDate: string, endDate: string) {
   return db.select().from(tasks)
     .where(
       and(
         sql`${tasks.date} >= ${startDate}`,
-        sql`${tasks.date} <= ${endDate}`
+        sql`${tasks.date} <= ${endDate}`,
+        sql`${tasks.parentId} IS NULL`
       )
     ).all();
 });
@@ -51,8 +59,9 @@ export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(task
   };
 });
 
+// ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
 export const getTasksForDate = cache(function getTasksForDate(date: string) {
-  return db.select().from(tasks).where(eq(tasks.date, date)).all();
+  return db.select().from(tasks).where(and(eq(tasks.date, date), sql`${tasks.parentId} IS NULL`)).all();
 });
 
 export async function createTask(data: {
@@ -273,9 +282,10 @@ export async function toggleTaskLabel(taskId: number, labelId: number, selected:
     }
 }
 
+// ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
 export const getTasksAfterDate = cache(function getTasksAfterDate(startDate: string) {
   return db.select().from(tasks)
     .where(
-        sql`${tasks.date} > ${startDate}`
+        and(sql`${tasks.date} > ${startDate}`, sql`${tasks.parentId} IS NULL`)
     ).all();
 });
