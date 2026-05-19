@@ -4,7 +4,6 @@ import { writeFile, mkdir } from 'fs/promises';
 import { join, basename } from 'path';
 import { db } from '@/lib/db';
 import { attachments, tasks } from '@/lib/schema';
-import { revalidatePath } from 'next/cache';
 import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
@@ -86,7 +85,6 @@ export async function uploadFile(taskId: number, formData: FormData) {
       filePath: webPath
   }).returning().get();
 
-  try { revalidatePath('/'); } catch { /* empty */ }
   return newAttachment;
 }
 

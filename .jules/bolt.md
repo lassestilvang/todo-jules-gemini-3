@@ -105,3 +105,6 @@
 ## 2026-05-18 - Prevent over-fetching subtasks in main queries
 **Learning:** Root-level list queries were fetching all tasks including subtasks, unnecessarily transferring and rendering data that is already handled within the task detail view.
 **Action:** Always filter root-level queries with `sql\`${tasks.parentId} IS NULL\`` to prevent over-fetching and render bloat.
+## 2024-05-24 - Unnecessary revalidatePath on deep UI actions
+**Learning:** Calling `revalidatePath('/')` unconditionally in Server Actions that only affect deeply nested, isolated UI states (such as subtasks or task attachments) causes the Next.js router cache to purge. This forces a heavy, full-page RSC re-render of all root components (tasks, lists, labels), creating unnecessary DB queries and bandwidth usage, even when the frontend component (like `SubtasksList` or `AttachmentsList`) already handles the state update optimistically.
+**Action:** When a Next.js Server Action updates data that is explicitly filtered out of root-level queries (e.g., `parentId IS NULL`) or dynamically fetched only inside modals (like attachments), rely strictly on local state optimistic updates and do NOT call `revalidatePath('/')` to preserve router cache and avoid massive redundant re-renders.
