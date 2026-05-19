@@ -40,3 +40,7 @@
 ## 2026-05-18 - Explicit Cancel buttons in modal forms
 **Learning:** Users need explicit, accessible exit paths in modal forms. Relying solely on the background overlay click or the 'Esc' key to cancel an action degrades keyboard usability and confidence, especially during asynchronous submissions.
 **Action:** When building forms inside modal dialogs (e.g., using Shadcn UI Dialog), always include an explicit 'Cancel' button within the DialogFooter. Use DialogClose asChild with type='button' and variant='outline' (or ghost) to provide a clear exit path. Place it before the submit button to ensure correct stacking and tab order.
+
+## 2026-05-19 - Explicit Dialog Cancellation
+**Learning:** Users and screen readers benefit from having explicit, visible "Cancel" buttons in dialog footers rather than relying solely on the Escape key or clicking the backdrop overlay.
+**Action:** Always include a Cancel button with `type="button"` and `variant="outline"` in Shadcn UI `<DialogFooter>` components.
