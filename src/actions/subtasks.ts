@@ -25,7 +25,6 @@ export async function createSubtask(parentId: number, name: string) {
       parentId,
       listId: undefined // Subtasks might not belong to a list directly, or inherit?
   }).returning().get();
-
   return result;
 }
 
