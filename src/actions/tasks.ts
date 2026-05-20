@@ -199,7 +199,8 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
     tx.update(tasks).set({ ...safeData, updatedAt: sql.raw('CURRENT_TIMESTAMP') }).where(eq(tasks.id, id)).run();
   });
 
-  if (hasChanges) {
+  // ⚡ Bolt: Prevent expensive full-page RSC re-renders by skipping cache invalidation for subtasks, which are filtered out of root queries
+  if (hasChanges && (current.parentId === null || safeData.parentId === null)) {
     try { revalidatePath('/'); } catch { /* empty */ }
   }
 }
@@ -263,6 +264,8 @@ export async function toggleTaskLabel(taskId: number, labelId: number, selected:
       throw new Error('Too many requests. Please try again later.');
     }
 
+    const task = db.select({ parentId: tasks.parentId }).from(tasks).where(eq(tasks.id, taskId)).get();
+
     let hasChanges = false;
 
     if (selected) {
@@ -276,8 +279,8 @@ export async function toggleTaskLabel(taskId: number, labelId: number, selected:
         if (result.changes > 0) hasChanges = true;
     }
 
-    // ⚡ Bolt: Early return to prevent unnecessary cache invalidations
-    if (hasChanges) {
+    // ⚡ Bolt: Prevent expensive full-page RSC re-renders by skipping cache invalidation for subtasks, which are filtered out of root queries
+    if (hasChanges && (!task || task.parentId === null)) {
         try { revalidatePath('/'); } catch { /* empty */ }
     }
 }
