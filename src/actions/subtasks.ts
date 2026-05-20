@@ -11,7 +11,7 @@ import { rateLimit } from '@/lib/rate-limit';
 export async function createSubtask(parentId: number, name: string) {
   // SECURE: Rate limit subtask creation to prevent DoS/spam
   const headersList = await headers();
-  const ip = headersList.get('x-forwarded-for')?.split(',').pop()?.trim() || '127.0.0.1';
+  const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
   if (!rateLimit(`createSubtask:${ip}`, 20, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
@@ -36,7 +36,7 @@ export const getSubtasks = cache(function getSubtasks(parentId: number) {
 export async function deleteSubtask(id: number) {
     // SECURE: Rate limit subtask deletion to prevent DoS
     const headersList = await headers();
-    const ip = headersList.get('x-forwarded-for')?.split(',').pop()?.trim() || '127.0.0.1';
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
     if (!rateLimit(`deleteSubtask:${ip}`, 30, 60 * 1000)) {
         throw new Error('Too many requests. Please try again later.');
     }

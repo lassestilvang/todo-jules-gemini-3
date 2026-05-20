@@ -111,3 +111,7 @@
 **Vulnerability:** Raw Node.js file system errors (e.g., `EACCES`, `ENOENT`) were being thrown from Server Actions and leaked to the frontend UI, exposing internal server file paths and stack traces to clients.
 **Learning:** Next.js Server Actions automatically serialize thrown error messages. If raw OS-level exceptions are not explicitly caught, they bubble across the RPC boundary and become visible to the end user (e.g., in UI toast notifications).
 **Prevention:** Always catch and sanitize low-level OS or database exceptions within Server Actions. Log the raw error internally using `console.error` for debugging, and throw a generic, sanitized error message (e.g., 'File upload failed due to a server error') to the client.
+## 2024-05-20 - Global DoS via Incorrect X-Forwarded-For Parsing
+**Vulnerability:** Extracting the last IP using `.pop()` from `X-Forwarded-For` groups all traffic under the reverse proxy's IP, causing a global rate limit DoS.
+**Learning:** The last IP is typically the nearest proxy. Rate limiting the proxy blocks everyone. The first IP `[0]` is the client (though spoofable without a proxy).
+**Prevention:** Use `.split(',')[0]` for the client IP, or use a dedicated header like `X-Real-IP` if behind a trusted proxy.
