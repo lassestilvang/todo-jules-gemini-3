@@ -200,7 +200,7 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
   });
 
   // ⚡ Bolt: Prevent expensive full-page RSC re-renders by skipping cache invalidation for subtasks, which are filtered out of root queries
-  if (hasChanges && current.parentId === null) {
+  if (hasChanges && (current.parentId === null || safeData.parentId === null)) {
     try { revalidatePath('/'); } catch { /* empty */ }
   }
 }
