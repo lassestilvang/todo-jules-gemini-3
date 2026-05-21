@@ -46,22 +46,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
             Planner
           </h2>
           <div className="space-y-1">
-            {staticLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Button
-                  key={link.href}
-                  variant={isActive ? 'secondary' : 'ghost'}
-                  className="w-full justify-start"
-                  asChild
-                >
-                  <Link href={link.href} aria-current={isActive ? 'page' : undefined}>
-                    <link.icon className="mr-2 h-4 w-4" aria-hidden="true" />
-                    {link.name}
-                  </Link>
-                </Button>
-              );
-            })}
+            <SidebarLinks links={staticLinks} />
           </div>
         </div>
         <div className="px-3 py-2">
