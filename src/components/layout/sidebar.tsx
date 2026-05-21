@@ -46,19 +46,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
             Planner
           </h2>
           <div className="space-y-1">
-            {staticLinks.map((link) => (
-              <Button
-                key={link.href}
-                variant={pathname === link.href ? 'secondary' : 'ghost'}
-                className="w-full justify-start"
-                asChild
-              >
-                <Link href={link.href}>
-                  <link.icon className="mr-2 h-4 w-4" aria-hidden="true" />
-                  {link.name}
-                </Link>
-              </Button>
-            ))}
+            <SidebarLinks links={staticLinks} />
           </div>
         </div>
         <div className="px-3 py-2">
@@ -66,19 +54,22 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
             Lists
           </h2>
           <div className="space-y-1">
-             {lists.map((list) => (
-               <Button
-                key={list.id}
-                variant={pathname === `/lists/${list.id}` ? 'secondary' : 'ghost'}
-                className="w-full justify-start"
-                asChild
-              >
-                <Link href={`/lists/${list.id}`}>
-                  <ListIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-                  {list.name}
-                </Link>
-              </Button>
-             ))}
+             {lists.map((list) => {
+               const isActive = pathname === `/lists/${list.id}`;
+               return (
+                 <Button
+                  key={list.id}
+                  variant={isActive ? 'secondary' : 'ghost'}
+                  className="w-full justify-start"
+                  asChild
+                >
+                  <Link href={`/lists/${list.id}`} aria-current={isActive ? 'page' : undefined}>
+                    <ListIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+                    {list.name}
+                  </Link>
+                </Button>
+               );
+             })}
              <CreateListDialog />
           </div>
         </div>
