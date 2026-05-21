@@ -18,9 +18,11 @@ export function rateLimit(ip: string, limit: number, windowMs: number): boolean 
       }
     }
 
-    // Fallback: If still too large after cleanup, clear entirely to prevent OOM crash
+    // Fallback: If still too large after cleanup, clear the oldest entry to prevent OOM crash
+    // SECURE: Do not use store.clear() to prevent attackers from clearing the rate limit state by sending thousands of requests from spoofed IPs.
     if (store.size >= MAX_STORE_SIZE) {
-        store.clear();
+        const firstKey = store.keys().next().value;
+        if (firstKey !== undefined) store.delete(firstKey);
     }
   }
 
