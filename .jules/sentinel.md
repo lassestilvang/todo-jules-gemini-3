@@ -115,3 +115,8 @@
 **Vulnerability:** Extracting the last IP using `.pop()` from `X-Forwarded-For` groups all traffic under the reverse proxy's IP, causing a global rate limit DoS.
 **Learning:** The last IP is typically the nearest proxy. Rate limiting the proxy blocks everyone. The first IP `[0]` is the client (though spoofable without a proxy).
 **Prevention:** Use `.split(',')[0]` for the client IP, or use a dedicated header like `X-Real-IP` if behind a trusted proxy.
+
+## 2024-05-22 - [Rate Limit Bypass via Store Clearing]
+**Vulnerability:** When the in-memory rate limit store reached its maximum size, it cleared the entire store `store.clear()` to prevent OOM. An attacker could exploit this by sending requests with thousands of spoofed IPs to fill the store, triggering the clear, and thereby bypassing rate limits for their actual attack traffic.
+**Learning:** Failing open (clearing all security state) under resource exhaustion allows attackers to easily bypass protections.
+**Prevention:** Implement an LRU-like eviction (deleting the oldest entry) or fail closed (rejecting new IPs) when security state storage is exhausted, instead of wiping the entire state.
