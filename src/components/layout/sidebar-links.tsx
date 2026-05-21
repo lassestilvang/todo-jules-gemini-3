@@ -19,19 +19,22 @@ export function SidebarLinks({ links }: SidebarLinksProps) {
 
     return (
         <>
-        {links.map((link) => (
-            <Button
-              key={link.href}
-              variant={pathname === link.href ? 'secondary' : 'ghost'}
-              className="w-full justify-start"
-              asChild
-            >
-              <Link href={link.href}>
-                <link.icon className="mr-2 h-4 w-4" aria-hidden="true" />
-                {link.name}
-              </Link>
-            </Button>
-          ))}
+        {links.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+                <Button
+                  key={link.href}
+                  variant={isActive ? 'secondary' : 'ghost'}
+                  className="w-full justify-start"
+                  asChild
+                >
+                  <Link href={link.href} aria-current={isActive ? 'page' : undefined}>
+                    <link.icon className="mr-2 h-4 w-4" aria-hidden="true" />
+                    {link.name}
+                  </Link>
+                </Button>
+            );
+        })}
         </>
     )
 }

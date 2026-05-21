@@ -48,3 +48,7 @@ Always use `error instanceof Error ? error.message : (typeof error === 'string' 
 ## 2025-05-25 - CommandEmpty Polish and Screen Reader Context
 **Learning:** CommandEmpty components often default to plain UI without borders/backgrounds, and dynamic command items (like labels) using purely visual icons to indicate selection state (like an Assigned checkmark) hide vital context from screen readers if a fallback isn't added.
 **Action:** Always wrap `<CommandEmpty>` inner content with a styled empty state container (e.g., `bg-muted/30 border border-dashed rounded-md p-4 m-2`) and always pair assigned/checked icons with visually hidden `<span className="sr-only">Assigned</span>` elements.
+
+## 2026-05-21 - Add `aria-current="page"` to active navigation links
+**Learning:** When navigation links use purely visual styling (like a 'secondary' button variant) to indicate the active page, screen reader users miss this crucial context.
+**Action:** Always add `aria-current="page"` to navigation elements (like `<Link>`) when they represent the current active route to ensure parity for assistive technologies.
