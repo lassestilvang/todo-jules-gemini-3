@@ -49,13 +49,13 @@ export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(task
   const assignedLabels = getTaskLabels(taskId);
   const subtasks = db.select().from(tasks).where(eq(tasks.parentId, taskId)).all();
   const attachmentsList = db.select().from(attachments).where(eq(attachments.taskId, taskId)).all();
-  const logs = db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).orderBy(desc(activityLogs.timestamp)).all();
+  // ⚡ Bolt: Removed activity logs fetch from here. The ActivityLog component will now lazily load
+  // its own data when mounted to prevent over-fetching large historical data on task open.
 
   return {
     assignedLabels,
     subtasks,
-    attachments: attachmentsList,
-    logs
+    attachments: attachmentsList
   };
 });
 

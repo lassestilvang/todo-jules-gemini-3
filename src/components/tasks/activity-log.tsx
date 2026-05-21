@@ -15,6 +15,8 @@ export function ActivityLog({ taskId, initialLogs }: ActivityLogProps) {
   const [logs, setLogs] = React.useState<ActivityLogEntry[]>(initialLogs || []);
   const [loading, setLoading] = React.useState(!initialLogs);
 
+  // ⚡ Bolt: Lazily fetch activity logs on mount if initialLogs is undefined.
+  // This prevents the parent component from over-fetching data for hidden tabs.
   React.useEffect(() => {
     if (initialLogs === undefined) {
         setLoading(true);

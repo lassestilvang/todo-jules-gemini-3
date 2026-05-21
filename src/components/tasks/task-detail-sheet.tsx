@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useState, useEffect, useMemo } from 'react';
-import { Task, Label as LabelType, Attachment, ActivityLogEntry } from '@/lib/types';
+import { Task, Label as LabelType, Attachment } from '@/lib/types';
 import { toast } from 'sonner';
 
 interface TaskDetailSheetProps {
@@ -36,7 +36,6 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   const [assignedLabels, setAssignedLabels] = useState<LabelType[]>([]);
   const [subtasks, setSubtasks] = useState<Task[] | null>(null);
   const [attachments, setAttachments] = useState<Attachment[] | null>(null);
-  const [logs, setLogs] = useState<ActivityLogEntry[] | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -49,13 +48,11 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
         setAssignedLabels([]);
         setSubtasks(null);
         setAttachments(null);
-        setLogs(null);
 
         getTaskDetailedInfo(task.id).then((data) => {
           setAssignedLabels(data.assignedLabels);
           setSubtasks(data.subtasks);
           setAttachments(data.attachments);
-          setLogs(data.logs);
         });
     }
   }, [task?.id]);
@@ -328,7 +325,8 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
             </TabsContent>
 
             <TabsContent value="history">
-                <ActivityLog taskId={task.id} initialLogs={logs} />
+                {/* ⚡ Bolt: Removed initialLogs prop to defer loading until this tab mounts */}
+                <ActivityLog taskId={task.id} />
             </TabsContent>
         </Tabs>
       </SheetContent>
