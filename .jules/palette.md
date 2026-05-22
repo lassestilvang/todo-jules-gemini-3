@@ -44,3 +44,6 @@
 ## 2026-05-19 - Explicit Dialog Cancellation
 **Learning:** Users and screen readers benefit from having explicit, visible "Cancel" buttons in dialog footers rather than relying solely on the Escape key or clicking the backdrop overlay.
 **Action:** Always include a Cancel button with `type="button"` and `variant="outline"` in Shadcn UI `<DialogFooter>` components.
+## 2024-05-22 - [Dialog/Sheet Close Icon Accessibility]
+**Learning:** Adding `aria-hidden="true"` to purely decorative or redundant icons (like the `<X>` close icon inside a `DialogPrimitive.Close` button which already contains a `<span className="sr-only">Close</span>`) ensures that screen readers don't announce redundant or confusing information, providing a cleaner accessibility experience.
+**Action:** Always add `aria-hidden="true"` to decorative icons within interactive elements that already have an accessible name (e.g., via `sr-only` text or `aria-label`).
