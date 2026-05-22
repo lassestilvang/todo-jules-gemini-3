@@ -112,3 +112,7 @@
 ## 2024-05-25 - Skip cache invalidation for subtask updates
 **Learning:** In Next.js, calling `revalidatePath('/')` after modifying a task purges the router cache and triggers a full-page RSC re-render. If the task being modified is a subtask (which are explicitly filtered out from root-level list queries via `parentId IS NULL`), this re-render is entirely redundant and severely degrades application responsiveness.
 **Action:** Always fetch or verify the `parentId` of the task being updated or toggled. Conditionally execute `revalidatePath('/')` ONLY if the task is a root task (`parentId === null`), allowing child components to handle subtask updates optimistically without purging the global cache.
+
+## 2024-05-25 - Avoid relying on Server Action revalidation for simple UI toggles
+**Learning:** Relying solely on Next.js Server Action `revalidatePath('/')` to update the UI after simple actions like marking a task as complete creates a noticeable perceived latency (100-300ms network roundtrip) and causes a full RSC re-render of the list.
+**Action:** When a Server Component passes down an array of data (like `tasks`), use the `useOptimistic` hook initialized with the prop to manage optimistic updates for simple toggles. Wrap the state update in `startTransition` and execute it before the Server Action call to provide an instantaneous sub-16ms UI update while the server synchronizes in the background.

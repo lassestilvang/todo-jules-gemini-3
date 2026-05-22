@@ -17,6 +17,7 @@ import {
 import { SearchCommand } from '@/components/search-command';
 import { CreateListDialog } from './create-list-dialog';
 import { CreateLabelDialog } from './create-label-dialog';
+import { SidebarLinks } from './sidebar-links';
 import { List, Label } from '@/lib/types';
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {

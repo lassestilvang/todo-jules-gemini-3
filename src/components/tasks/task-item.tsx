@@ -46,8 +46,11 @@ export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }
           aria-label={`Mark task "${task.name}" as ${task.isCompleted ? 'incomplete' : 'complete'}`}
           checked={!!task.isCompleted}
           onCheckedChange={async (checked) => {
-             if (onToggle) onToggle(task.id, checked as boolean);
-             else await toggleTaskCompletion(task.id, checked as boolean);
+             if (onToggle) {
+                 onToggle(task.id, checked as boolean);
+             } else {
+                 await toggleTaskCompletion(task.id, checked as boolean);
+             }
           }}
         />
       </div>
