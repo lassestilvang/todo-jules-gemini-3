@@ -4,7 +4,8 @@ import * as React from 'react';
 import { TaskItem } from './task-item';
 import { AnimatePresence } from 'framer-motion';
 import { TaskDetailSheet } from './task-detail-sheet';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useOptimistic, startTransition } from 'react';
+import { toggleTaskCompletion } from '@/actions/recurrence';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { createTask } from '@/actions/tasks';
@@ -62,10 +63,27 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showCompleted, setShowCompleted] = useState(false);
 
-  const filteredTasks = useMemo(
-    () => tasks.filter(task => showCompleted || !task.isCompleted),
-    [tasks, showCompleted]
+  const [optimisticTasks, setOptimisticTasks] = useOptimistic(
+    tasks,
+    (state: Task[], { id, isCompleted }: { id: number, isCompleted: boolean }) =>
+      state.map(task => task.id === id ? { ...task, isCompleted } : task)
   );
+
+  const filteredTasks = useMemo(
+    () => optimisticTasks.filter(task => showCompleted || !task.isCompleted),
+    [optimisticTasks, showCompleted]
+  );
+
+  const handleToggle = React.useCallback((id: number, checked: boolean) => {
+    startTransition(async () => {
+        setOptimisticTasks({ id, isCompleted: checked });
+        try {
+            await toggleTaskCompletion(id, checked);
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to update task status");
+        }
+    });
+  }, [setOptimisticTasks]);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -91,6 +109,7 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
             <TaskItem
                 key={task.id}
                 task={task}
+                onToggle={handleToggle}
                 onClick={setSelectedTask}
             />
           ))}
