@@ -120,3 +120,8 @@
 **Vulnerability:** When the in-memory rate limit store reached its maximum size, it cleared the entire store `store.clear()` to prevent OOM. An attacker could exploit this by sending requests with thousands of spoofed IPs to fill the store, triggering the clear, and thereby bypassing rate limits for their actual attack traffic.
 **Learning:** Failing open (clearing all security state) under resource exhaustion allows attackers to easily bypass protections.
 **Prevention:** Implement an LRU-like eviction (deleting the oldest entry) or fail closed (rejecting new IPs) when security state storage is exhausted, instead of wiping the entire state.
+
+## 2024-06-03 - [Consistent Rate Limiting IP Extraction]
+**Vulnerability:** Several Server Actions relied on `headersList.get('x-forwarded-for')?.split(',')[0]` to extract the client's IP address for rate limiting, without checking for `x-real-ip` first. Since the first IP in `x-forwarded-for` is user-controlled, attackers could bypass rate limits by spoofing their IP.
+**Learning:** Inconsistent IP extraction logic across the application can leave certain endpoints vulnerable to rate limit bypasses. When behind a trusted proxy, a dedicated header like `x-real-ip` should be prioritized over `x-forwarded-for` to ensure an attacker cannot inject a spoofed IP.
+**Prevention:** Always use a consistent helper function or pattern for IP extraction (e.g., `const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';`) across all Server Actions that implement rate limiting.
