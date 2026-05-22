@@ -80,7 +80,7 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
         try {
             await toggleTaskCompletion(id, checked);
         } catch (error) {
-            toast.error("Failed to update task status");
+            toast.error(error instanceof Error ? error.message : "Failed to update task status");
         }
     });
   }, [setOptimisticTasks]);
