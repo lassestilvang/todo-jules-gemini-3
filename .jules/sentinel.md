@@ -125,3 +125,8 @@
 **Vulnerability:** Several Server Actions relied on `headersList.get('x-forwarded-for')?.split(',')[0]` to extract the client's IP address for rate limiting, without checking for `x-real-ip` first. Since the first IP in `x-forwarded-for` is user-controlled, attackers could bypass rate limits by spoofing their IP.
 **Learning:** Inconsistent IP extraction logic across the application can leave certain endpoints vulnerable to rate limit bypasses. When behind a trusted proxy, a dedicated header like `x-real-ip` should be prioritized over `x-forwarded-for` to ensure an attacker cannot inject a spoofed IP.
 **Prevention:** Always use a consistent helper function or pattern for IP extraction (e.g., `const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';`) across all Server Actions that implement rate limiting.
+
+## 2026-05-23 - [Database Exhaustion DoS via Unprotected Read Actions]
+**Vulnerability:** The `getLogs` Server Action fetched activity logs from the database without any rate limiting. Since Next.js exposes all functions in a `'use server'` file as public POST endpoints, an attacker could abuse this unprotected action to send thousands of requests per second, exhausting database connections and causing a Denial of Service.
+**Learning:** Rate limiting is not just for mutations (creates/updates/deletes). Read-heavy operations exposed as public Server Actions must also be rate limited, especially if they execute unpaginated database queries that consume significant resources.
+**Prevention:** Apply rate limiting constraints consistently to all Server Actions, including data fetching methods, to ensure defense in depth against DoS.
