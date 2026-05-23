@@ -93,7 +93,7 @@ export function CreateLabelDialog() {
                     aria-label="Color hex code"
                     placeholder="#000000"
                     maxLength={7}
-                    pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                    pattern="^#[A-Fa-f0-9]{6}$"
                     title="Hex color code (e.g., #EF4444)"
                   />
               </div>
