@@ -18,7 +18,7 @@ const { chromium } = require('playwright');
   await page.waitForTimeout(1000);
 
   // Take screenshot
-  await page.screenshot({ path: '/home/jules/verification/screenshots/dialog.png' });
+  await page.screenshot({ path: 'dialog.png' });
 
   await browser.close();
 })();
