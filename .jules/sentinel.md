@@ -129,4 +129,4 @@
 ## 2026-05-23 - [Database Exhaustion DoS via Unprotected Read Actions]
 **Vulnerability:** The `getLogs` Server Action fetched activity logs from the database without any rate limiting. Since Next.js exposes all functions in a `'use server'` file as public POST endpoints, an attacker could abuse this unprotected action to send thousands of requests per second, exhausting database connections and causing a Denial of Service.
 **Learning:** Rate limiting is not just for mutations (creates/updates/deletes). Read-heavy operations exposed as public Server Actions must also be rate limited, especially if they execute unpaginated database queries that consume significant resources.
-**Prevention:** Apply rate limiting constraints consistently to all Server Actions, including data fetching methods, to ensure defense in depth against DoS.
+**Prevention:** Apply rate limiting constraints and pagination consistently to all Server Actions, including data fetching methods, to ensure defense in depth against DoS.
