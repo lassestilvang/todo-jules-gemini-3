@@ -3,7 +3,6 @@
 import { db } from '@/lib/db';
 import { tasks, activityLogs, taskLabels, attachments } from '@/lib/schema';
 import { eq, inArray } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
 import { cache } from 'react';
 import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
@@ -63,5 +62,5 @@ export async function deleteSubtask(id: number) {
         } catch { /* ignore missing file errors */ }
     }));
 
-    try { revalidatePath('/'); } catch { /* empty */ }
+    // ⚡ Bolt: Removed revalidatePath('/') here to prevent full-page RSC bloat since subtasks are filtered out of root queries
 }
