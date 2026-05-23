@@ -82,15 +82,19 @@ export function CreateLabelDialog() {
                     type="color"
                     value={color}
                     onChange={(e) => setColor(e.target.value)}
-                    className="w-12 h-10 p-1"
+                    className="w-12 h-10 p-1 cursor-pointer"
                     disabled={isSubmitting}
                   />
                   <Input
                     value={color}
                     onChange={(e) => setColor(e.target.value)}
-                    className="flex-1"
+                    className="flex-1 font-mono uppercase"
                     disabled={isSubmitting}
                     aria-label="Color hex code"
+                    placeholder="#000000"
+                    maxLength={7}
+                    pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                    title="Hex color code (e.g., #EF4444)"
                   />
               </div>
             </div>
