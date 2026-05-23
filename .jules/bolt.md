@@ -116,3 +116,6 @@
 ## 2024-05-25 - Avoid relying on Server Action revalidation for simple UI toggles
 **Learning:** Relying solely on Next.js Server Action `revalidatePath('/')` to update the UI after simple actions like marking a task as complete creates a noticeable perceived latency (100-300ms network roundtrip) and causes a full RSC re-render of the list.
 **Action:** When a Server Component passes down an array of data (like `tasks`), use the `useOptimistic` hook initialized with the prop to manage optimistic updates for simple toggles. Wrap the state update in `startTransition` and execute it before the Server Action call to provide an instantaneous sub-16ms UI update while the server synchronizes in the background.
+## 2024-05-25 - Avoid full cache invalidation on nested updates
+**Learning:** Calling `revalidatePath("/")` inside a Next.js Server Action triggers a full route re-render. If the action modifies deeply nested data (like a subtask) that is already explicitly filtered out of root queries, and the client UI handles the update optimistically, invalidating the entire cache is a severe performance bottleneck causing massive RSC render tree bloat.
+**Action:** Remove `revalidatePath("/")` from Server Actions that mutate nested entities (like subtasks) which are not part of the root component data fetching.
