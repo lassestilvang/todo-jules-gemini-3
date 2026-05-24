@@ -64,7 +64,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                   className="w-full justify-start"
                   asChild
                 >
-                  <Link href={`/lists/${list.id}`} aria-current={isActive ? 'page' : undefined}>
+                  <Link href={`/lists/${list.id}`} prefetch={false} aria-current={isActive ? 'page' : undefined}>
                     <ListIcon className="mr-2 h-4 w-4" aria-hidden="true" />
                     {list.name}
                   </Link>

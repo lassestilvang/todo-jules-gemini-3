@@ -28,7 +28,7 @@ export function SidebarLinks({ links }: SidebarLinksProps) {
                   className="w-full justify-start"
                   asChild
                 >
-                  <Link href={link.href} aria-current={isActive ? 'page' : undefined}>
+                  <Link href={link.href} prefetch={false} aria-current={isActive ? 'page' : undefined}>
                     <link.icon className="mr-2 h-4 w-4" aria-hidden="true" />
                     {link.name}
                   </Link>
