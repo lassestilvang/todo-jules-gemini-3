@@ -15,7 +15,7 @@ export async function searchTasks(query: string) {
 
   // SECURE: Rate limit search queries to 30 per minute per IP to prevent DoS via expensive LIKE queries
   const headersList = await headers();
-  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',').pop()?.trim() || '127.0.0.1';
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')?.pop()?.trim() || '127.0.0.1';
   if (!rateLimit('searchTasks:' + ip, 30, 60 * 1000)) {
     throw new Error('Too many search requests. Please try again later.');
   }
