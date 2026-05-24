@@ -15,7 +15,7 @@ export const getLabels = cache(function getLabels() {
 export async function createLabel(data: { name: string; color?: string }) {
   // SECURE: Rate limit label creation to prevent DoS/spam
   const headersList = await headers();
-  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',').pop()?.trim() || '127.0.0.1';
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')?.pop()?.trim() || '127.0.0.1';
   if (!rateLimit(`createLabel:${ip}`, 10, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
