@@ -64,9 +64,9 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                   className="w-full justify-start"
                   asChild
                 >
-                  <Link href={`/lists/${list.id}`} prefetch={false} aria-current={isActive ? 'page' : undefined}>
-                    <ListIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-                    {list.name}
+                  <Link href={'/lists/' + list.id} aria-current={isActive ? 'page' : undefined}>
+                    <ListIcon className="mr-2" aria-hidden="true" />
+                    <span className="truncate">{list.name}</span>
                   </Link>
                 </Button>
                );
@@ -85,8 +85,8 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                 variant="ghost"
                 className="w-full justify-start"
                >
-                  <Tag className="mr-2 h-4 w-4" style={{ color: label.color || '#000000' }} aria-hidden="true" />
-                  {label.name}
+                  <Tag className="mr-2" style={{ color: label.color || '#000000' }} aria-hidden="true" />
+                  <span className="truncate">{label.name}</span>
                </Button>
              ))}
              <CreateLabelDialog />
