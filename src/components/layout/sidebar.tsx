@@ -64,8 +64,8 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                   className="w-full justify-start"
                   asChild
                 >
-                  {/* ⚡ Bolt: Disabled aggressive Link prefetching for dynamic lists to prevent server-side data fetching and DB connection exhaustion on mount */}
-                  <Link href={'/lists/' + list.id} aria-current={isActive ? 'page' : undefined} prefetch={false}>
+                  <Link href={`/lists/${list.id}`} aria-current={isActive ? 'page' : undefined} prefetch={false}>
+                    {/* ⚡ Bolt: Disabled aggressive Link prefetching for dynamic lists to prevent server-side data fetching and DB connection exhaustion on mount */}
                     <ListIcon className="mr-2" aria-hidden="true" />
                     <span className="truncate">{list.name}</span>
                   </Link>
