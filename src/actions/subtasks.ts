@@ -57,8 +57,8 @@ export async function deleteSubtask(id: number) {
     // contrasting with synchronous better-sqlite3 queries which do not benefit from Promise.all
     await Promise.all(taskAttachments.map(async (att: { filePath: string }) => {
         try {
-            const fileName = att.filePath.split('/').pop()?.split('\\').pop() || '';
-            if (fileName) await unlink(join(process.cwd(), 'public', 'uploads', fileName));
+            const fileName = att.filePath.split(/[\/\\\\]/).pop() || '';
+            if (fileName && fileName !== '.' && fileName !== '..') await unlink(join(process.cwd(), 'public', 'uploads', fileName));
         } catch { /* ignore missing file errors */ }
     }));
 
