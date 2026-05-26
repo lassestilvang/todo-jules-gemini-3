@@ -27,7 +27,7 @@ export async function createList(name: string, color: string = '#000000') {
 
   // SECURE: Rate limit list creation to prevent DoS/spam
   const headersList = await headers();
-  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',').pop()?.trim() || '127.0.0.1';
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
   if (!rateLimit(`createList:${ip}`, 10, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
@@ -39,7 +39,7 @@ export async function createList(name: string, color: string = '#000000') {
 export async function deleteList(id: number) {
   // SECURE: Rate limit list deletion to prevent DoS
   const headersList = await headers();
-  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',').pop()?.trim() || '127.0.0.1';
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
   if (!rateLimit(`deleteList:${ip}`, 30, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }

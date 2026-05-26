@@ -11,7 +11,7 @@ import { rateLimit } from '@/lib/rate-limit';
 export async function uploadFile(taskId: number, formData: FormData) {
   // SECURE: Rate limit uploads to 10 per minute per IP to prevent DoS
   const headersList = await headers();
-  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')?.pop()?.trim() || '127.0.0.1';
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
   if (!rateLimit(`uploadFile:${ip}`, 10, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
