@@ -1,5 +1,3 @@
-## 2024-05-24 - Sidebar Text Overflow
-
-**Learning:** When rendering user-generated content like lists or label names in a constrained layout (like a sidebar), it easily breaks the UI design if the text is exceptionally long. It needs standard `truncate` (ellipsis) to remain graceful without bleeding into other areas. Furthermore, `shrink-0` needs to be applied to adjacent icons to keep them from being squished when the flex container gets squeezed.
-
-**Action:** Always wrap user-provided text in constrained UI areas within a `<span className="truncate">` tag and apply `shrink-0` to the adjacent icons inside flexbox rows.
+## 2024-05-26 - Improved Search Command UI and Button Hover States
+**Learning:** Adding subtle hover states to sidebar action buttons (like "Create List") provides essential interaction feedback that is often missed in standard shadcn ghost buttons. Furthermore, rendering a global search trigger with exact input styling (icons, padding, layout) instead of looking like a basic button drastically improves the user's immediate understanding of the component's purpose.
+**Action:** Always verify that interactive non-primary actions have clear visual feedback on hover (`hover:bg-muted/50 transition-colors`). Ensure fake inputs acting as dialog triggers perfectly mimic real input styling to maintain user expectations.

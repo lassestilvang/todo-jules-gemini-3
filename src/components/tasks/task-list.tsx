@@ -45,7 +45,7 @@ function CreateTaskForm() {
   return (
     <form onSubmit={handleCreate} className="flex gap-2 mb-6">
         <Input
-          placeholder="Add a new task..."
+          placeholder="Add a new task... (Press Enter to save)"
           value={newTaskName}
           onChange={(e) => setNewTaskName(e.target.value)}
           className="flex-1"
