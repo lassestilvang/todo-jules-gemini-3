@@ -64,7 +64,8 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                   className="w-full justify-start"
                   asChild
                 >
-                  <Link href={'/lists/' + list.id} aria-current={isActive ? 'page' : undefined}>
+                  {/* Disable prefetch to prevent unnecessary background requests for all list links */}
+                  <Link href={'/lists/' + list.id} aria-current={isActive ? 'page' : undefined} prefetch={false}>
                     <ListIcon aria-hidden="true" />
                     <span className="truncate">{list.name}</span>
                   </Link>
