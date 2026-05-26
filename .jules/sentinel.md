@@ -6,4 +6,4 @@
 ## 2025-05-26 - Prevent Path Traversal via Backslashes
 **Vulnerability:** File deletion logic used `split('/').pop()` to extract filenames from file paths. This failed to account for Windows-style backslashes (`\`), allowing path traversal if an attacker uploaded a file with a name like `..\..\etc\passwd`.
 **Learning:** Always normalize paths or explicitly split on both forward slashes and backslashes when sanitizing user-provided filenames across different operating systems.
-**Prevention:** Use `path.split('/').pop()?.split('\\').pop()` to securely extract the base filename.
+**Prevention:** Use `path.split(/[\/\\\\]/).pop()` to securely extract the base filename, and ensure it is not `.` or `..`.
