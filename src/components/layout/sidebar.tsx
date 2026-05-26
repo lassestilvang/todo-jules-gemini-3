@@ -65,7 +65,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                   asChild
                 >
                   <Link href={'/lists/' + list.id} aria-current={isActive ? 'page' : undefined}>
-                    <ListIcon className="mr-2 shrink-0" aria-hidden="true" />
+                    <ListIcon aria-hidden="true" />
                     <span className="truncate">{list.name}</span>
                   </Link>
                 </Button>
