@@ -123,3 +123,6 @@
 ## 2026-05-24 - Disable Next.js Link prefetching for dynamic/dense menus
 **Learning:** Next.js defaults to aggressively prefetching routes for every `<Link>` that enters the viewport. In dense navigation components like sidebars displaying dynamic, user-generated content (e.g., numerous lists or tags), this default behavior can cause a surge of unnecessary background network requests and server-side data fetching on page load, exhausting bandwidth and DB connections.
 **Action:** Add prefetch={false} to Link components in sidebars and other dense navigation menus specifically for dynamic routes or non-critical pages to prevent aggressive prefetching, while retaining default prefetching for core static routes.
+## $(date +%Y-%m-%d) - Disabling Next.js prefetching in dense sidebars
+**Learning:** Next.js aggressively prefetches links in the viewport by default. In dense navigation components (like sidebars with dynamic/user-generated routes), this causes a surge of unnecessary background network requests, server-side data fetching, and database connection exhaustion.
+**Action:** Explicitly set `prefetch={false}` on `<Link>` components in dense navigation bars (like `sidebar.tsx` and `sidebar-links.tsx`) to prevent this overhead, especially when these links point to dynamic user data that isn't immediately critical to load before hover.
