@@ -29,8 +29,8 @@ export function SidebarLinks({ links }: SidebarLinksProps) {
                   asChild
                 >
                   <Link href={link.href} aria-current={isActive ? 'page' : undefined}>
-                    <link.icon className="mr-2 h-4 w-4" aria-hidden="true" />
-                    {link.name}
+                    <link.icon aria-hidden="true" />
+                    <span className="truncate min-w-0">{link.name}</span>
                   </Link>
                 </Button>
             );
