@@ -68,8 +68,13 @@ export async function uploadFile(taskId: number, formData: FormData) {
       await writeFile(path, buffer);
   } catch (err) {
       if (err instanceof Error && 'code' in err && (err as { code: string }).code === 'ENOENT') {
-          await mkdir(uploadDir, { recursive: true });
-          await writeFile(path, buffer);
+          try {
+              await mkdir(uploadDir, { recursive: true });
+              await writeFile(path, buffer);
+          } catch (innerErr) {
+              console.error('File upload fallback error:', innerErr);
+              throw new Error('File upload failed due to a server error.');
+          }
       } else {
           // SECURE: Do not leak raw Node.js error objects (like stack traces or internal paths) to the frontend
           console.error('File upload error:', err);
