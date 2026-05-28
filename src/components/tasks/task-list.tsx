@@ -4,13 +4,13 @@ import * as React from 'react';
 import { TaskItem } from './task-item';
 import { AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
+import { useState, useMemo, useOptimistic, startTransition } from 'react';
+import { toggleTaskCompletion } from '@/actions/recurrence';
+import { Input } from '@/components/ui/input';
 
 const TaskDetailSheet = dynamic(() => import('./task-detail-sheet').then(mod => mod.TaskDetailSheet), {
   ssr: false,
 });
-import { useState, useMemo, useOptimistic, startTransition } from 'react';
-import { toggleTaskCompletion } from '@/actions/recurrence';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { createTask } from '@/actions/tasks';
 import { Plus, Loader2, CheckCircle2, ListTodo } from 'lucide-react';
