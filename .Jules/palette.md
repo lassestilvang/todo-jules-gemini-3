@@ -52,3 +52,7 @@ Always use `error instanceof Error ? error.message : (typeof error === 'string' 
 ## 2026-05-21 - Add `aria-current="page"` to active navigation links
 **Learning:** When navigation links use purely visual styling (like a 'secondary' button variant) to indicate the active page, screen reader users miss this crucial context.
 **Action:** Always add `aria-current="page"` to navigation elements (like `<Link>`) when they represent the current active route to ensure parity for assistive technologies.
+
+## 2026-05-22 - Add Tooltips to Truncated Text
+**Learning:** When using text truncation classes (like Tailwind's `truncate`) in constrained UI layouts like sidebars, users lose access to the full text, which degrades UX. Additionally, long text can inadvertently squish adjacent icons if `shrink-0` is not applied.
+**Action:** Always add a native `title` attribute containing the full text to the element or its parent link when using text truncation, and ensure adjacent icons have the `shrink-0` class to prevent layout breakage.
