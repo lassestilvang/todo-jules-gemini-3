@@ -65,8 +65,8 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                   asChild
                 >
                   {/* Disable prefetch to prevent unnecessary background requests for all list links */}
-                  <Link href={'/lists/' + list.id} aria-current={isActive ? 'page' : undefined} prefetch={false}>
-                    <ListIcon aria-hidden="true" />
+                  <Link href={'/lists/' + list.id} aria-current={isActive ? 'page' : undefined} prefetch={false} title={list.name}>
+                    <ListIcon className="mr-2 h-4 w-4 shrink-0" aria-hidden="true" />
                     <span className="truncate">{list.name}</span>
                   </Link>
                 </Button>
@@ -85,8 +85,9 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                 key={label.id}
                 variant="ghost"
                 className="w-full justify-start"
+                title={label.name}
                >
-                  <Tag style={{ color: label.color || '#000000' }} aria-hidden="true" />
+                  <Tag className="mr-2 h-4 w-4 shrink-0" style={{ color: label.color || '#000000' }} aria-hidden="true" />
                   <span className="truncate">{label.name}</span>
                </Button>
              ))}
