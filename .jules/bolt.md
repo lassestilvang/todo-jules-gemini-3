@@ -126,3 +126,6 @@
 ## $(date +%Y-%m-%d) - Disabling Next.js prefetching in dense sidebars
 **Learning:** Next.js aggressively prefetches links in the viewport by default. In dense navigation components (like sidebars with dynamic/user-generated routes), this causes a surge of unnecessary background network requests, server-side data fetching, and database connection exhaustion.
 **Action:** Explicitly set `prefetch={false}` on `<Link>` components in dense navigation bars (like `sidebar.tsx` and `sidebar-links.tsx`) to prevent this overhead, especially when these links point to dynamic user data that isn't immediately critical to load before hover.
+## 2024-05-24 - Custom Comparator for React.memo in Next.js Server Components
+**Learning:** Data fetched from databases in Next.js Server Components generates new object references on every route revalidation (such as when `revalidatePath` is triggered). Default `React.memo` relies on referential equality, meaning it fails to prevent re-renders when a new array of structurally identical items is passed down.
+**Action:** When passing database row objects as props to memoized Client Components (like list items), implement a custom comparator function in `React.memo` to perform a shallow comparison of the object's specific fields instead of relying on default referential equality. This prevents O(N) re-renders.
