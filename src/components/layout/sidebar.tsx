@@ -66,8 +66,8 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                 >
                   {/* Disable prefetch to prevent unnecessary background requests for all list links */}
                   <Link href={'/lists/' + list.id} aria-current={isActive ? 'page' : undefined} prefetch={false} title={list.name}>
-                    <ListIcon className="shrink-0" aria-hidden="true" />
-                    <span className="truncate">{list.name}</span>
+                    <ListIcon className="mr-2 h-4 w-4 shrink-0" aria-hidden="true" />
+                    <span className="truncate min-w-0">{list.name}</span>
                   </Link>
                 </Button>
                );
