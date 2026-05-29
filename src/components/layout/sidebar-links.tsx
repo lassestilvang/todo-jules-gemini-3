@@ -30,7 +30,7 @@ export function SidebarLinks({ links }: SidebarLinksProps) {
                 >
                   {/* Disable prefetch to prevent unnecessary background requests for all sidebar items */}
                   <Link href={link.href} aria-current={isActive ? 'page' : undefined} prefetch={false} title={link.name}>
-                    <link.icon aria-hidden="true" />
+                    <link.icon className="shrink-0" aria-hidden="true" />
                     <span className="truncate min-w-0">{link.name}</span>
                   </Link>
                 </Button>
