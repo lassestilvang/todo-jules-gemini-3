@@ -37,6 +37,22 @@ export async function uploadFile(taskId: number, formData: FormData) {
     throw new Error('File size exceeds the maximum limit of 5MB');
   }
 
+  // SECURE: Prevent empty file uploads
+  if (file.size === 0) {
+    throw new Error('File cannot be empty');
+  }
+
+  // SECURE: Validate MIME type as a defense-in-depth measure against file spoofing
+  const ALLOWED_MIME_TYPES = [
+    'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+    'application/pdf', 'text/plain', 'text/csv',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // xlsx
+  ];
+  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    throw new Error('File type not allowed for security reasons');
+  }
+
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 

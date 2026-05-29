@@ -7,3 +7,7 @@
 **Vulnerability:** File deletion logic used `split('/').pop()` to extract filenames from file paths. This failed to account for Windows-style backslashes (`\`), allowing path traversal if an attacker uploaded a file with a name like `..\..\etc\passwd`.
 **Learning:** Always normalize paths or explicitly split on both forward slashes and backslashes when sanitizing user-provided filenames across different operating systems.
 **Prevention:** Use `path.split(/[\/\\\\]/).pop()` to securely extract the base filename, and ensure it is not `.` or `..`.
+## 2024-05-29 - Defense in Depth for File Uploads
+**Vulnerability:** File upload missing MIME type and empty file validation, which allowed zero-byte file DoS and potential file spoofing via extension mismatch.
+**Learning:** Relying solely on file extensions for security is insufficient because attackers can manipulate the extension. Checking the MIME type adds a crucial layer of defense in depth against file spoofing, while checking for a zero-size file prevents resource exhaustion or empty state bugs.
+**Prevention:** Always validate file size, enforce a strictly permitted list of extensions, AND validate the MIME type (file.type) during file uploads before processing or saving the file.
