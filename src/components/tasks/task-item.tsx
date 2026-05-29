@@ -83,4 +83,24 @@ export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }
       </div>
     </motion.div>
   );
+}, (prevProps, nextProps) => {
+  // ⚡ Bolt: Implement custom shallow equality comparator.
+  // Data fetched from Next.js Server Components (like database queries) creates new object
+  // references on every revalidation. We must shallow compare the fields to avoid O(N) re-renders.
+  if (prevProps.onToggle !== nextProps.onToggle) return false;
+  if (prevProps.onClick !== nextProps.onClick) return false;
+
+  const prevTask = prevProps.task;
+  const nextTask = nextProps.task;
+
+  // Since tasks have many fields, checking a few key fields that drive the UI in the list is sufficient.
+  // If we need to be strictly correct, we could check all fields or the ones used in render:
+  return (
+    prevTask.id === nextTask.id &&
+    prevTask.name === nextTask.name &&
+    prevTask.isCompleted === nextTask.isCompleted &&
+    prevTask.date === nextTask.date &&
+    prevTask.priority === nextTask.priority &&
+    prevTask.recurrenceInterval === nextTask.recurrenceInterval
+  );
 });
