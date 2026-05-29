@@ -56,3 +56,6 @@ Always use `error instanceof Error ? error.message : (typeof error === 'string' 
 ## 2026-05-22 - Add Tooltips to Truncated Text
 **Learning:** When using text truncation classes (like Tailwind's `truncate`) in constrained UI layouts like sidebars, users lose access to the full text, which degrades UX. Additionally, long text can inadvertently squish adjacent icons if `shrink-0` is not applied.
 **Action:** Always add a native `title` attribute containing the full text to the element or its parent link when using text truncation, and ensure adjacent icons have the `shrink-0` class to prevent layout breakage.
+## 2026-05-23 - Prevent SVG Squishing in Flex Layouts
+**Learning:** In constrained flexbox layouts (like sidebars) using `truncate` for text, adjacent SVG icons without explicit `shrink-0` classes will compress when the text overflows, degrading the UI.
+**Action:** Always add the `shrink-0` class to icons placed next to text that has the `truncate` class in flex containers.
