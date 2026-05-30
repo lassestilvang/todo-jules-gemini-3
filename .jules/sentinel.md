@@ -11,3 +11,8 @@
 **Vulnerability:** File upload missing MIME type and empty file validation, which allowed zero-byte file DoS and potential file spoofing via extension mismatch.
 **Learning:** Relying solely on file extensions for security is insufficient because attackers can manipulate the extension. Checking the MIME type adds a crucial layer of defense in depth against file spoofing, while checking for a zero-size file prevents resource exhaustion or empty state bugs.
 **Prevention:** Always validate file size, enforce a strictly permitted list of extensions, AND validate the MIME type (file.type) during file uploads before processing or saving the file.
+
+## 2025-05-30 - Missing Rate Limiting on Read-Heavy Server Actions
+**Vulnerability:** Public Server Actions that only read data (like fetching attachments or subtasks) were missing rate limiting.
+**Learning:** Even read-only Server Actions can be abused by attackers to exhaust database connections or compute resources, causing a Denial of Service (DoS) if they are called directly from Client Components.
+**Prevention:** Always apply rate limiting to read-heavy Server Actions, not just mutations.
