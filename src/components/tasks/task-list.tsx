@@ -66,6 +66,7 @@ function CreateTaskForm() {
 export function TaskList({ tasks, title, labels }: TaskListProps) {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showCompleted, setShowCompleted] = useState(false);
+  const [hasMountedSheet, setHasMountedSheet] = useState(false);
 
   const [optimisticTasks, setOptimisticTasks] = useOptimistic(
     tasks,
@@ -114,7 +115,10 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
                 key={task.id}
                 task={task}
                 onToggle={handleToggle}
-                onClick={setSelectedTask}
+                onClick={(task) => {
+                    setSelectedTask(task);
+                    setHasMountedSheet(true);
+                }}
             />
           ))}
         </AnimatePresence>
@@ -141,12 +145,14 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
         )}
       </div>
 
-      <TaskDetailSheet
-        task={selectedTask}
-        open={!!selectedTask}
-        onOpenChange={(open) => !open && setSelectedTask(null)}
-        labels={labels}
-      />
+      {hasMountedSheet && (
+          <TaskDetailSheet
+            task={selectedTask}
+            open={!!selectedTask}
+            onOpenChange={(open) => !open && setSelectedTask(null)}
+            labels={labels}
+          />
+      )}
     </div>
   );
 }
