@@ -114,10 +114,7 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
                 key={task.id}
                 task={task}
                 onToggle={handleToggle}
-                onClick={(task) => {
-                    setSelectedTask(task);
-                    setHasMountedSheet(true);
-                }}
+                onClick={setSelectedTask}
             />
           ))}
         </AnimatePresence>
