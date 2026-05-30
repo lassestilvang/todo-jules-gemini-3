@@ -141,12 +141,14 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
         )}
       </div>
 
-      <TaskDetailSheet
-        task={selectedTask}
-        open={!!selectedTask}
-        onOpenChange={(open) => !open && setSelectedTask(null)}
-        labels={labels}
-      />
+      {selectedTask && (
+          <TaskDetailSheet
+            task={selectedTask}
+            open={!!selectedTask}
+            onOpenChange={(open) => !open && setSelectedTask(null)}
+            labels={labels}
+          />
+      )}
     </div>
   );
 }
