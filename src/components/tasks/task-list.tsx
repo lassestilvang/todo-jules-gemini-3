@@ -56,7 +56,7 @@ function CreateTaskForm() {
           aria-label="New task name"
           disabled={isSubmitting}
         />
-        <Button type="submit" size="icon" disabled={!newTaskName.trim() || isSubmitting} aria-label="Add task">
+        <Button type="submit" size="icon" disabled={isSubmitting} aria-label="Add task" title="Add task">
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Plus className="h-4 w-4" aria-hidden="true" />}
         </Button>
     </form>
