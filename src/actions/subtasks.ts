@@ -28,7 +28,14 @@ export async function createSubtask(parentId: number, name: string) {
 }
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
-export const getSubtasks = cache(function getSubtasks(parentId: number) {
+export const getSubtasks = cache(async function getSubtasks(parentId: number) {
+    // SECURE: Rate limit subtask retrieval to prevent DoS via database connection exhaustion
+    const headersList = await headers();
+    const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+    if (!rateLimit(`getSubtasks:${ip}`, 60, 60 * 1000)) {
+        throw new Error('Too many requests. Please try again later.');
+    }
+
     return db.select().from(tasks).where(eq(tasks.parentId, parentId)).all();
 });
 
