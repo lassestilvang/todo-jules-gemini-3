@@ -141,7 +141,7 @@ export function TaskList({ tasks, title, labels }: TaskListProps) {
         )}
       </div>
 
-      {hasMountedSheet && (
+      {selectedTask && (
           <TaskDetailSheet
             task={selectedTask}
             open={!!selectedTask}
