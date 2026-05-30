@@ -66,7 +66,6 @@ function CreateTaskForm() {
 export function TaskList({ tasks, title, labels }: TaskListProps) {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showCompleted, setShowCompleted] = useState(false);
-  const [hasMountedSheet, setHasMountedSheet] = useState(false);
 
   const [optimisticTasks, setOptimisticTasks] = useOptimistic(
     tasks,
