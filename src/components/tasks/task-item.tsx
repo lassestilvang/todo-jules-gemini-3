@@ -61,7 +61,7 @@ export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }
         </div>
         <div className="text-xs text-muted-foreground flex items-center space-x-2">
             {task.priority !== 'none' && (
-                <Badge variant={task.priority === 'high' ? 'destructive' : 'secondary'} className="text-[10px] px-1 py-0 h-5 capitalize">
+                <Badge variant={task.priority === 'high' ? 'destructive' : task.priority === 'medium' ? 'secondary' : 'outline'} className="text-[10px] px-1 py-0 h-5 capitalize">
                     <span className="sr-only">Priority: </span>{task.priority}
                 </Badge>
             )}

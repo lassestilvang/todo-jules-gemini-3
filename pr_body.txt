@@ -1,4 +1,4 @@
-💡 What: Added a custom equality comparator to React.memo() for the TaskItem component.
-🎯 Why: Data fetched from the database in Next.js Server Components generates new object references on every route revalidation, defeating default React.memo referential equality and causing O(N) re-renders for unchanged items in the list.
-📊 Impact: Prevents unnecessary O(N) DOM diffing and re-renders for unchanged TaskItems when the task list updates.
-🔬 Measurement: Verify using React Developer Tools Profiler; toggling a single task will no longer trigger re-renders for all other unchanged tasks in the list.
+💡 What: Updated the TaskItem priority badge to use distinct variants for all priority levels (destructive for high, secondary for medium, and outline for low).
+🎯 Why: Previously, 'low' and 'medium' priorities both used the 'secondary' variant, making them visually indistinguishable at a glance. Using distinct standard variants makes the list easier to scan.
+📸 Before/After: Visual distinction added to priority badges.
+♿ Accessibility: Preserved existing sr-only labels.
