@@ -79,7 +79,7 @@ const SubtaskItem = React.memo(({ task, onToggle }: { task: Task, onToggle: (id:
   return (
     prevProps.task.id === nextProps.task.id &&
     prevProps.task.name === nextProps.task.name &&
-    prevProps.task.isCompleted === nextProps.task.isCompleted
+    !!prevProps.task.isCompleted === !!nextProps.task.isCompleted
   );
 });
 
