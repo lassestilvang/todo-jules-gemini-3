@@ -1,4 +1,4 @@
-💡 What: Updated the TaskItem priority badge to use distinct variants for all priority levels (destructive for high, secondary for medium, and outline for low).
-🎯 Why: Previously, 'low' and 'medium' priorities both used the 'secondary' variant, making them visually indistinguishable at a glance. Using distinct standard variants makes the list easier to scan.
-📸 Before/After: Visual distinction added to priority badges.
-♿ Accessibility: Preserved existing sr-only labels.
+💡 What: Added text truncation to attachment filenames and a native `title` attribute to show the full name on hover. Also prevented the file icon from squishing.
+🎯 Why: Long filenames previously caused layout breakage in the constrained sidebar/sheet. While truncation fixes the layout, it hides information; the tooltip restores accessibility for the full name.
+📸 Before/After: Long names now truncate cleanly with `...` and show a native tooltip on hover.
+♿ Accessibility: Added a native `title` attribute to the attachment link, ensuring users can read the full filename even when truncated.
