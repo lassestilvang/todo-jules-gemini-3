@@ -71,6 +71,16 @@ const SubtaskItem = React.memo(({ task, onToggle }: { task: Task, onToggle: (id:
       </label>
     </div>
   );
+}, (prevProps, nextProps) => {
+  // ⚡ Bolt: Implement custom shallow equality comparator to prevent O(N) re-renders.
+  // Data fetched from Next.js Server Components creates new object references on every revalidation.
+  if (prevProps.onToggle !== nextProps.onToggle) return false;
+
+  return (
+    prevProps.task.id === nextProps.task.id &&
+    prevProps.task.name === nextProps.task.name &&
+    prevProps.task.isCompleted === nextProps.task.isCompleted
+  );
 });
 
 SubtaskItem.displayName = 'SubtaskItem';
