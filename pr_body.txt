@@ -1,4 +1,9 @@
-💡 What: Updated the TaskItem priority badge to use distinct variants for all priority levels (destructive for high, secondary for medium, and outline for low).
-🎯 Why: Previously, 'low' and 'medium' priorities both used the 'secondary' variant, making them visually indistinguishable at a glance. Using distinct standard variants makes the list easier to scan.
-📸 Before/After: Visual distinction added to priority badges.
-♿ Accessibility: Preserved existing sr-only labels.
+🚨 Severity: HIGH
+
+💡 Vulnerability: The `getTaskDetailedInfo` function in `src/actions/tasks.ts` is an exported Server Action called from a Client Component (`TaskDetailSheet`) to fetch subtasks, labels, and attachments. It was missing rate limiting, making it vulnerable to abuse.
+
+🎯 Impact: A malicious actor could repeatedly call this read-heavy Server Action, causing database connection exhaustion and a Denial of Service (DoS) for the application.
+
+🔧 Fix: Added the `rateLimit` check to `getTaskDetailedInfo`, restricting it to 60 requests per minute per IP, matching the established security pattern for other read-heavy actions in the codebase.
+
+✅ Verification: Verified the fix passes TypeScript compilation, `bun run lint`, and tests.
