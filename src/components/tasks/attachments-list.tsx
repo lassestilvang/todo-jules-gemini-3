@@ -70,10 +70,11 @@ export function AttachmentsList({ taskId, initialAttachments }: AttachmentsListP
                 href={file.filePath}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center p-2 rounded-md border bg-muted/50 hover:bg-muted transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                title={file.fileName}
+                className="flex items-center p-2 rounded-md border bg-muted/50 hover:bg-muted transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 overflow-hidden"
               >
-                  <FileIcon className="w-4 h-4 mr-2" aria-hidden="true" />
-                  {file.fileName}
+                  <FileIcon className="w-4 h-4 mr-2 shrink-0" aria-hidden="true" />
+                  <span className="truncate">{file.fileName}</span>
               </a>
           ))}
       </div>
