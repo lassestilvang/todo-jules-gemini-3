@@ -16,3 +16,7 @@
 **Vulnerability:** Public Server Actions that only read data (like fetching attachments or subtasks) were missing rate limiting.
 **Learning:** Even read-only Server Actions can be abused by attackers to exhaust database connections or compute resources, causing a Denial of Service (DoS) if they are called directly from Client Components.
 **Prevention:** Always apply rate limiting to read-heavy Server Actions, not just mutations.
+## 2024-05-31 - Add Rate Limiting to getTaskDetailedInfo Server Action
+**Vulnerability:** The `getTaskDetailedInfo` function in `src/actions/tasks.ts` was an exported Server Action (`'use server'`) that was called directly from the `TaskDetailSheet` Client Component to fetch associated labels, subtasks, and attachments. It lacked rate limiting.
+**Learning:** Even if a function is read-only and wrapped in a React `cache()`, if it is exposed as a public Server Action and performs database queries (like `db.select()...`), it can be directly invoked by a malicious client repeatedly. This can exhaust the database connection pool or compute resources, leading to a Denial of Service (DoS).
+**Prevention:** Always ensure that read-heavy Server Actions, especially those making multiple database queries (like `getTaskDetailedInfo`), implement rate limiting just like mutating Server Actions to protect backend resources.
