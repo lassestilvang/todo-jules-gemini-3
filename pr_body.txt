@@ -7,3 +7,7 @@
 🔧 Fix: Added the `rateLimit` check to `getTaskDetailedInfo`, restricting it to 60 requests per minute per IP, matching the established security pattern for other read-heavy actions in the codebase.
 
 ✅ Verification: Verified the fix passes TypeScript compilation, `bun run lint`, and tests.
+💡 What: Added text truncation to attachment filenames and a native `title` attribute to show the full name on hover. Also prevented the file icon from squishing.
+🎯 Why: Long filenames previously caused layout breakage in the constrained sidebar/sheet. While truncation fixes the layout, it hides information; the tooltip restores accessibility for the full name.
+📸 Before/After: Long names now truncate cleanly with `...` and show a native tooltip on hover.
+♿ Accessibility: Added a native `title` attribute to the attachment link, ensuring users can read the full filename even when truncated.
