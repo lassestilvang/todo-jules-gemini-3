@@ -61,12 +61,12 @@ export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }
         </div>
         <div className="text-xs text-muted-foreground flex items-center space-x-2">
             {task.priority !== 'none' && (
-                <Badge variant={task.priority === 'high' ? 'destructive' : task.priority === 'medium' ? 'secondary' : 'outline'} className="text-[10px] px-1 py-0 h-5 capitalize">
+                <Badge variant={task.priority === 'high' ? 'destructive' : task.priority === 'medium' ? 'secondary' : 'outline'} className="text-[10px] px-1 py-0 h-5 capitalize" title={`Priority: ${task.priority}`}>
                     <span className="sr-only">Priority: </span>{task.priority}
                 </Badge>
             )}
             {task.date && (
-                <span className={cn("flex items-center", isOverdue && "text-destructive font-bold")}>
+                <span className={cn("flex items-center", isOverdue && "text-destructive font-bold")} title={isOverdue ? `Overdue: ${format(new Date(task.date), 'MMM d')}` : `Due date: ${format(new Date(task.date), 'MMM d')}`}>
                     <Calendar className="w-3 h-3 mr-1" aria-hidden="true" />
                     <span className="sr-only">Due date: </span>
                     {isOverdue && <span className="sr-only">Overdue: </span>}
@@ -74,7 +74,7 @@ export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }
                 </span>
             )}
             {task.recurrenceInterval && task.recurrenceInterval !== 'none' && (
-                <span className="flex items-center text-blue-500">
+                <span className="flex items-center text-blue-500" title={`Repeats: ${task.recurrenceInterval}`}>
                     <Repeat className="w-3 h-3 mr-1" aria-hidden="true" />
                     <span className="sr-only">Repeats: </span>{task.recurrenceInterval}
                 </span>
