@@ -22,9 +22,9 @@ export const labels = sqliteTable('labels', {
 // Tasks Table
 export const tasks = sqliteTable('tasks', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  listId: integer('list_id').references(() => lists.id),
+  listId: integer('list_id').references(() => lists.id, { onDelete: 'set null' }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  parentId: integer('parent_id').references((): any => tasks.id), // Self-referencing for subtasks
+  parentId: integer('parent_id').references((): any => tasks.id, { onDelete: 'cascade' }), // Self-referencing for subtasks
   name: text('name').notNull(),
   description: text('description'),
   date: text('date'), // Stored as ISO string YYYY-MM-DD
@@ -54,8 +54,8 @@ export const tasks = sqliteTable('tasks', {
 // Task Labels (Many-to-Many)
 export const taskLabels = sqliteTable('task_labels', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  taskId: integer('task_id').references(() => tasks.id).notNull(),
-  labelId: integer('label_id').references(() => labels.id).notNull(),
+  taskId: integer('task_id').references(() => tasks.id, { onDelete: 'cascade' }).notNull(),
+  labelId: integer('label_id').references(() => labels.id, { onDelete: 'cascade' }).notNull(),
 }, (table) => {
   return {
     taskIdIdx: index('task_labels_task_id_idx').on(table.taskId),
@@ -65,7 +65,7 @@ export const taskLabels = sqliteTable('task_labels', {
 // Attachments
 export const attachments = sqliteTable('attachments', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  taskId: integer('task_id').references(() => tasks.id).notNull(),
+  taskId: integer('task_id').references(() => tasks.id, { onDelete: 'cascade' }).notNull(),
   filePath: text('file_path').notNull(),
   fileName: text('file_name').notNull(),
   createdAt: text('created_at').default(sql`(CURRENT_TIMESTAMP)`),
@@ -78,7 +78,7 @@ export const attachments = sqliteTable('attachments', {
 // Activity Logs
 export const activityLogs = sqliteTable('activity_logs', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  taskId: integer('task_id').references(() => tasks.id).notNull(),
+  taskId: integer('task_id').references(() => tasks.id, { onDelete: 'cascade' }).notNull(),
   field: text('field').notNull(),
   oldValue: text('old_value'),
   newValue: text('new_value'),
