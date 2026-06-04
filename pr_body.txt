@@ -1,0 +1,4 @@
+💡 What: Added tooltips, text truncation, and shrink-0 to icons in CommandItems.
+🎯 Why: Prevents long task and label names from breaking the flex layout and squishing SVGs, while maintaining accessibility to the full text via tooltips.
+📸 Before/After: N/A
+♿ Accessibility: Ensures full text is readable via native tooltips on hover.

@@ -172,13 +172,13 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                             {labels.map(label => {
                                                 const isAssigned = assignedLabelIds.has(label.id);
                                                 return (
-                                                    <CommandItem key={label.id} onSelect={() => handleToggleLabel(label.id)}>
+                                                    <CommandItem key={label.id} onSelect={() => handleToggleLabel(label.id)} title={label.name}>
                                                         <div className="flex items-center gap-2 w-full cursor-pointer">
-                                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: label.color || '#000' }} />
-                                                            <span>{label.name}</span>
+                                                            <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: label.color || '#000' }} />
+                                                            <span className="truncate min-w-0">{label.name}</span>
                                                             {isAssigned && (
                                                                 <>
-                                                                    <Check className="ml-auto w-4 h-4" aria-hidden="true" />
+                                                                    <Check className="ml-auto w-4 h-4 shrink-0" aria-hidden="true" />
                                                                     <span className="sr-only">Assigned</span>
                                                                 </>
                                                             )}

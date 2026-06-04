@@ -118,19 +118,20 @@ export function SearchCommand() {
                     onSelect={() => {
                       setOpen(false);
                     }}
+                    title={task.name}
                   >
                     {task.isCompleted ? (
                       <>
-                        <CheckCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+                        <CheckCircle className="mr-2 h-4 w-4 shrink-0" aria-hidden="true" />
                         <span className="sr-only">Completed</span>
                       </>
                     ) : (
                       <>
-                        <Circle className="mr-2 h-4 w-4" aria-hidden="true" />
+                        <Circle className="mr-2 h-4 w-4 shrink-0" aria-hidden="true" />
                         <span className="sr-only">Incomplete</span>
                       </>
                     )}
-                    <span>{task.name}</span>
+                    <span className="truncate min-w-0">{task.name}</span>
                   </CommandItem>
                 ))}
               </CommandGroup>
