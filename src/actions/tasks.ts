@@ -46,7 +46,13 @@ export const getTasksByDateRange = cache(function getTasksByDateRange(startDate:
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
 export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(taskId: number) {
-  const assignedLabels = getTaskLabels(taskId);
+  // SECURE: Rate limit task retrieval to prevent DoS via database connection exhaustion
+  const headersList = await headers();
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+  if (!rateLimit(`getTaskDetailedInfo:${ip}`, 60, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+  const assignedLabels = getTaskLabelsInternal(taskId);
   const subtasks = db.select().from(tasks).where(eq(tasks.parentId, taskId)).all();
   const attachmentsList = db.select().from(attachments).where(eq(attachments.taskId, taskId)).all();
   // ⚡ Bolt: Removed activity logs fetch from here. The ActivityLog component will now lazily load
@@ -240,12 +246,24 @@ export async function deleteTask(id: number) {
 }
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
-export const getActivityLogs = cache(function getActivityLogs(taskId: number) {
+export const getActivityLogs = cache(async function getActivityLogs(taskId: number) {
+    // SECURE: Rate limit activity log retrieval to prevent DoS via database connection exhaustion
+    const headersList = await headers();
+    const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+    if (!rateLimit(`getActivityLogs:${ip}`, 60, 60 * 1000)) {
+        throw new Error('Too many requests. Please try again later.');
+    }
     return db.select().from(activityLogs).where(eq(activityLogs.taskId, taskId)).all();
 });
 
 // ⚡ Bolt: Wrapped in React cache() to deduplicate database queries across Server Components in a single render pass
-export const getTaskLabels = cache(function getTaskLabels(taskId: number) {
+export const getTaskLabels = cache(async function getTaskLabels(taskId: number) {
+    // SECURE: Rate limit task label retrieval to prevent DoS via database connection exhaustion
+    const headersList = await headers();
+    const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+    if (!rateLimit(`getTaskLabels:${ip}`, 60, 60 * 1000)) {
+        throw new Error('Too many requests. Please try again later.');
+    }
     return db.select({
         id: labels.id,
         name: labels.name, createdAt: labels.createdAt,
