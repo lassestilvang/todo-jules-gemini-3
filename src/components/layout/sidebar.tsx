@@ -84,7 +84,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                <Button
                 key={label.id}
                 variant="ghost"
-                className="w-full justify-start transition-colors hover:bg-muted/50"
+                className="w-full justify-start hover:bg-muted/50"
                 title={label.name}
                >
                   <Tag className="mr-2 h-4 w-4 shrink-0" style={{ color: label.color || '#000000' }} aria-hidden="true" />
