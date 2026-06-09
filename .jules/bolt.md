@@ -133,6 +133,9 @@
 ## $(date +%Y-%m-%d) - Lazy Loading Dynamic Imports in Next.js
 **Learning:** In Next.js, using `next/dynamic` to dynamically import a component (like `<TaskDetailSheet>`) will NOT prevent it from being fetched immediately on initial page load if the component is unconditionally rendered in the JSX tree, even if its visible state (like `open={false}`) is hidden. This causes unnecessary JavaScript chunks (often hundreds of KB containing heavy UI libraries) to be downloaded and parsed on initial load, severely degrading Time To Interactive (TTI).
 **Action:** When using `next/dynamic` for heavy, infrequently accessed components (like modals or sheets), introduce a state variable (e.g., `hasMountedSheet`) and conditionally render the component block (e.g., `{hasMountedSheet && <DynamicComponent ... />}`) only *after* the user triggers the interaction that requires it.
+## 2024-06-25 - Prevent O(N) Re-Renders in Dense Next.js Navigation Sidebars
+**Learning:** Using `usePathname()` inside a dense navigation component (like a Sidebar) triggers a re-render of the entire component on every client-side navigation. If the sidebar maps over large data arrays (like user lists or labels) fetched from Server Components (which generate new object references on revalidation), this causes massive O(N) re-renders, stalling the main thread during route transitions.
+**Action:** Extract list item mappings inside navigation components into `React.memo` wrappers with custom shallow comparators. This ensures that only the newly active and previously active items re-render when `pathname` changes, bypassing the remaining N-2 items.
 
 ## 2024-05-25 - Caching Internal Function Calls
 **Learning:** In Next.js Server Actions, internal un-cached helper functions can cause redundant database queries during a single request lifecycle if invoked directly by multiple endpoints.
