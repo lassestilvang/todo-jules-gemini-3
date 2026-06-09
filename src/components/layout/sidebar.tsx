@@ -20,6 +20,54 @@ import { CreateLabelDialog } from './create-label-dialog';
 import { SidebarLinks } from './sidebar-links';
 import { List, Label } from '@/lib/types';
 
+// ⚡ Bolt: Memoize individual list items so that navigating to a different list only
+// re-renders the newly active and previously active items, instead of the entire O(N) array.
+const SidebarListItem = React.memo(({ list, isActive }: { list: List, isActive: boolean }) => (
+  <Button
+    variant={isActive ? 'secondary' : 'ghost'}
+    className="w-full justify-start"
+    asChild
+  >
+    {/* Disable prefetch to prevent unnecessary background requests for all list links */}
+    <Link href={'/lists/' + list.id} aria-current={isActive ? 'page' : undefined} prefetch={false} title={list.name}>
+      <ListIcon className="mr-2 h-4 w-4 shrink-0" aria-hidden="true" />
+      <span className="truncate min-w-0">{list.name}</span>
+    </Link>
+  </Button>
+), (prevProps, nextProps) => {
+  return prevProps.isActive === nextProps.isActive &&
+         prevProps.list.id === nextProps.list.id &&
+         prevProps.list.name === nextProps.list.name;
+});
+SidebarListItem.displayName = 'SidebarListItem';
+
+// ⚡ Bolt: Memoize the entire labels list to prevent re-rendering when navigating between routes.
+const SidebarLabels = React.memo(({ labels }: { labels: Label[] }) => {
+  return (
+    <>
+      {labels.map((label) => (
+        <Button
+          key={label.id}
+          variant="ghost"
+          className="w-full justify-start"
+          title={label.name}
+        >
+          <Tag className="mr-2 h-4 w-4 shrink-0" style={{ color: label.color || '#000000' }} aria-hidden="true" />
+          <span className="truncate">{label.name}</span>
+        </Button>
+      ))}
+    </>
+  );
+}, (prevProps, nextProps) => {
+  if (prevProps.labels.length !== nextProps.labels.length) return false;
+  return prevProps.labels.every((l, i) =>
+    l.id === nextProps.labels[i].id &&
+    l.name === nextProps.labels[i].name &&
+    l.color === nextProps.labels[i].color
+  );
+});
+SidebarLabels.displayName = 'SidebarLabels';
+
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
     lists: List[];
     labels: Label[];
@@ -57,20 +105,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
           <div className="space-y-1">
              {lists.map((list) => {
                const isActive = pathname === `/lists/${list.id}`;
-               return (
-                 <Button
-                  key={list.id}
-                  variant={isActive ? 'secondary' : 'ghost'}
-                  className="w-full justify-start"
-                  asChild
-                >
-                  {/* Disable prefetch to prevent unnecessary background requests for all list links */}
-                  <Link href={'/lists/' + list.id} aria-current={isActive ? 'page' : undefined} prefetch={false} title={list.name}>
-                    <ListIcon className="mr-2 h-4 w-4 shrink-0" aria-hidden="true" />
-                    <span className="truncate min-w-0">{list.name}</span>
-                  </Link>
-                </Button>
-               );
+               return <SidebarListItem key={list.id} list={list} isActive={isActive} />;
              })}
              <CreateListDialog />
           </div>
@@ -80,17 +115,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
             Labels
           </h2>
           <div className="space-y-1">
-             {labels.map((label) => (
-               <Button
-                key={label.id}
-                variant="ghost"
-                className="w-full justify-start"
-                title={label.name}
-               >
-                  <Tag className="mr-2 h-4 w-4 shrink-0" style={{ color: label.color || '#000000' }} aria-hidden="true" />
-                  <span className="truncate">{label.name}</span>
-               </Button>
-             ))}
+             <SidebarLabels labels={labels} />
              <CreateLabelDialog />
           </div>
         </div>
