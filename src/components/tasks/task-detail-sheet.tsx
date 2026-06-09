@@ -358,7 +358,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
             <Button type="button" variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} autoFocus>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+            <Button type="button" variant="destructive" onClick={handleDelete} disabled={isDeleting}>
               {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />}
               Delete
             </Button>
