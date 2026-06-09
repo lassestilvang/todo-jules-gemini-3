@@ -28,3 +28,7 @@
 **Vulnerability:** The application relied entirely on application-level transactions (`db.transaction`) to manually delete related records (subtasks, attachments, labels, logs) when a parent entity was deleted. If these transactions were ever bypassed, failed silently, or if records were deleted via direct DB access, it would leave orphaned records in the database, potentially leading to application crashes or data inconsistency.
 **Learning:** SQLite foreign keys are disabled by default (though they were enabled in `db.ts` here), but even when enabled, `onDelete: cascade` is not the default behavior. Drizzle ORM requires explicit configuration of `.onDelete('cascade')` on foreign key references to enforce this at the schema level.
 **Prevention:** Always configure `.onDelete('cascade')` or `.onDelete('set null')` on foreign key references in `schema.ts` when defining relationships where child records cannot exist without the parent. This provides a critical layer of defense-in-depth for data integrity.
+## 2025-05-30 - Fix missing rate limiting on read-heavy Server Actions
+**Vulnerability:** Public read-only Server Actions were exported without rate limiting logic.
+**Learning:** Even read-only Server Actions can be abused by attackers to exhaust database connections or compute resources, causing a Denial of Service (DoS) if they are called directly from Client Components or via their API endpoints.
+**Prevention:** Always apply rate limiting to all Server Actions, including read-heavy operations, to protect backend resources.

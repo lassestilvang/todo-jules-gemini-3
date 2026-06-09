@@ -11,29 +11,64 @@ import { rateLimit } from '@/lib/rate-limit';
 import { ALLOWED_TASK_KEYS } from '@/lib/types';
 
 // ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
-export const getTasks = cache(function getTasks() {
+export const getTasks = cache(async function getTasks() {
+  // SECURE: Rate limit task retrieval to prevent DoS via database connection exhaustion
+  const headersList = await headers();
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+  if (!rateLimit(`getTasks:${ip}`, 60, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   return db.select().from(tasks).where(sql`${tasks.parentId} IS NULL`).all();
 });
 
 // ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
-export const getIncompleteTasks = cache(function getIncompleteTasks() {
+export const getIncompleteTasks = cache(async function getIncompleteTasks() {
+  // SECURE: Rate limit task retrieval to prevent DoS via database connection exhaustion
+  const headersList = await headers();
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+  if (!rateLimit(`getIncompleteTasks:${ip}`, 60, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   return db.select().from(tasks).where(and(eq(tasks.isCompleted, false), sql`${tasks.parentId} IS NULL`)).all();
 });
 
 // ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
-export const getUpcomingTasks = cache(function getUpcomingTasks() {
+export const getUpcomingTasks = cache(async function getUpcomingTasks() {
+  // SECURE: Rate limit task retrieval to prevent DoS via database connection exhaustion
+  const headersList = await headers();
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+  if (!rateLimit(`getUpcomingTasks:${ip}`, 60, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   const today = format(new Date(), "yyyy-MM-dd");
   return db.select().from(tasks)
     .where(and(sql`${tasks.date} > ${today}`, sql`${tasks.parentId} IS NULL`)).all();
 });
 
 // ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
-export const getTasksByListId = cache(function getTasksByListId(listId: number) {
+export const getTasksByListId = cache(async function getTasksByListId(listId: number) {
+  // SECURE: Rate limit task retrieval to prevent DoS via database connection exhaustion
+  const headersList = await headers();
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+  if (!rateLimit(`getTasksByListId:${ip}`, 60, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   return db.select().from(tasks).where(and(eq(tasks.listId, listId), sql`${tasks.parentId} IS NULL`)).all();
 });
 
 // ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
-export const getTasksByDateRange = cache(function getTasksByDateRange(startDate: string, endDate: string) {
+export const getTasksByDateRange = cache(async function getTasksByDateRange(startDate: string, endDate: string) {
+  // SECURE: Rate limit task retrieval to prevent DoS via database connection exhaustion
+  const headersList = await headers();
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+  if (!rateLimit(`getTasksByDateRange:${ip}`, 60, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   return db.select().from(tasks)
     .where(
       and(
@@ -52,7 +87,7 @@ export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(task
   if (!rateLimit(`getTaskDetailedInfo:${ip}`, 60, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
-  const assignedLabels = getTaskLabelsInternal(taskId);
+  const assignedLabels = await getTaskLabels(taskId);
   const subtasks = db.select().from(tasks).where(eq(tasks.parentId, taskId)).all();
   const attachmentsList = db.select().from(attachments).where(eq(attachments.taskId, taskId)).all();
   // ⚡ Bolt: Removed activity logs fetch from here. The ActivityLog component will now lazily load
@@ -66,7 +101,14 @@ export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(task
 });
 
 // ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
-export const getTasksForDate = cache(function getTasksForDate(date: string) {
+export const getTasksForDate = cache(async function getTasksForDate(date: string) {
+  // SECURE: Rate limit task retrieval to prevent DoS via database connection exhaustion
+  const headersList = await headers();
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+  if (!rateLimit(`getTasksForDate:${ip}`, 60, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   return db.select().from(tasks).where(and(eq(tasks.date, date), sql`${tasks.parentId} IS NULL`)).all();
 });
 
@@ -304,7 +346,14 @@ export async function toggleTaskLabel(taskId: number, labelId: number, selected:
 }
 
 // ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
-export const getTasksAfterDate = cache(function getTasksAfterDate(startDate: string) {
+export const getTasksAfterDate = cache(async function getTasksAfterDate(startDate: string) {
+  // SECURE: Rate limit task retrieval to prevent DoS via database connection exhaustion
+  const headersList = await headers();
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+  if (!rateLimit(`getTasksAfterDate:${ip}`, 60, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   return db.select().from(tasks)
     .where(
         and(sql`${tasks.date} > ${startDate}`, sql`${tasks.parentId} IS NULL`)
