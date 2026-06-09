@@ -1,4 +1,4 @@
-💡 What: Added tooltips, text truncation, and shrink-0 to icons in CommandItems.
-🎯 Why: Prevents long task and label names from breaking the flex layout and squishing SVGs, while maintaining accessibility to the full text via tooltips.
-📸 Before/After: N/A
-♿ Accessibility: Ensures full text is readable via native tooltips on hover.
+💡 What: Disabled the task creation submit button when the input is empty and added optimistic UI updates for label assignments.
+🎯 Why: Provides immediate visual feedback that a task name is required and makes label toggling feel instantaneous by removing network delay from the UI interaction.
+📸 Before/After: 'Add task' button visually grays out when input is empty. Label checkmarks appear immediately upon click.
+♿ Accessibility: Enhances visual cues for form validation and improves perceived performance for interactive elements.
