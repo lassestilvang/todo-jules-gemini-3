@@ -84,12 +84,26 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
 
   const handleToggleLabel = async (labelId: number) => {
     const isAssigned = assignedLabelIds.has(labelId);
-    await toggleTaskLabel(task.id, labelId, !isAssigned);
+
+    // Optimistic UI update
     if (isAssigned) {
         setAssignedLabels(prev => prev.filter(l => l.id !== labelId));
     } else {
         const label = labelsMap.get(labelId);
         if (label) setAssignedLabels(prev => [...prev, label]);
+    }
+
+    try {
+        await toggleTaskLabel(task.id, labelId, !isAssigned);
+    } catch (error) {
+        // Rollback on failure
+        if (isAssigned) {
+            const label = labelsMap.get(labelId);
+            if (label) setAssignedLabels(prev => [...prev, label]);
+        } else {
+            setAssignedLabels(prev => prev.filter(l => l.id !== labelId));
+        }
+        toast.error("Failed to update label assignment");
     }
   };
 
@@ -139,6 +153,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                         id="description"
                         defaultValue={task.description || ''}
                         onBlur={(e) => handleUpdate({ description: e.target.value })}
+                        onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !e.nativeEvent.isComposing) { e.preventDefault(); e.currentTarget.blur(); } }}
                         className="min-h-[100px]"
                     />
                 </div>
@@ -340,7 +355,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
-            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} autoFocus>
+            <Button type="button" variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} autoFocus>
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
