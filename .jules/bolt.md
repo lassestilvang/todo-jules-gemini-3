@@ -133,3 +133,7 @@
 ## $(date +%Y-%m-%d) - Lazy Loading Dynamic Imports in Next.js
 **Learning:** In Next.js, using `next/dynamic` to dynamically import a component (like `<TaskDetailSheet>`) will NOT prevent it from being fetched immediately on initial page load if the component is unconditionally rendered in the JSX tree, even if its visible state (like `open={false}`) is hidden. This causes unnecessary JavaScript chunks (often hundreds of KB containing heavy UI libraries) to be downloaded and parsed on initial load, severely degrading Time To Interactive (TTI).
 **Action:** When using `next/dynamic` for heavy, infrequently accessed components (like modals or sheets), introduce a state variable (e.g., `hasMountedSheet`) and conditionally render the component block (e.g., `{hasMountedSheet && <DynamicComponent ... />}`) only *after* the user triggers the interaction that requires it.
+
+## 2024-05-25 - Caching Internal Function Calls
+**Learning:** In Next.js Server Actions, internal un-cached helper functions can cause redundant database queries during a single request lifecycle if invoked directly by multiple endpoints.
+**Action:** In Next.js Server Actions, to prevent redundant database queries during a single request lifecycle, ensure that internal operations reuse exported `React.cache()` wrapped functions rather than directly invoking un-cached internal helpers.

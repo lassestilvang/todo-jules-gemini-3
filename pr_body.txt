@@ -2,3 +2,7 @@
 🎯 Why: Provides immediate visual feedback that a task name is required and makes label toggling feel instantaneous by removing network delay from the UI interaction.
 📸 Before/After: 'Add task' button visually grays out when input is empty. Label checkmarks appear immediately upon click.
 ♿ Accessibility: Enhances visual cues for form validation and improves perceived performance for interactive elements.
+💡 What: Introduced a conditional render state (`hasMounted`) for the `<CommandDialog>` in `SearchCommand`. Also replaced an un-cached helper call with a cached call to optimize DB queries.
+🎯 Why: The search dialog and its heavy `cmdk` dependencies were unconditionally rendered in the JSX tree (even when hidden). Next.js eagerly downloads these chunks on initial page load, which degraded the initial Time to Interactive (TTI).
+📊 Impact: Reduces the initial JavaScript bundle size required to render the Sidebar by deferring the download and parsing of the search palette until the user actually interacts with it.
+🔭 Measurement: Verify by checking the network tab in DevTools; the JS chunks for the `cmdk` component will only be fetched after pressing Cmd+K or clicking the search button.
