@@ -139,6 +139,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                         id="description"
                         defaultValue={task.description || ''}
                         onBlur={(e) => handleUpdate({ description: e.target.value })}
+                        onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !e.nativeEvent.isComposing) e.currentTarget.blur(); }}
                         className="min-h-[100px]"
                     />
                 </div>
@@ -340,7 +341,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-4">
-            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} autoFocus>
+            <Button type="button" variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isDeleting} autoFocus>
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
