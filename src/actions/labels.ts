@@ -8,7 +8,14 @@ import { cache } from 'react';
 import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
 
-export const getLabels = cache(function getLabels() {
+export const getLabels = cache(async function getLabels() {
+  // SECURE: Rate limit label retrieval to prevent DoS via database connection exhaustion
+  const headersList = await headers();
+  const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+  if (!rateLimit(`getLabels:${ip}`, 60, 60 * 1000)) {
+    throw new Error('Too many requests. Please try again later.');
+  }
+
   return db.select().from(labels).all();
 });
 
