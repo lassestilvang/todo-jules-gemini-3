@@ -8,17 +8,18 @@ import { cache } from 'react';
 import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
 
-export const getLists = cache(async function getLists() {
-  // SECURE: Rate limit list retrieval to prevent DoS via database connection exhaustion
+export const getListsInternal = cache(function getListsInternal() {
+  return db.select().from(lists).all();
+});
+
+export const getLists = async function getLists() {
   const headersList = await headers();
   const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
   if (!rateLimit(`getLists:${ip}`, 60, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
-
-  // Optimized: Cache the lists query to prevent redundant database calls in a single render pass
-  return db.select().from(lists).all();
-});
+  return getListsInternal();
+};
 
 export const getListById = cache(async function getListById(id: number) {
   // SECURE: Rate limit list retrieval to prevent DoS via database connection exhaustion
