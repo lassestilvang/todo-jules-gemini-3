@@ -11,16 +11,18 @@ import { rateLimit } from '@/lib/rate-limit';
 import { ALLOWED_TASK_KEYS } from '@/lib/types';
 
 // ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
-export const getTasks = cache(async function getTasks() {
-  // SECURE: Rate limit task retrieval to prevent DoS via database connection exhaustion
+export const getTasksInternal = cache(function getTasksInternal() {
+  return db.select().from(tasks).where(sql`\${tasks.parentId} IS NULL`).all();
+});
+
+export const getTasks = async function getTasks() {
   const headersList = await headers();
   const ip = headersList.get('x-real-ip') || headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
   if (!rateLimit(`getTasks:${ip}`, 60, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
-
-  return db.select().from(tasks).where(sql`${tasks.parentId} IS NULL`).all();
-});
+  return getTasksInternal();
+};
 
 // ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
 export const getIncompleteTasks = cache(async function getIncompleteTasks() {
