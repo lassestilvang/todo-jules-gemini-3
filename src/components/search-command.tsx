@@ -16,6 +16,8 @@ import { useDebounce } from '@/lib/hooks';
 
 export function SearchCommand() {
   const [open, setOpen] = React.useState(false);
+  // ⚡ Bolt: State to track if the heavy search dialog has been opened at least once to defer loading
+  const [hasMounted, setHasMounted] = React.useState(false);
   const [query, setQuery] = React.useState('');
   const [results, setResults] = React.useState<Task[]>([]);
   const debouncedQuery = useDebounce(query, 300);
@@ -23,6 +25,12 @@ export function SearchCommand() {
   // ⚡ Bolt: Local cache to prevent redundant network requests during typos/backspacing
   const cacheRef = React.useRef<Map<string, Task[]>>(new Map());
   const CACHE_MAX_SIZE = 50;
+
+  React.useEffect(() => {
+    if (open && !hasMounted) {
+      setHasMounted(true);
+    }
+  }, [open, hasMounted]);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -93,8 +101,10 @@ export function SearchCommand() {
             </kbd>
         </button>
 
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput
+      {/* ⚡ Bolt: Conditionally render the heavy cmdk dialog to prevent it from being fetched and parsed on initial page load, improving TTI */}
+      {hasMounted && (
+        <CommandDialog open={open} onOpenChange={setOpen}>
+          <CommandInput
             placeholder="Type to search tasks..."
             value={query}
             onValueChange={setQuery}
@@ -132,12 +142,13 @@ export function SearchCommand() {
                       </>
                     )}
                     <span className="truncate min-w-0">{task.name}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-          )}
-        </CommandList>
-      </CommandDialog>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+            )}
+          </CommandList>
+        </CommandDialog>
+      )}
     </>
   );
 }

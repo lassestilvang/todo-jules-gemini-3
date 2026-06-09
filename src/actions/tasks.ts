@@ -52,7 +52,7 @@ export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(task
   if (!rateLimit(`getTaskDetailedInfo:${ip}`, 60, 60 * 1000)) {
     throw new Error('Too many requests. Please try again later.');
   }
-  const assignedLabels = getTaskLabelsInternal(taskId);
+  const assignedLabels = await getTaskLabels(taskId);
   const subtasks = db.select().from(tasks).where(eq(tasks.parentId, taskId)).all();
   const attachmentsList = db.select().from(attachments).where(eq(attachments.taskId, taskId)).all();
   // ⚡ Bolt: Removed activity logs fetch from here. The ActivityLog component will now lazily load
