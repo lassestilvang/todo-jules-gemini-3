@@ -61,7 +61,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                  <Button
                   key={list.id}
                   variant={isActive ? 'secondary' : 'ghost'}
-                  className="w-full justify-start"
+                  className="w-full justify-start hover:bg-muted/50"
                   asChild
                 >
                   {/* Disable prefetch to prevent unnecessary background requests for all list links */}
@@ -84,7 +84,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                <Button
                 key={label.id}
                 variant="ghost"
-                className="w-full justify-start"
+                className="w-full justify-start hover:bg-muted/50"
                 title={label.name}
                >
                   <Tag className="mr-2 h-4 w-4 shrink-0" style={{ color: label.color || '#000000' }} aria-hidden="true" />
