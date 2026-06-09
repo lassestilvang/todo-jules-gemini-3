@@ -84,12 +84,26 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
 
   const handleToggleLabel = async (labelId: number) => {
     const isAssigned = assignedLabelIds.has(labelId);
-    await toggleTaskLabel(task.id, labelId, !isAssigned);
+
+    // Optimistic UI update
     if (isAssigned) {
         setAssignedLabels(prev => prev.filter(l => l.id !== labelId));
     } else {
         const label = labelsMap.get(labelId);
         if (label) setAssignedLabels(prev => [...prev, label]);
+    }
+
+    try {
+        await toggleTaskLabel(task.id, labelId, !isAssigned);
+    } catch (error) {
+        // Rollback on failure
+        if (isAssigned) {
+            const label = labelsMap.get(labelId);
+            if (label) setAssignedLabels(prev => [...prev, label]);
+        } else {
+            setAssignedLabels(prev => prev.filter(l => l.id !== labelId));
+        }
+        toast.error("Failed to update label assignment");
     }
   };
 
