@@ -59,3 +59,6 @@ Always use `error instanceof Error ? error.message : (typeof error === 'string' 
 ## 2026-05-23 - Prevent SVG Squishing in Flex Layouts
 **Learning:** In constrained flexbox layouts (like sidebars) using `truncate` for text, adjacent SVG icons without explicit `shrink-0` classes will compress when the text overflows, degrading the UI.
 **Action:** Always add the `shrink-0` class to icons placed next to text that has the `truncate` class in flex containers.
+## 2024-06-07 - Add Consistent Hover Transitions to Sidebar Links
+**Learning:** Ghost buttons used as navigation links in sidebars often miss the subtle hover background colors (`hover:bg-muted/50`) and smooth transitions (`transition-colors`) that are present on adjacent secondary actions (like "Create" buttons), breaking visual consistency.
+**Action:** Always ensure navigation links and list items using ghost variants explicitly include `transition-colors hover:bg-muted/50` if they do not inherit them by default from the design system's variant.

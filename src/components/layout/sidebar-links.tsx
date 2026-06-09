@@ -25,7 +25,7 @@ export function SidebarLinks({ links }: SidebarLinksProps) {
                 <Button
                   key={link.href}
                   variant={isActive ? 'secondary' : 'ghost'}
-                  className="w-full justify-start"
+                  className="w-full justify-start transition-colors hover:bg-muted/50"
                   asChild
                 >
                   {/* Disable prefetch to prevent unnecessary background requests for all sidebar items */}
