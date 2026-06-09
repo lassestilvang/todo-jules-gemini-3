@@ -15,9 +15,15 @@ import { Task } from '@/lib/types';
 import { useDebounce } from '@/lib/hooks';
 
 export function SearchCommand() {
-  const [open, setOpen] = React.useState(false);
-  // ⚡ Bolt: State to track if the heavy search dialog has been opened at least once to defer loading
+  const [open, _setOpen] = React.useState(false);
   const [hasMounted, setHasMounted] = React.useState(false);
+  const setOpen = React.useCallback((val: boolean | ((prev: boolean) => boolean)) => {
+    _setOpen((prev) => {
+      const next = typeof val === 'function' ? val(prev) : val;
+      if (next) setHasMounted(true);
+      return next;
+    });
+  }, []);
   const [query, setQuery] = React.useState('');
   const [results, setResults] = React.useState<Task[]>([]);
   const debouncedQuery = useDebounce(query, 300);
