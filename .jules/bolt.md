@@ -136,3 +136,7 @@
 ## 2024-06-25 - Prevent O(N) Re-Renders in Dense Next.js Navigation Sidebars
 **Learning:** Using `usePathname()` inside a dense navigation component (like a Sidebar) triggers a re-render of the entire component on every client-side navigation. If the sidebar maps over large data arrays (like user lists or labels) fetched from Server Components (which generate new object references on revalidation), this causes massive O(N) re-renders, stalling the main thread during route transitions.
 **Action:** Extract list item mappings inside navigation components into `React.memo` wrappers with custom shallow comparators. This ensures that only the newly active and previously active items re-render when `pathname` changes, bypassing the remaining N-2 items.
+
+## 2024-05-25 - Caching Internal Function Calls
+**Learning:** In Next.js Server Actions, internal un-cached helper functions can cause redundant database queries during a single request lifecycle if invoked directly by multiple endpoints.
+**Action:** In Next.js Server Actions, to prevent redundant database queries during a single request lifecycle, ensure that internal operations reuse exported `React.cache()` wrapped functions rather than directly invoking un-cached internal helpers.
