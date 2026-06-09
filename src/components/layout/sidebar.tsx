@@ -61,7 +61,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
                  <Button
                   key={list.id}
                   variant={isActive ? 'secondary' : 'ghost'}
-                  className="w-full justify-start transition-colors hover:bg-muted/50"
+                  className="w-full justify-start hover:bg-muted/50"
                   asChild
                 >
                   {/* Disable prefetch to prevent unnecessary background requests for all list links */}
