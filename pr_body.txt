@@ -1,4 +1,4 @@
-💡 What: Added tooltips, text truncation, and shrink-0 to icons in CommandItems.
-🎯 Why: Prevents long task and label names from breaking the flex layout and squishing SVGs, while maintaining accessibility to the full text via tooltips.
-📸 Before/After: N/A
-♿ Accessibility: Ensures full text is readable via native tooltips on hover.
+💡 What: Added type="button" to the Cancel and Delete buttons in the Task Detail Sheet's delete confirmation dialog.
+🎯 Why: In form dialogs, not explicitly setting type="button" can accidentally trigger unwanted form submissions if wrapped in a form later. This aligns with accessibility best practices.
+📸 Before/After: Before: Buttons lacked the type="button" attribute. After: Both buttons now explicitly use type="button".
+♿ Accessibility: Ensures the "Cancel" button provides a clear, non-destructive exit path without risking unintended form submissions.

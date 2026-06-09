@@ -59,3 +59,6 @@ Always use `error instanceof Error ? error.message : (typeof error === 'string' 
 ## 2026-05-23 - Prevent SVG Squishing in Flex Layouts
 **Learning:** In constrained flexbox layouts (like sidebars) using `truncate` for text, adjacent SVG icons without explicit `shrink-0` classes will compress when the text overflows, degrading the UI.
 **Action:** Always add the `shrink-0` class to icons placed next to text that has the `truncate` class in flex containers.
+## 2026-05-24 - Ensure Cancel Buttons Have type="button"
+**Learning:** In form dialogs or modal confirmations, not explicitly setting `type="button"` on "Cancel" or alternative action buttons can accidentally trigger unwanted form submissions if the component is wrapped in a form later.
+**Action:** Always ensure that "Cancel" and other non-submit action buttons explicitly have the `type="button"` attribute to provide a clear, non-destructive exit path and prevent unintended form submissions.
