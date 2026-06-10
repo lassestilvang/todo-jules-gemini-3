@@ -25,7 +25,7 @@ import { List, Label } from '@/lib/types';
 const SidebarListItem = React.memo(({ list, isActive }: { list: List, isActive: boolean }) => (
   <Button
     variant={isActive ? 'secondary' : 'ghost'}
-    className="w-full justify-start"
+    className="w-full justify-start hover:bg-muted/50"
     asChild
   >
     {/* Disable prefetch to prevent unnecessary background requests for all list links */}
@@ -49,7 +49,7 @@ const SidebarLabels = React.memo(({ labels }: { labels: Label[] }) => {
         <Button
           key={label.id}
           variant="ghost"
-          className="w-full justify-start"
+          className="w-full justify-start hover:bg-muted/50"
           title={label.name}
         >
           <Tag className="mr-2 h-4 w-4 shrink-0" style={{ color: label.color || '#000000' }} aria-hidden="true" />
@@ -103,23 +103,10 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
             Lists
           </h2>
           <div className="space-y-1">
-             {lists.map((list) => {
-               const isActive = pathname === `/lists/${list.id}`;
-               return (
-                 <Button
-                  key={list.id}
-                  variant={isActive ? 'secondary' : 'ghost'}
-                  className="w-full justify-start hover:bg-muted/50"
-                  asChild
-                >
-                  {/* Disable prefetch to prevent unnecessary background requests for all list links */}
-                  <Link href={'/lists/' + list.id} aria-current={isActive ? 'page' : undefined} prefetch={false} title={list.name}>
-                    <ListIcon className="mr-2 h-4 w-4 shrink-0" aria-hidden="true" />
-                    <span className="truncate min-w-0">{list.name}</span>
-                  </Link>
-                </Button>
-               );
-             })}
+             {/* ⚡ Bolt: Using memoized component to avoid re-rendering entire list on path change */}
+             {lists.map((list) => (
+                 <SidebarListItem key={list.id} list={list} isActive={pathname === `/lists/${list.id}`} />
+             ))}
              <CreateListDialog />
           </div>
         </div>
@@ -128,17 +115,8 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
             Labels
           </h2>
           <div className="space-y-1">
-             {labels.map((label) => (
-               <Button
-                key={label.id}
-                variant="ghost"
-                className="w-full justify-start hover:bg-muted/50"
-                title={label.name}
-               >
-                  <Tag className="mr-2 h-4 w-4 shrink-0" style={{ color: label.color || '#000000' }} aria-hidden="true" />
-                  <span className="truncate">{label.name}</span>
-               </Button>
-             ))}
+             {/* ⚡ Bolt: Using memoized component to avoid re-rendering entire list on path change */}
+             <SidebarLabels labels={labels} />
              <CreateLabelDialog />
           </div>
         </div>
