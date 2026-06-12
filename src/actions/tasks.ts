@@ -9,6 +9,8 @@ import { cache } from 'react';
 import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
 import { ALLOWED_TASK_KEYS } from '@/lib/types';
+import { getSubtasks } from '@/actions/subtasks';
+import { getAttachments } from '@/actions/upload';
 
 // ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
 export const getTasksInternal = cache(function getTasksInternal() {
@@ -90,8 +92,8 @@ export const getTaskDetailedInfo = cache(async function getTaskDetailedInfo(task
     throw new Error('Too many requests. Please try again later.');
   }
   const assignedLabels = await getTaskLabels(taskId);
-  const subtasks = db.select().from(tasks).where(eq(tasks.parentId, taskId)).all();
-  const attachmentsList = db.select().from(attachments).where(eq(attachments.taskId, taskId)).all();
+  const subtasks = await getSubtasks(taskId);
+  const attachmentsList = await getAttachments(taskId);
   // ⚡ Bolt: Removed activity logs fetch from here. The ActivityLog component will now lazily load
   // its own data when mounted to prevent over-fetching large historical data on task open.
 

@@ -143,3 +143,6 @@
 ## 2024-06-25 - Optimize Sidebar rendering
 **Learning:** The Sidebar component previously defined memoized `SidebarListItem` and `SidebarLabels` components, but failed to actually use them in the render tree, leading to unnecessary O(N) re-renders of list items during navigation because of `usePathname`.
 **Action:** Ensure memoized components are actually rendered in the JSX.
+## $(date +%Y-%m-%d) - Reuse React.cache wrapped functions for internal queries
+**Learning:** Directly performing `db.select()` queries inside Server Actions for nested entities like subtasks and attachments causes redundant database queries during a single request lifecycle, bypassing the deduplication benefits of Next.js Server Actions.
+**Action:** In Next.js Server Actions, to prevent redundant database queries during a single request lifecycle, ensure that internal operations reuse exported `React.cache()` wrapped functions (e.g. `getSubtasks` and `getAttachments`) rather than directly invoking un-cached internal helpers or db queries.
