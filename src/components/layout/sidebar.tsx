@@ -25,7 +25,7 @@ import { List, Label } from '@/lib/types';
 const SidebarListItem = React.memo(({ list, isActive }: { list: List, isActive: boolean }) => (
   <Button
     variant={isActive ? 'secondary' : 'ghost'}
-    className="w-full justify-start hover:bg-muted/50"
+    className="w-full justify-start hover:bg-muted/50 transition-colors"
     asChild
   >
     {/* Disable prefetch to prevent unnecessary background requests for all list links */}
@@ -49,7 +49,7 @@ const SidebarLabels = React.memo(({ labels }: { labels: Label[] }) => {
         <Button
           key={label.id}
           variant="ghost"
-          className="w-full justify-start hover:bg-muted/50"
+          className="w-full justify-start hover:bg-muted/50 transition-colors"
           title={label.name}
         >
           <Tag className="mr-2 h-4 w-4 shrink-0" style={{ color: label.color || '#000000' }} aria-hidden="true" />

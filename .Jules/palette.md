@@ -67,7 +67,6 @@ Always use `error instanceof Error ? error.message : (typeof error === 'string' 
 **Action:** Always wrap disabled buttons in a container element (like a `<span>` with `tabIndex={-1}`) and apply the `title` attribute to the wrapper to ensure the explanatory tooltip is accessible to sighted users via mouse hover.
 ## 2026-05-24 - Quick-save for Textareas and Explicit Button Types
 **Learning:** In textareas intended for descriptions or notes, users expect standard keyboard shortcuts like Cmd+Enter or Ctrl+Enter to save their input quickly. Without it, they are forced to use the mouse to click outside the textarea to trigger `onBlur`, breaking their keyboard flow. Additionally, cancel/close buttons inside dialogs or forms can inadvertently act as submit buttons if they are missing `type="button"`.
-**Action:** Always add `onKeyDown` handlers to form textareas to capture `Cmd+Enter`/`Ctrl+Enter` and trigger a `blur` event for quick-saving, taking care to check `!e.nativeEvent.isComposing` to avoid breaking IME input. Always explicitly set `type="button"` on non-submitting action buttons.
-## 2024-06-07 - Add Consistent Hover Transitions to Sidebar Links
+## 2025-06-07 - Add Consistent Hover Transitions to Sidebar Links
 **Learning:** Ghost buttons used as navigation links in sidebars often miss the subtle hover background colors (`hover:bg-muted/50`) and smooth transitions (`transition-colors`) that are present on adjacent secondary actions (like "Create" buttons), breaking visual consistency.
 **Action:** Always ensure navigation links and list items using ghost variants explicitly include `transition-colors hover:bg-muted/50` if they do not inherit them by default from the design system's variant.
