@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { labels, taskLabels } from '@/lib/schema';
+import { labels } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { cache } from 'react';
@@ -48,9 +48,6 @@ export async function deleteLabel(id: number) {
     throw new Error('Too many requests. Please try again later.');
   }
 
-  db.transaction((tx: typeof db) => {
-    tx.delete(taskLabels).where(eq(taskLabels.labelId, id)).run();
-    tx.delete(labels).where(eq(labels.id, id)).run();
-  });
+  db.delete(labels).where(eq(labels.id, id)).run();
   try { revalidatePath('/'); } catch { /* empty */ }
 }

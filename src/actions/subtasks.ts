@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { tasks, activityLogs, taskLabels, attachments } from '@/lib/schema';
+import { tasks, attachments } from '@/lib/schema';
 import { eq, inArray } from 'drizzle-orm';
 import { cache } from 'react';
 import { headers } from 'next/headers';
@@ -50,12 +50,7 @@ export async function deleteSubtask(id: number) {
     const taskIds = [id];
     const taskAttachments = db.select().from(attachments).where(inArray(attachments.taskId, taskIds)).all();
 
-    db.transaction((tx: typeof db) => {
-        tx.delete(taskLabels).where(inArray(taskLabels.taskId, taskIds)).run();
-        tx.delete(activityLogs).where(inArray(activityLogs.taskId, taskIds)).run();
-        tx.delete(attachments).where(inArray(attachments.taskId, taskIds)).run();
-        tx.delete(tasks).where(inArray(tasks.id, taskIds)).run();
-    });
+    db.delete(tasks).where(inArray(tasks.id, taskIds)).run();
 
     const { unlink } = await import('fs/promises');
     const { join } = await import('path');

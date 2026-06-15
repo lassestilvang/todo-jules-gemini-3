@@ -143,3 +143,7 @@
 ## 2024-06-25 - Optimize Sidebar rendering
 **Learning:** The Sidebar component previously defined memoized `SidebarListItem` and `SidebarLabels` components, but failed to actually use them in the render tree, leading to unnecessary O(N) re-renders of list items during navigation because of `usePathname`.
 **Action:** Ensure memoized components are actually rendered in the JSX.
+
+## $(date +%Y-%m-%d) - Native SQLite Foreign Key Cascading
+**Learning:** Performing application-level transactions to manually fetch and delete dependent rows (like subtasks, task_labels, activity_logs) is redundant, causes extra network/database roundtrips, and slows down operations. `drizzle-orm` properly configures `.references(..., { onDelete: 'cascade' })`, and WAL mode `db.ts` enables `foreign_keys = ON`.
+**Action:** Always rely on SQLite's native `ON DELETE CASCADE` and `ON DELETE SET NULL` for referential integrity and dependency cleanup instead of manually executing separate DELETE or UPDATE queries inside a transaction.

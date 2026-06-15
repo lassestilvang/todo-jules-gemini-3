@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { lists, tasks } from '@/lib/schema';
+import { lists } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { cache } from 'react';
@@ -59,9 +59,6 @@ export async function deleteList(id: number) {
     throw new Error('Too many requests. Please try again later.');
   }
 
-  db.transaction((tx: typeof db) => {
-    tx.update(tasks).set({ listId: null }).where(eq(tasks.listId, id)).run();
-    tx.delete(lists).where(eq(lists.id, id)).run();
-  });
+  db.delete(lists).where(eq(lists.id, id)).run();
   try { revalidatePath('/'); } catch { /* empty */ }
 }
