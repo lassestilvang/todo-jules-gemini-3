@@ -143,3 +143,7 @@
 ## 2024-06-25 - Optimize Sidebar rendering
 **Learning:** The Sidebar component previously defined memoized `SidebarListItem` and `SidebarLabels` components, but failed to actually use them in the render tree, leading to unnecessary O(N) re-renders of list items during navigation because of `usePathname`.
 **Action:** Ensure memoized components are actually rendered in the JSX.
+
+## 2024-06-25 - Prevent O(N) Re-Renders in Static Sidebar Links
+**Learning:** Similar to dynamic lists, inline mapping of static links in components that use `usePathname()` causes all links to re-render on every client-side navigation.
+**Action:** Extract individual static link items into `React.memo` components with custom comparators that check if the `isActive` state changed, ensuring only the previously and newly active links re-render.
