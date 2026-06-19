@@ -30,7 +30,8 @@ const SidebarLinkItem = React.memo(({ link, isActive }: { link: SidebarLinksProp
 ), (prevProps, nextProps) => {
     return prevProps.isActive === nextProps.isActive &&
            prevProps.link.href === nextProps.link.href &&
-           prevProps.link.name === nextProps.link.name;
+           prevProps.link.name === nextProps.link.name &&
+           prevProps.link.icon === nextProps.link.icon;
 });
 SidebarLinkItem.displayName = 'SidebarLinkItem';
 
