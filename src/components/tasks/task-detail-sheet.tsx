@@ -168,7 +168,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                         ))}
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" size="sm" className="h-6 border-dashed">
+                                <Button type="button" variant="outline" size="sm" className="h-6 border-dashed">
                                     <Plus className="w-3 h-3 mr-1" aria-hidden="true" />
                                     Add Label
                                 </Button>
@@ -330,7 +330,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                 </div>
 
                 <div className="pt-4 mt-4 border-t">
-                    <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)} disabled={isDeleting} className="w-full sm:w-auto">
+                    <Button type="button" variant="destructive" onClick={() => setShowDeleteConfirm(true)} disabled={isDeleting} className="w-full sm:w-auto">
                         {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />}
                         Delete Task
                     </Button>
