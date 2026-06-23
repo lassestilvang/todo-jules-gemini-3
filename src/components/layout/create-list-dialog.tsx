@@ -42,7 +42,7 @@ export function CreateListDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-muted/50 transition-colors">
+        <Button type="button" variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-muted/50 transition-colors">
           <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
           Create List
         </Button>
