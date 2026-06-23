@@ -9,4 +9,4 @@
 **Action:** Always pair `aria-label` with `title` on icon-only interactive elements to provide context for sighted users relying on hover, but use custom wrappers if explaining disabled states is strictly required.
 ## 2025-01-20 - Prevent default submit behavior
 **Learning:** Always add `type="button"` to `<button>` elements that trigger custom JavaScript logic (like `onClick` handlers) rather than native form submissions, especially within dialogs or potential future form contexts, to prevent accidental default submit behaviors and page reloads.
-**Action:** Always verify custom action buttons are missing native `type` attribute, adding `type="button"` when missing.
+**Action:** Always verify whether custom action buttons have a type attribute, and add type="button" if it is missing.
