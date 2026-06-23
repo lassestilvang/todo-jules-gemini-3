@@ -16,6 +16,7 @@ import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
 
 // Create a test DB instance
 const sqlite = new Database(':memory:');
+sqlite.query('PRAGMA foreign_keys = ON;').run();
 const testDb = drizzle(sqlite);
 
 // Mock the app's db module to return our testDb

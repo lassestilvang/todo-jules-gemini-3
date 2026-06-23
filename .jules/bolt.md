@@ -147,3 +147,7 @@
 ## 2024-06-25 - Prevent O(N) Re-Renders for Small Static Links Arrays
 **Learning:** In Next.js Client Components that use `usePathname()` for navigation state, inline mapping of even small static links arrays causes all links to re-render on every client-side navigation.
 **Action:** Extract individual static link items into `React.memo` components with custom comparators (e.g., checking for `isActive` state changes) to prevent O(N) re-renders, ensuring only the previously and newly active links re-render.
+
+## 2024-06-25 - Rely on SQLite ON DELETE CASCADE
+**Learning:** Manually deleting dependent rows (like labels, logs, or subtasks) inside an application-level transaction when native ON DELETE CASCADE / SET NULL constraints are configured adds redundant database roundtrips and degrades performance.
+**Action:** Rely on SQLite's native foreign key constraints instead of explicitly deleting related records in application code.
