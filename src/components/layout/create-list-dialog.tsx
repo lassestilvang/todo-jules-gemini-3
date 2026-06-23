@@ -56,7 +56,9 @@ export function CreateListDialog() {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="name">List Name</Label>
+            <Label htmlFor="name">
+              List Name <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="name"
               value={name}
@@ -64,6 +66,7 @@ export function CreateListDialog() {
               placeholder="e.g., Work, Personal"
               disabled={isSubmitting}
               autoFocus
+              required
             />
           </div>
           <DialogFooter>

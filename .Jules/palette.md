@@ -70,3 +70,6 @@ Always use `error instanceof Error ? error.message : (typeof error === 'string' 
 ## 2025-06-07 - Add Consistent Hover Transitions to Sidebar Links
 **Learning:** Ghost buttons used as navigation links in sidebars often miss the subtle hover background colors (`hover:bg-muted/50`) and smooth transitions (`transition-colors`) that are present on adjacent secondary actions (like "Create" buttons), breaking visual consistency.
 **Action:** Always ensure navigation links and list items using ghost variants explicitly include `transition-colors hover:bg-muted/50` if they do not inherit them by default from the design system's variant.
+## 2025-06-08 - Required Form Field Indicators
+**Learning:** Dialogs with form fields that disable their submit button when empty provide no upfront indication to sighted users that the fields are mandatory. Relying solely on a disabled submit button leads to a guessing game.
+**Action:** Always add a visual required indicator (e.g., `<span className="text-destructive">*</span>`) to the labels of mandatory fields, and include the HTML5 `required` attribute on the inputs to provide clear upfront expectations and better semantic validation.
