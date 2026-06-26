@@ -59,7 +59,6 @@ export function CreateLabelDialog() {
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
                 Name <span className="text-destructive" aria-hidden="true">*</span>
               </Label>
