@@ -130,5 +130,8 @@ export async function toggleTaskCompletion(taskId: number, isCompleted: boolean)
     }
   });
 
-  try { revalidatePath('/'); } catch { /* empty */ }
+  // ⚡ Bolt: Prevent expensive full-page RSC re-renders by skipping cache invalidation for subtasks, which are filtered out of root queries
+  if (task.parentId === null) {
+    try { revalidatePath('/'); } catch { /* empty */ }
+  }
 }
