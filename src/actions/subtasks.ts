@@ -52,7 +52,7 @@ export async function deleteSubtask(id: number) {
 
     // ⚡ Bolt: Rely on native SQLite ON DELETE CASCADE to handle dependent records
     // (taskLabels, activityLogs, attachments) instead of issuing multiple redundant DELETE queries
-    db.delete(tasks).where(inArray(tasks.id, taskIds)).run();
+    db.delete(tasks).where(eq(tasks.id, id)).run();
 
     const { unlink } = await import('fs/promises');
     const { join } = await import('path');
