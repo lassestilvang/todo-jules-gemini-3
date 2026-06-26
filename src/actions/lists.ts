@@ -59,9 +59,8 @@ export async function deleteList(id: number) {
     throw new Error('Too many requests. Please try again later.');
   }
 
-  db.transaction((tx: typeof db) => {
-    tx.update(tasks).set({ listId: null }).where(eq(tasks.listId, id)).run();
-    tx.delete(lists).where(eq(lists.id, id)).run();
-  });
+  // ⚡ Bolt: Rely on native SQLite ON DELETE SET NULL to handle dependent records
+  // (tasks.listId) instead of issuing multiple redundant DELETE/UPDATE queries
+  db.delete(lists).where(eq(lists.id, id)).run();
   try { revalidatePath('/'); } catch { /* empty */ }
 }

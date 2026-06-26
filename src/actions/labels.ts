@@ -48,9 +48,8 @@ export async function deleteLabel(id: number) {
     throw new Error('Too many requests. Please try again later.');
   }
 
-  db.transaction((tx: typeof db) => {
-    tx.delete(taskLabels).where(eq(taskLabels.labelId, id)).run();
-    tx.delete(labels).where(eq(labels.id, id)).run();
-  });
+  // ⚡ Bolt: Rely on native SQLite ON DELETE CASCADE to handle dependent records
+  // (taskLabels) instead of issuing multiple redundant DELETE queries
+  db.delete(labels).where(eq(labels.id, id)).run();
   try { revalidatePath('/'); } catch { /* empty */ }
 }
