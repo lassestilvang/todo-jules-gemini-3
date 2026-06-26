@@ -56,13 +56,16 @@ export function CreateListDialog() {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="name">List Name</Label>
+            <Label htmlFor="name">
+              List Name <span className="text-destructive" aria-hidden="true">*</span>
+            </Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Work, Personal"
               disabled={isSubmitting}
+              required
               autoFocus
             />
           </div>

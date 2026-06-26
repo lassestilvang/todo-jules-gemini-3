@@ -61,7 +61,7 @@ export function CreateLabelDialog() {
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
-                Name
+                Name <span className="text-destructive" aria-hidden="true">*</span>
               </Label>
               <Input
                 id="name"
@@ -70,6 +70,7 @@ export function CreateLabelDialog() {
                 className="col-span-3"
                 autoFocus
                 disabled={isSubmitting}
+                required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
