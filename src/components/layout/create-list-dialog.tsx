@@ -65,6 +65,7 @@ export function CreateListDialog() {
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Work, Personal"
               disabled={isSubmitting}
+              required
               autoFocus
               required
             />

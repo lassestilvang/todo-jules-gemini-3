@@ -73,3 +73,6 @@ Always use `error instanceof Error ? error.message : (typeof error === 'string' 
 ## 2025-06-08 - Required Form Field Indicators
 **Learning:** Dialogs with form fields that disable their submit button when empty provide no upfront indication to sighted users that the fields are mandatory. Relying solely on a disabled submit button leads to a guessing game.
 **Action:** Always add a visual required indicator (e.g., `<span className="text-destructive">*</span>`) to the labels of mandatory fields, and include the HTML5 `required` attribute on the inputs to provide clear upfront expectations and better semantic validation.
+## 2026-06-25 - Required Form Field Indicators
+**Learning:** In forms or dialogs where the submit button is disabled until mandatory fields are filled, users (especially those relying on screen readers or with cognitive disabilities) may not understand why they cannot submit.
+**Action:** Always provide explicit upfront indications by adding a visual required indicator (e.g., `*` in a destructive color) to the label and including the HTML5 `required` attribute on the input element to improve usability and accessibility.

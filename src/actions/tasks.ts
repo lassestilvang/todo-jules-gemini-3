@@ -267,12 +267,9 @@ export async function deleteTask(id: number) {
   const taskIds = [id, ...subtasks.map((t: { id: number }) => t.id)];
   const taskAttachments = db.select().from(attachments).where(inArray(attachments.taskId, taskIds)).all();
 
-  db.transaction((tx: typeof db) => {
-    tx.delete(taskLabels).where(inArray(taskLabels.taskId, taskIds)).run();
-    tx.delete(activityLogs).where(inArray(activityLogs.taskId, taskIds)).run();
-    tx.delete(attachments).where(inArray(attachments.taskId, taskIds)).run();
-    tx.delete(tasks).where(inArray(tasks.id, taskIds)).run();
-  });
+  // ⚡ Bolt: Rely on native SQLite ON DELETE CASCADE to handle dependent records
+  // (taskLabels, activityLogs, attachments) instead of issuing multiple redundant DELETE queries
+  db.delete(tasks).where(eq(tasks.id, id)).run();
 
   const { unlink } = await import('fs/promises');
   const { join } = await import('path');
