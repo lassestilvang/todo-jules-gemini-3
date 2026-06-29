@@ -123,14 +123,14 @@
 ## 2026-05-24 - Disable Next.js Link prefetching for dynamic/dense menus
 **Learning:** Next.js defaults to aggressively prefetching routes for every `<Link>` that enters the viewport. In dense navigation components like sidebars displaying dynamic, user-generated content (e.g., numerous lists or tags), this default behavior can cause a surge of unnecessary background network requests and server-side data fetching on page load, exhausting bandwidth and DB connections.
 **Action:** Add prefetch={false} to Link components in sidebars and other dense navigation menus specifically for dynamic routes or non-critical pages to prevent aggressive prefetching, while retaining default prefetching for core static routes.
-## $(date +%Y-%m-%d) - Disabling Next.js prefetching in dense sidebars
+## 2024-06-25 - Disabling Next.js prefetching in dense sidebars
 **Learning:** Next.js aggressively prefetches links in the viewport by default. In dense navigation components (like sidebars with dynamic/user-generated routes), this causes a surge of unnecessary background network requests, server-side data fetching, and database connection exhaustion.
 **Action:** Explicitly set `prefetch={false}` on `<Link>` components in dense navigation bars (like `sidebar.tsx` and `sidebar-links.tsx`) to prevent this overhead, especially when these links point to dynamic user data that isn't immediately critical to load before hover.
 ## 2024-05-24 - Custom Comparator for React.memo in Next.js Server Components
 **Learning:** Data fetched from databases in Next.js Server Components generates new object references on every route revalidation (such as when `revalidatePath` is triggered). Default `React.memo` relies on referential equality, meaning it fails to prevent re-renders when a new array of structurally identical items is passed down.
 **Action:** When passing database row objects as props to memoized Client Components (like list items), implement a custom comparator function in `React.memo` to perform a shallow comparison of the object's specific fields instead of relying on default referential equality. This prevents O(N) re-renders.
 
-## $(date +%Y-%m-%d) - Lazy Loading Dynamic Imports in Next.js
+## 2024-06-25 - Lazy Loading Dynamic Imports in Next.js
 **Learning:** In Next.js, using `next/dynamic` to dynamically import a component (like `<TaskDetailSheet>`) will NOT prevent it from being fetched immediately on initial page load if the component is unconditionally rendered in the JSX tree, even if its visible state (like `open={false}`) is hidden. This causes unnecessary JavaScript chunks (often hundreds of KB containing heavy UI libraries) to be downloaded and parsed on initial load, severely degrading Time To Interactive (TTI).
 **Action:** When using `next/dynamic` for heavy, infrequently accessed components (like modals or sheets), introduce a state variable (e.g., `hasMountedSheet`) and conditionally render the component block (e.g., `{hasMountedSheet && <DynamicComponent ... />}`) only *after* the user triggers the interaction that requires it.
 ## 2024-06-25 - Prevent O(N) Re-Renders in Dense Next.js Navigation Sidebars
@@ -154,3 +154,6 @@
 ## 2024-06-24 - Prevent O(N) Re-renders by filtering out subtasks from RSC root queries cache invalidation in recurrence logic
 **Learning:** In Next.js, calling `revalidatePath('/')` after a mutation clears the Server Component router cache and triggers a full page re-render. If a mutation only modifies data that is explicitly filtered out of root queries (like subtasks, where `parentId IS NOT NULL`), invalidating the entire root path causes massive unnecessary RSC render tree bloat and latency, as it forces the server to re-fetch and re-render the entire list of parent tasks even though they haven't changed.
 **Action:** When performing mutations on dependent or nested records (like toggling a subtask's completion status) that are optimistically updated on the client and filtered out of root server queries, conditionally skip `revalidatePath('/')` if the task is a subtask (e.g., `!task || task.parentId === null`).
+## 2024-06-25 - Push navigation state down to avoid Layout re-renders
+**Learning:** Calling `usePathname()` at the top level of a heavy layout component (like `Sidebar`) forces the entire component tree—including unrelated heavy children like `SearchCommand` and dialogs—to re-render on every client-side navigation.
+**Action:** Always push navigation-dependent state (`usePathname()`) down to the lowest possible leaf components (e.g., `SidebarLists`, `SidebarLinks`). This allows the parent layout component to remain pure and completely bypass re-rendering during route transitions.
