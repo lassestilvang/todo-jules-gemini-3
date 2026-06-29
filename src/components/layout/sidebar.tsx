@@ -41,6 +41,28 @@ const SidebarListItem = React.memo(({ list, isActive }: { list: List, isActive: 
 });
 SidebarListItem.displayName = 'SidebarListItem';
 
+// ⚡ Bolt: Extracted SidebarLists to consume usePathname internally, preventing the entire Sidebar from re-rendering on every navigation
+const SidebarLists = React.memo(({ lists }: { lists: List[] }) => {
+  const pathname = usePathname();
+  return (
+    <>
+      {lists.map((list) => (
+        <SidebarListItem key={list.id} list={list} isActive={pathname === `/lists/${list.id}`} />
+      ))}
+    </>
+  );
+}, (prevProps, nextProps) => {
+  if (prevProps.lists.length !== nextProps.lists.length) return false;
+  return prevProps.lists.every((l, i) =>
+    l.id === nextProps.lists[i].id &&
+    l.name === nextProps.lists[i].name &&
+    l.color === nextProps.lists[i].color &&
+    l.icon === nextProps.lists[i].icon &&
+    l.isDefault === nextProps.lists[i].isDefault
+  );
+});
+SidebarLists.displayName = 'SidebarLists';
+
 // ⚡ Bolt: Memoize the entire labels list to prevent re-rendering when navigating between routes.
 const SidebarLabels = React.memo(({ labels }: { labels: Label[] }) => {
   return (
@@ -73,17 +95,16 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
     labels: Label[];
 }
 
+// ⚡ Bolt: Moved staticLinks outside of the component to prevent recreating the array on every render
+const staticLinks = [
+  { name: 'Inbox', href: '/', icon: Inbox },
+  { name: 'Today', href: '/today', icon: CalendarDays },
+  { name: 'Next 7 Days', href: '/next-7-days', icon: CalendarRange },
+  { name: 'Upcoming', href: '/upcoming', icon: Calendar },
+  { name: 'All Tasks', href: '/all', icon: Layers },
+];
+
 export function Sidebar({ className, lists, labels }: SidebarProps) {
-  const pathname = usePathname();
-
-  const staticLinks = [
-    { name: 'Inbox', href: '/', icon: Inbox },
-    { name: 'Today', href: '/today', icon: CalendarDays },
-    { name: 'Next 7 Days', href: '/next-7-days', icon: CalendarRange },
-    { name: 'Upcoming', href: '/upcoming', icon: Calendar },
-    { name: 'All Tasks', href: '/all', icon: Layers },
-  ];
-
   return (
     <div className={cn('pb-12 w-64 border-r min-h-screen bg-background', className)}>
       <div className="space-y-4 py-4">
@@ -104,9 +125,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
           </h2>
           <div className="space-y-1">
              {/* ⚡ Bolt: Using memoized component to avoid re-rendering entire list on path change */}
-             {lists.map((list) => (
-                 <SidebarListItem key={list.id} list={list} isActive={pathname === `/lists/${list.id}`} />
-             ))}
+             <SidebarLists lists={lists} />
              <CreateListDialog />
           </div>
         </div>
