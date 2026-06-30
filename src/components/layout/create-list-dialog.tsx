@@ -67,7 +67,6 @@ export function CreateListDialog() {
               disabled={isSubmitting}
               required
               autoFocus
-              required
             />
           </div>
           <DialogFooter>
