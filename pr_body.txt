@@ -1,12 +1,4 @@
-💡 What: Added type="button" to the Cancel and Delete buttons in the Task Detail Sheet's delete confirmation dialog.
-🎯 Why: In form dialogs, not explicitly setting type="button" can accidentally trigger unwanted form submissions if wrapped in a form later. This aligns with accessibility best practices.
-📸 Before/After: Before: Buttons lacked the type="button" attribute. After: Both buttons now explicitly use type="button".
-♿ Accessibility: Ensures the "Cancel" button provides a clear, non-destructive exit path without risking unintended form submissions.
-💡 What: Disabled the task creation submit button when the input is empty and added optimistic UI updates for label assignments.
-🎯 Why: Provides immediate visual feedback that a task name is required and makes label toggling feel instantaneous by removing network delay from the UI interaction.
-📸 Before/After: 'Add task' button visually grays out when input is empty. Label checkmarks appear immediately upon click.
-♿ Accessibility: Enhances visual cues for form validation and improves perceived performance for interactive elements.
-💡 What: Introduced a conditional render state (`hasMounted`) for the `<CommandDialog>` in `SearchCommand`. Also replaced an un-cached helper call with a cached call to optimize DB queries.
-🎯 Why: The search dialog and its heavy `cmdk` dependencies were unconditionally rendered in the JSX tree (even when hidden). Next.js eagerly downloads these chunks on initial page load, which degraded the initial Time to Interactive (TTI).
-📊 Impact: Reduces the initial JavaScript bundle size required to render the Sidebar by deferring the download and parsing of the search palette until the user actually interacts with it.
-🔭 Measurement: Verify by checking the network tab in DevTools; the JS chunks for the `cmdk` component will only be fetched after pressing Cmd+K or clicking the search button.
+💡 What: Extract `usePathname` out of the main Sidebar component into a localized leaf component for dynamic lists.
+🎯 Why: Calling `usePathname` at the root of a dense navigation component forces the entire component tree to re-render on every client-side navigation.
+📊 Impact: Eliminates massive layout re-renders on route transitions, keeping interaction smooth.
+🔬 Measurement: Use React Profiler to verify that Sidebar bypasses re-renders during route navigation.

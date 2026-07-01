@@ -41,6 +41,19 @@ const SidebarListItem = React.memo(({ list, isActive }: { list: List, isActive: 
 });
 SidebarListItem.displayName = 'SidebarListItem';
 
+// ⚡ Bolt: Extract navigation-dependent list mapping into a localized component to prevent
+// the heavy parent Sidebar component from re-rendering on every client-side route transition.
+const SidebarLists = ({ lists }: { lists: List[] }) => {
+  const pathname = usePathname();
+  return (
+    <>
+      {lists.map((list) => (
+        <SidebarListItem key={list.id} list={list} isActive={pathname === `/lists/${list.id}`} />
+      ))}
+    </>
+  );
+};
+
 // ⚡ Bolt: Memoize the entire labels list to prevent re-rendering when navigating between routes.
 const SidebarLabels = React.memo(({ labels }: { labels: Label[] }) => {
   return (
@@ -74,8 +87,6 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function Sidebar({ className, lists, labels }: SidebarProps) {
-  const pathname = usePathname();
-
   const staticLinks = [
     { name: 'Inbox', href: '/', icon: Inbox },
     { name: 'Today', href: '/today', icon: CalendarDays },
@@ -103,10 +114,8 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
             Lists
           </h2>
           <div className="space-y-1">
-             {/* ⚡ Bolt: Using memoized component to avoid re-rendering entire list on path change */}
-             {lists.map((list) => (
-                 <SidebarListItem key={list.id} list={list} isActive={pathname === `/lists/${list.id}`} />
-             ))}
+             {/* ⚡ Bolt: Using localized leaf component to avoid re-rendering the entire Sidebar on path change */}
+             <SidebarLists lists={lists} />
              <CreateListDialog />
           </div>
         </div>
