@@ -68,14 +68,25 @@ const SidebarLabels = React.memo(({ labels }: { labels: Label[] }) => {
 });
 SidebarLabels.displayName = 'SidebarLabels';
 
+// ⚡ Bolt: Extract lists mapping into a separate component to localize usePathname()
+// This prevents the entire Sidebar (and its heavy children like SearchCommand) from re-rendering on every navigation.
+const SidebarLists = ({ lists }: { lists: List[] }) => {
+  const pathname = usePathname();
+  return (
+    <>
+      {lists.map((list) => (
+        <SidebarListItem key={list.id} list={list} isActive={pathname === `/lists/${list.id}`} />
+      ))}
+    </>
+  );
+};
+
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
     lists: List[];
     labels: Label[];
 }
 
 export function Sidebar({ className, lists, labels }: SidebarProps) {
-  const pathname = usePathname();
-
   const staticLinks = [
     { name: 'Inbox', href: '/', icon: Inbox },
     { name: 'Today', href: '/today', icon: CalendarDays },
@@ -104,9 +115,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
           </h2>
           <div className="space-y-1">
              {/* ⚡ Bolt: Using memoized component to avoid re-rendering entire list on path change */}
-             {lists.map((list) => (
-                 <SidebarListItem key={list.id} list={list} isActive={pathname === `/lists/${list.id}`} />
-             ))}
+             <SidebarLists lists={lists} />
              <CreateListDialog />
           </div>
         </div>
