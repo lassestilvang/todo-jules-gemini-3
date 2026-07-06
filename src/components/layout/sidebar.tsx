@@ -68,14 +68,28 @@ const SidebarLabels = React.memo(({ labels }: { labels: Label[] }) => {
 });
 SidebarLabels.displayName = 'SidebarLabels';
 
+// ⚡ Bolt: Extracted lists rendering to push down usePathname to a leaf component
+const SidebarListItems = React.memo(({ lists }: { lists: List[] }) => {
+    const pathname = usePathname();
+    return (
+        <>
+            {lists.map((list) => (
+                <SidebarListItem key={list.id} list={list} isActive={pathname === `/lists/${list.id}`} />
+            ))}
+        </>
+    );
+}, (prevProps, nextProps) => {
+    if (prevProps.lists.length !== nextProps.lists.length) return false;
+    return prevProps.lists.every((l, i) => l.id === nextProps.lists[i].id && l.name === nextProps.lists[i].name);
+});
+SidebarListItems.displayName = 'SidebarListItems';
+
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
     lists: List[];
     labels: Label[];
 }
 
 export function Sidebar({ className, lists, labels }: SidebarProps) {
-  const pathname = usePathname();
-
   const staticLinks = [
     { name: 'Inbox', href: '/', icon: Inbox },
     { name: 'Today', href: '/today', icon: CalendarDays },
@@ -103,10 +117,7 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
             Lists
           </h2>
           <div className="space-y-1">
-             {/* ⚡ Bolt: Using memoized component to avoid re-rendering entire list on path change */}
-             {lists.map((list) => (
-                 <SidebarListItem key={list.id} list={list} isActive={pathname === `/lists/${list.id}`} />
-             ))}
+             <SidebarListItems lists={lists} />
              <CreateListDialog />
           </div>
         </div>
@@ -115,7 +126,6 @@ export function Sidebar({ className, lists, labels }: SidebarProps) {
             Labels
           </h2>
           <div className="space-y-1">
-             {/* ⚡ Bolt: Using memoized component to avoid re-rendering entire list on path change */}
              <SidebarLabels labels={labels} />
              <CreateLabelDialog />
           </div>
