@@ -154,3 +154,7 @@
 ## 2024-06-24 - Prevent O(N) Re-renders by filtering out subtasks from RSC root queries cache invalidation in recurrence logic
 **Learning:** In Next.js, calling `revalidatePath('/')` after a mutation clears the Server Component router cache and triggers a full page re-render. If a mutation only modifies data that is explicitly filtered out of root queries (like subtasks, where `parentId IS NOT NULL`), invalidating the entire root path causes massive unnecessary RSC render tree bloat and latency, as it forces the server to re-fetch and re-render the entire list of parent tasks even though they haven't changed.
 **Action:** When performing mutations on dependent or nested records (like toggling a subtask's completion status) that are optimistically updated on the client and filtered out of root server queries, conditionally skip `revalidatePath('/')` if the task is a subtask (e.g., `!task || task.parentId === null`).
+
+## 2024-07-06 - Push down usePathname() to leaf components
+**Learning:** In Next.js, calling `usePathname()` at the top level of a heavy parent component forces the entire component tree to re-render on every client-side navigation.
+**Action:** Extract navigation-dependent logic into localized leaf components so the parent component bypasses re-renders during route transitions.
