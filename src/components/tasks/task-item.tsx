@@ -18,7 +18,14 @@ interface TaskItemProps {
 
 // ⚡ Bolt: Memoize TaskItem to prevent unnecessary re-renders of list items during parent state updates (e.g. typing in the "Add a new task" input)
 export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }: TaskItemProps) {
-  const isOverdue = task.date && new Date(task.date) < new Date() && !task.isCompleted;
+  let isOverdue = false;
+  let formattedDate = '';
+
+  if (task.date) {
+    const parsedDate = new Date(task.date);
+    formattedDate = format(parsedDate, 'MMM d');
+    isOverdue = parsedDate < new Date() && !task.isCompleted;
+  }
 
   return (
     <motion.div
@@ -66,11 +73,11 @@ export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }
                 </Badge>
             )}
             {task.date && (
-                <span className={cn("flex items-center", isOverdue && "text-destructive font-bold")} title={isOverdue ? `Overdue: ${format(new Date(task.date), 'MMM d')}` : `Due date: ${format(new Date(task.date), 'MMM d')}`}>
+                <span className={cn("flex items-center", isOverdue && "text-destructive font-bold")} title={isOverdue ? `Overdue: ${formattedDate}` : `Due date: ${formattedDate}`}>
                     <Calendar className="w-3 h-3 mr-1" aria-hidden="true" />
                     <span className="sr-only">Due date: </span>
                     {isOverdue && <span className="sr-only">Overdue: </span>}
-                    {format(new Date(task.date), 'MMM d')}
+                    {formattedDate}
                 </span>
             )}
             {task.recurrenceInterval && task.recurrenceInterval !== 'none' && (
