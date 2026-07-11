@@ -158,3 +158,6 @@
 ## 2024-07-06 - Push down usePathname() to leaf components
 **Learning:** In Next.js, calling `usePathname()` at the top level of a heavy parent component forces the entire component tree to re-render on every client-side navigation.
 **Action:** Extract navigation-dependent logic into localized leaf components so the parent component bypasses re-renders during route transitions.
+## 2024-11-20 - Precomputing Expensive Operations in React List Render
+**Learning:** To optimize React list rendering, precomputing expensive operations like date parsing (`new Date()`) and formatting (`date-fns format()`) in the component body instead of executing them inline within JSX attributes avoids redundant evaluations on every render cycle.
+**Action:** Always extract and precompute date parsing and formatting operations into variables before the `return` statement when rendering items in a list.
