@@ -55,9 +55,10 @@ function CreateTaskForm() {
           className="flex-1"
           aria-label="New task name"
           disabled={isSubmitting}
+          required
         />
         <span title={!newTaskName.trim() ? "Task name is required" : "Add task"} tabIndex={-1}>
-            <Button type="submit" size="icon" disabled={!newTaskName.trim() || isSubmitting} aria-label={!newTaskName.trim() ? "Task name is required" : "Add task"}>
+            <Button type="submit" size="icon" disabled={!newTaskName.trim() || isSubmitting} aria-label="Add task">
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Plus className="h-4 w-4" aria-hidden="true" />}
             </Button>
         </span>
