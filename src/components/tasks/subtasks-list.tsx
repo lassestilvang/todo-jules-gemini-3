@@ -49,9 +49,11 @@ function CreateSubtaskForm({ taskId, onCreated }: { taskId: number; onCreated: (
         aria-label="New subtask name"
         disabled={isSubmitting}
       />
-      <Button size="sm" variant="ghost" type="submit" disabled={!newSubtaskName.trim() || isSubmitting} aria-label="Add subtask" title="Add subtask">
-        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Plus className="h-4 w-4" aria-hidden="true" />}
-      </Button>
+      <span title={!newSubtaskName.trim() ? "Subtask name is required" : "Add subtask"} tabIndex={-1}>
+        <Button size="sm" variant="ghost" type="submit" disabled={!newSubtaskName.trim() || isSubmitting} aria-label="Add subtask">
+          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Plus className="h-4 w-4" aria-hidden="true" />}
+        </Button>
+      </span>
     </form>
   );
 }
