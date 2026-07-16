@@ -158,6 +158,9 @@
 ## 2024-07-06 - Push down usePathname() to leaf components
 **Learning:** In Next.js, calling `usePathname()` at the top level of a heavy parent component forces the entire component tree to re-render on every client-side navigation.
 **Action:** Extract navigation-dependent logic into localized leaf components so the parent component bypasses re-renders during route transitions.
+## 2024-05-23 - Avoid Inline Date Parsing in List Items
+**Learning:** Parsing dates with `new Date()` and formatting with `date-fns` inline within JSX attributes of list items causes redundant expensive evaluations on every render cycle, multiplying the performance cost by the number of items.
+**Action:** Always precompute expensive operations like date parsing and formatting in the component body before the `return` statement when rendering lists.
 
 ## 2024-07-12 - Precompute dates and formats in list items
 **Learning:** Executing date parsing (`new Date()`) and formatting (`date-fns format()`) inline within JSX attributes causes redundant evaluations on every render cycle for each item in a list.
