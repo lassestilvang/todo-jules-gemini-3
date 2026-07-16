@@ -10,3 +10,6 @@
 ## 2025-01-20 - Prevent default submit behavior
 **Learning:** Always add `type="button"` to `<button>` elements that trigger custom JavaScript logic (like `onClick` handlers) rather than native form submissions, especially within dialogs or potential future form contexts, to prevent accidental default submit behaviors and page reloads.
 **Action:** Always verify whether custom action buttons have a type attribute, and add type="button" if it is missing.
+## 2024-06-01 - Accessible Names for Disabled Submit Buttons
+**Learning:** Dynamically changing the `aria-label` of a disabled submit button to an error message (e.g., "Task name is required") is an accessibility anti-pattern. It removes the button's semantic function ("Add task") for screen reader users, confusing them.
+**Action:** Keep the `aria-label` permanently focused on the button's action. Use a wrapping `<span title="...">` to display dynamic error messages as visual tooltips for sighted users hovering over the disabled button.
