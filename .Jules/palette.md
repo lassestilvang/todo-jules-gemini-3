@@ -76,3 +76,6 @@ Always use `error instanceof Error ? error.message : (typeof error === 'string' 
 ## 2026-06-25 - Required Form Field Indicators
 **Learning:** In forms or dialogs where the submit button is disabled until mandatory fields are filled, users (especially those relying on screen readers or with cognitive disabilities) may not understand why they cannot submit.
 **Action:** Always provide explicit upfront indications by adding a visual required indicator (e.g., `*` in a destructive color) to the label and including the HTML5 `required` attribute on the input element to improve usability and accessibility.
+## 2026-06-25 - Dynamic aria-label Anti-pattern
+**Learning:** When providing contextual validation feedback for disabled buttons, never dynamically change the button's `aria-label` to an error message, as it removes the button's semantic function for screen readers.
+**Action:** Always keep the `aria-label` focused on the primary action and use a wrapping `<span title="...">` to display the error message as a visual tooltip for sighted users.
