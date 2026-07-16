@@ -158,3 +158,24 @@
 ## 2024-07-06 - Push down usePathname() to leaf components
 **Learning:** In Next.js, calling `usePathname()` at the top level of a heavy parent component forces the entire component tree to re-render on every client-side navigation.
 **Action:** Extract navigation-dependent logic into localized leaf components so the parent component bypasses re-renders during route transitions.
+## 2024-07-15 - Precompute expensive operations in list rendering
+**Learning:** To optimize React list rendering, precomputing expensive operations like date parsing (`new Date()`) and formatting (`date-fns format()`) in the component body avoids redundant evaluations on every render cycle compared to inline evaluations inside JSX attributes.
+**Action:** Always precompute expensive string formatting or date parsing operations in the component body before rendering them inline within JSX attributes.
+
+## 2024-07-14 - Precompute expensive date formatting in React lists
+**Learning:** In Next.js/React list components (like `TaskItem`), executing expensive operations such as `new Date()` and `date-fns format()` inline within JSX attributes causes redundant evaluations on every render cycle, which compounds severely in long lists.
+**Action:** Precompute these expensive operations once in the component body and assign them to variables, then reference these variables in the JSX attributes to avoid redundant evaluations on every render cycle.
+## 2024-05-23 - Avoid Inline Date Parsing in List Items
+**Learning:** Parsing dates with `new Date()` and formatting with `date-fns` inline within JSX attributes of list items causes redundant expensive evaluations on every render cycle, multiplying the performance cost by the number of items.
+**Action:** Always precompute expensive operations like date parsing and formatting in the component body before the `return` statement when rendering lists.
+
+## 2024-07-12 - Precompute dates and formats in list items
+**Learning:** Executing date parsing (`new Date()`) and formatting (`date-fns format()`) inline within JSX attributes causes redundant evaluations on every render cycle for each item in a list.
+**Action:** Precompute expensive operations like date parsing and formatting in the component body before the `return` statement to optimize React list rendering.
+## 2024-11-20 - Precomputing Expensive Operations in React List Render
+**Learning:** To optimize React list rendering, precomputing expensive operations like date parsing (`new Date()`) and formatting (`date-fns format()`) in the component body instead of executing them inline within JSX attributes avoids redundant evaluations on every render cycle.
+**Action:** Always extract and precompute date parsing and formatting operations into variables before the `return` statement when rendering items in a list.
+
+## 2024-07-10 - Precompute formatting and parsed dates in JSX lists
+**Learning:** Redundant date parsing and formatting (`new Date()` and `format()`) inline within JSX attributes of list items (like `title` and children) causes significant overhead when mapping over arrays, taking roughly twice as long as computing it once per item.
+**Action:** Precompute parsed dates and formatted strings in the component body before the `return` statement when rendering items in a list.
