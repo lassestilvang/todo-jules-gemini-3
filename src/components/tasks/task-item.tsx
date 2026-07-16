@@ -23,6 +23,14 @@ export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }
   const isValidDate = parsedDate && !isNaN(parsedDate.getTime());
   const isOverdue = isValidDate && parsedDate < new Date() && !task.isCompleted;
   const formattedDate = isValidDate ? format(parsedDate, 'MMM d') : null;
+  let isOverdue = false;
+  let formattedDate = '';
+
+  if (task.date) {
+    const parsedDate = new Date(task.date);
+    formattedDate = format(parsedDate, 'MMM d');
+    isOverdue = parsedDate < new Date() && !task.isCompleted;
+  }
 
   return (
     <motion.div
