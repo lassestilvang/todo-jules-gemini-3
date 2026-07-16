@@ -55,6 +55,7 @@ function CreateTaskForm() {
           className="flex-1"
           aria-label="New task name"
           disabled={isSubmitting}
+          required
         />
         <span title={!newTaskName.trim() ? "Task name is required" : "Add task"} tabIndex={-1}>
             <Button type="submit" size="icon" disabled={!newTaskName.trim() || isSubmitting} aria-label="Add task">
