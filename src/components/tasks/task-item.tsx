@@ -18,6 +18,11 @@ interface TaskItemProps {
 
 // ⚡ Bolt: Memoize TaskItem to prevent unnecessary re-renders of list items during parent state updates (e.g. typing in the "Add a new task" input)
 export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }: TaskItemProps) {
+  // ⚡ Bolt: Precompute expensive date parsing and formatting once per render to avoid redundant operations in JSX
+  const parsedDate = task.date ? new Date(task.date) : null;
+  const isValidDate = parsedDate && !isNaN(parsedDate.getTime());
+  const isOverdue = isValidDate && parsedDate < new Date() && !task.isCompleted;
+  const formattedDate = isValidDate ? format(parsedDate, 'MMM d') : null;
   let isOverdue = false;
   let formattedDate = '';
 
@@ -72,7 +77,7 @@ export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }
                     <span className="sr-only">Priority: </span>{task.priority}
                 </Badge>
             )}
-            {task.date && (
+            {formattedDate && (
                 <span className={cn("flex items-center", isOverdue && "text-destructive font-bold")} title={isOverdue ? `Overdue: ${formattedDate}` : `Due date: ${formattedDate}`}>
                     <Calendar className="w-3 h-3 mr-1" aria-hidden="true" />
                     <span className="sr-only">Due date: </span>
