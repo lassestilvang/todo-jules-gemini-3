@@ -161,3 +161,14 @@
 ## 2024-05-23 - Avoid Inline Date Parsing in List Items
 **Learning:** Parsing dates with `new Date()` and formatting with `date-fns` inline within JSX attributes of list items causes redundant expensive evaluations on every render cycle, multiplying the performance cost by the number of items.
 **Action:** Always precompute expensive operations like date parsing and formatting in the component body before the `return` statement when rendering lists.
+
+## 2024-07-12 - Precompute dates and formats in list items
+**Learning:** Executing date parsing (`new Date()`) and formatting (`date-fns format()`) inline within JSX attributes causes redundant evaluations on every render cycle for each item in a list.
+**Action:** Precompute expensive operations like date parsing and formatting in the component body before the `return` statement to optimize React list rendering.
+## 2024-11-20 - Precomputing Expensive Operations in React List Render
+**Learning:** To optimize React list rendering, precomputing expensive operations like date parsing (`new Date()`) and formatting (`date-fns format()`) in the component body instead of executing them inline within JSX attributes avoids redundant evaluations on every render cycle.
+**Action:** Always extract and precompute date parsing and formatting operations into variables before the `return` statement when rendering items in a list.
+
+## 2024-07-10 - Precompute formatting and parsed dates in JSX lists
+**Learning:** Redundant date parsing and formatting (`new Date()` and `format()`) inline within JSX attributes of list items (like `title` and children) causes significant overhead when mapping over arrays, taking roughly twice as long as computing it once per item.
+**Action:** Precompute parsed dates and formatted strings in the component body before the `return` statement when rendering items in a list.
