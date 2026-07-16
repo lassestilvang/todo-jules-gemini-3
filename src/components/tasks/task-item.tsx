@@ -18,8 +18,9 @@ interface TaskItemProps {
 
 // ⚡ Bolt: Memoize TaskItem to prevent unnecessary re-renders of list items during parent state updates (e.g. typing in the "Add a new task" input)
 export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }: TaskItemProps) {
-  const isOverdue = task.date && new Date(task.date) < new Date() && !task.isCompleted;
-  const formattedDate = task.date ? format(new Date(task.date), 'MMM d') : null;
+  const taskDate = task.date ? new Date(task.date) : null;
+  const isOverdue = taskDate && taskDate < new Date() && !task.isCompleted;
+  const formattedDate = taskDate ? format(taskDate, 'MMM d') : null;
 
   return (
     <motion.div
