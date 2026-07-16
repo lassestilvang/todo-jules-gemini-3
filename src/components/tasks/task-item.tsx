@@ -20,8 +20,9 @@ interface TaskItemProps {
 export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }: TaskItemProps) {
   // ⚡ Bolt: Precompute expensive date parsing and formatting once per render to avoid redundant operations in JSX
   const parsedDate = task.date ? new Date(task.date) : null;
-  const isOverdue = parsedDate && parsedDate < new Date() && !task.isCompleted;
-  const formattedDate = parsedDate ? format(parsedDate, 'MMM d') : null;
+  const isValidDate = parsedDate && !isNaN(parsedDate.getTime());
+  const isOverdue = isValidDate && parsedDate < new Date() && !task.isCompleted;
+  const formattedDate = isValidDate ? format(parsedDate, 'MMM d') : null;
 
   return (
     <motion.div
