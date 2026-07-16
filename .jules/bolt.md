@@ -123,14 +123,14 @@
 ## 2026-05-24 - Disable Next.js Link prefetching for dynamic/dense menus
 **Learning:** Next.js defaults to aggressively prefetching routes for every `<Link>` that enters the viewport. In dense navigation components like sidebars displaying dynamic, user-generated content (e.g., numerous lists or tags), this default behavior can cause a surge of unnecessary background network requests and server-side data fetching on page load, exhausting bandwidth and DB connections.
 **Action:** Add prefetch={false} to Link components in sidebars and other dense navigation menus specifically for dynamic routes or non-critical pages to prevent aggressive prefetching, while retaining default prefetching for core static routes.
-## $(date +%Y-%m-%d) - Disabling Next.js prefetching in dense sidebars
+## 2026-07-16 - Disabling Next.js prefetching in dense sidebars
 **Learning:** Next.js aggressively prefetches links in the viewport by default. In dense navigation components (like sidebars with dynamic/user-generated routes), this causes a surge of unnecessary background network requests, server-side data fetching, and database connection exhaustion.
 **Action:** Explicitly set `prefetch={false}` on `<Link>` components in dense navigation bars (like `sidebar.tsx` and `sidebar-links.tsx`) to prevent this overhead, especially when these links point to dynamic user data that isn't immediately critical to load before hover.
 ## 2024-05-24 - Custom Comparator for React.memo in Next.js Server Components
 **Learning:** Data fetched from databases in Next.js Server Components generates new object references on every route revalidation (such as when `revalidatePath` is triggered). Default `React.memo` relies on referential equality, meaning it fails to prevent re-renders when a new array of structurally identical items is passed down.
 **Action:** When passing database row objects as props to memoized Client Components (like list items), implement a custom comparator function in `React.memo` to perform a shallow comparison of the object's specific fields instead of relying on default referential equality. This prevents O(N) re-renders.
 
-## $(date +%Y-%m-%d) - Lazy Loading Dynamic Imports in Next.js
+## 2026-07-16 - Lazy Loading Dynamic Imports in Next.js
 **Learning:** In Next.js, using `next/dynamic` to dynamically import a component (like `<TaskDetailSheet>`) will NOT prevent it from being fetched immediately on initial page load if the component is unconditionally rendered in the JSX tree, even if its visible state (like `open={false}`) is hidden. This causes unnecessary JavaScript chunks (often hundreds of KB containing heavy UI libraries) to be downloaded and parsed on initial load, severely degrading Time To Interactive (TTI).
 **Action:** When using `next/dynamic` for heavy, infrequently accessed components (like modals or sheets), introduce a state variable (e.g., `hasMountedSheet`) and conditionally render the component block (e.g., `{hasMountedSheet && <DynamicComponent ... />}`) only *after* the user triggers the interaction that requires it.
 ## 2024-06-25 - Prevent O(N) Re-Renders in Dense Next.js Navigation Sidebars
@@ -158,6 +158,9 @@
 ## 2024-07-06 - Push down usePathname() to leaf components
 **Learning:** In Next.js, calling `usePathname()` at the top level of a heavy parent component forces the entire component tree to re-render on every client-side navigation.
 **Action:** Extract navigation-dependent logic into localized leaf components so the parent component bypasses re-renders during route transitions.
+## 2026-07-16 - Precompute Date Formatting in Component Body
+**Learning:** In React list components (like `TaskItem`), placing expensive operations such as `new Date()` and `format(date, 'MMM d')` inline within the JSX return statement causes them to be redundantly re-evaluated on every single render cycle, even if the underlying date data hasn't changed.
+**Action:** Precompute expensive date parsing and formatting operations in the component body before the `return` statement. Store the results in local variables and reference those variables in the JSX, preventing unnecessary inline recalculations and slightly reducing CPU overhead during React render phases.
 ## 2024-07-15 - Precompute expensive operations in list rendering
 **Learning:** To optimize React list rendering, precomputing expensive operations like date parsing (`new Date()`) and formatting (`date-fns format()`) in the component body avoids redundant evaluations on every render cycle compared to inline evaluations inside JSX attributes.
 **Action:** Always precompute expensive string formatting or date parsing operations in the component body before rendering them inline within JSX attributes.
