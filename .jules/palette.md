@@ -13,3 +13,6 @@
 ## 2024-06-01 - Accessible Names for Disabled Submit Buttons
 **Learning:** Dynamically changing the `aria-label` of a disabled submit button to an error message (e.g., "Task name is required") is an accessibility anti-pattern. It removes the button's semantic function ("Add task") for screen reader users, confusing them.
 **Action:** Keep the `aria-label` permanently focused on the button's action. Use a wrapping `<span title="...">` to display dynamic error messages as visual tooltips for sighted users hovering over the disabled button.
+## 2025-01-20 - Contextual Tooltips for Disabled Dialog Submits
+**Learning:** When primary action buttons in dialogs (like "Create List" or "Create Label") are disabled because mandatory fields are empty, users might not immediately understand why they cannot proceed.
+**Action:** Always wrap conditionally disabled submit buttons in a `<span title="...">` that explains why the button is disabled (e.g., "List name is required") when the condition is not met.
