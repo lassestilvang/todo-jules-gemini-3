@@ -182,3 +182,6 @@
 ## 2024-07-10 - Precompute formatting and parsed dates in JSX lists
 **Learning:** Redundant date parsing and formatting (`new Date()` and `format()`) inline within JSX attributes of list items (like `title` and children) causes significant overhead when mapping over arrays, taking roughly twice as long as computing it once per item.
 **Action:** Precompute parsed dates and formatted strings in the component body before the `return` statement when rendering items in a list.
+## 2024-07-17 - Memoizing Date Operations in TaskItem
+**Learning:** In list components that may re-render frequently (like when toggling checkboxes or due to parent state updates), inline date parsing (`new Date()`) and formatting (`date-fns format()`) within the component body can cause significant CPU overhead and degrade performance.
+**Action:** Always wrap expensive synchronous parsing and formatting operations within `React.useMemo` in list items to ensure they are only re-evaluated when the underlying data changes, rather than on every render cycle.
