@@ -104,10 +104,12 @@ export function CreateLabelDialog() {
             <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button type="submit" disabled={!name.trim() || isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              Create Label
-            </Button>
+            <span title={!name.trim() ? "Label name is required" : "Create label"} tabIndex={-1}>
+              <Button type="submit" disabled={!name.trim() || isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+                Create Label
+              </Button>
+            </span>
           </DialogFooter>
         </form>
       </DialogContent>
