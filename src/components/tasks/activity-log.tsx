@@ -32,19 +32,27 @@ export function ActivityLog({ taskId, initialLogs }: ActivityLogProps) {
     }
   }, [taskId, initialLogs]);
 
+  // ⚡ Bolt: Precompute date parsing and formatting for activity logs to prevent redundant inline evaluations on every render
+  const formattedLogs = React.useMemo(() => {
+      return logs.map(log => ({
+          ...log,
+          formattedTimestamp: log.timestamp ? format(new Date(log.timestamp), 'MMM d, HH:mm') : ''
+      }));
+  }, [logs]);
+
   if (loading) {
       return <div className="text-sm text-muted-foreground mt-4 animate-pulse">Loading activity...</div>;
   }
 
   return (
     <div className="space-y-4 mt-4">
-      {logs.length === 0 && (
+      {formattedLogs.length === 0 && (
         <div className="flex flex-col items-center justify-center p-4 bg-muted/30 border border-dashed rounded-md text-center space-y-2">
           <History className="w-6 h-6 text-muted-foreground opacity-50" aria-hidden="true" />
           <p className="text-sm text-muted-foreground">No activity recorded yet.<br/><span className="text-xs">Changes to this task will appear here.</span></p>
         </div>
       )}
-      {logs.map((log) => (
+      {formattedLogs.map((log) => (
         <div key={log.id} className="text-sm border-b pb-2">
             <div className="font-medium capitalize">{log.field} changed</div>
             <div className="text-muted-foreground text-xs flex justify-between">
@@ -56,7 +64,7 @@ export function ActivityLog({ taskId, initialLogs }: ActivityLogProps) {
                         <span className="text-foreground">{(log.newValue ?? '') === '' ? <span className="italic opacity-50">empty</span> : String(log.newValue)}</span>
                     </span>
                 </span>
-                <span>{log.timestamp ? format(new Date(log.timestamp), 'MMM d, HH:mm') : ''}</span>
+                <span>{log.formattedTimestamp}</span>
             </div>
         </div>
       ))}
