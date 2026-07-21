@@ -32,10 +32,13 @@ export function ActivityLog({ taskId, initialLogs }: ActivityLogProps) {
     }
   }, [taskId, initialLogs]);
 
-  const formattedLogs = React.useMemo(() => logs.map(log => ({
-      ...log,
-      formattedTimestamp: log.timestamp ? format(new Date(log.timestamp), 'MMM d, HH:mm') : ''
-  })), [logs]);
+  // ⚡ Bolt: Precompute date parsing and formatting for activity logs to prevent redundant inline evaluations on every render
+  const formattedLogs = React.useMemo(() => {
+      return logs.map(log => ({
+          ...log,
+          formattedTimestamp: log.timestamp ? format(new Date(log.timestamp), 'MMM d, HH:mm') : ''
+      }));
+  }, [logs]);
 
   if (loading) {
       return <div className="text-sm text-muted-foreground mt-4 animate-pulse">Loading activity...</div>;
