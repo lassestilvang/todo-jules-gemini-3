@@ -18,22 +18,18 @@ interface TaskItemProps {
 
 // ⚡ Bolt: Memoize TaskItem to prevent unnecessary re-renders of list items during parent state updates (e.g. typing in the "Add a new task" input)
 export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }: TaskItemProps) {
-  // ⚡ Bolt: Precompute date parsing and formatting to prevent redundant inline evaluations on every render
-  const taskDateObj = React.useMemo(() => task.date ? new Date(task.date) : null, [task.date]);
-  const isOverdue = taskDateObj && taskDateObj < new Date() && !task.isCompleted;
-  const formattedDate = taskDateObj ? format(taskDateObj, 'MMM d') : '';
+  // ⚡ Bolt: Precompute expensive date parsing and formatting once per render to avoid redundant operations in JSX
   const { isOverdue, formattedDate } = React.useMemo(() => {
-    if (!task.date) return { isOverdue: false, formattedDate: '' };
+    let overdue = false;
+    let formatted = '';
 
-    const parsedDate = new Date(task.date);
-    const isValidDate = !isNaN(parsedDate.getTime());
+    if (task.date) {
+      const parsedDate = new Date(task.date);
+      formatted = format(parsedDate, 'MMM d');
+      overdue = parsedDate < new Date() && !task.isCompleted;
+    }
 
-    if (!isValidDate) return { isOverdue: false, formattedDate: '' };
-
-    return {
-      isOverdue: parsedDate < new Date() && !task.isCompleted,
-      formattedDate: format(parsedDate, 'MMM d')
-    };
+    return { isOverdue: overdue, formattedDate: formatted };
   }, [task.date, task.isCompleted]);
 
   return (
