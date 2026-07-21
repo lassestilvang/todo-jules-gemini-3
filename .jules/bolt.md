@@ -182,3 +182,7 @@
 ## 2024-07-10 - Precompute formatting and parsed dates in JSX lists
 **Learning:** Redundant date parsing and formatting (`new Date()` and `format()`) inline within JSX attributes of list items (like `title` and children) causes significant overhead when mapping over arrays, taking roughly twice as long as computing it once per item.
 **Action:** Precompute parsed dates and formatted strings in the component body before the `return` statement when rendering items in a list.
+
+## 2024-07-21 - Precompute Date Formatting in Activity Log with useMemo
+**Learning:** In React list components, executing expensive operations such as `new Date()` and `format()` inline within JSX attributes inside a `.map()` causes redundant evaluations on every render cycle, degrading performance on large lists.
+**Action:** Wrap the mapping logic in `React.useMemo` to precompute expensive date parsing and formatting operations when the underlying data changes, and store the formatted strings in the mapped objects to prevent redundant inline recalculations.

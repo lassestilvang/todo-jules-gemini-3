@@ -19,22 +19,19 @@ interface TaskItemProps {
 // ⚡ Bolt: Memoize TaskItem to prevent unnecessary re-renders of list items during parent state updates (e.g. typing in the "Add a new task" input)
 export const TaskItem = React.memo(function TaskItem({ task, onToggle, onClick }: TaskItemProps) {
   // ⚡ Bolt: Precompute date parsing and formatting to prevent redundant inline evaluations on every render
-  const taskDateObj = React.useMemo(() => task.date ? new Date(task.date) : null, [task.date]);
-  const isOverdue = taskDateObj && taskDateObj < new Date() && !task.isCompleted;
-  const formattedDate = taskDateObj ? format(taskDateObj, 'MMM d') : '';
-  // ⚡ Bolt: Precompute expensive date parsing and formatting once per render to avoid redundant operations in JSX
-  const parsedDate = task.date ? new Date(task.date) : null;
-  const isValidDate = parsedDate && !isNaN(parsedDate.getTime());
-  const isOverdue = isValidDate && parsedDate < new Date() && !task.isCompleted;
-  const formattedDate = isValidDate ? format(parsedDate, 'MMM d') : null;
-  let isOverdue = false;
-  let formattedDate = '';
-
-  if (task.date) {
+  // and use useMemo to avoid re-evaluating date logic unnecessarily on every render cycle.
+  const { formattedDate, isOverdue } = React.useMemo(() => {
+    if (!task.date) {
+      return { formattedDate: '', isOverdue: false };
+    }
     const parsedDate = new Date(task.date);
-    formattedDate = format(parsedDate, 'MMM d');
-    isOverdue = parsedDate < new Date() && !task.isCompleted;
-  }
+    const isValidDate = !isNaN(parsedDate.getTime());
+
+    return {
+      formattedDate: isValidDate ? format(parsedDate, 'MMM d') : '',
+      isOverdue: isValidDate && parsedDate < new Date() && !task.isCompleted
+    };
+  }, [task.date, task.isCompleted]);
 
   return (
     <motion.div
