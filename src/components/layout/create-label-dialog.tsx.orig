@@ -71,7 +71,6 @@ export function CreateLabelDialog() {
                 autoFocus
                 disabled={isSubmitting}
                 required
-                placeholder="e.g., Bug, Feature"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">

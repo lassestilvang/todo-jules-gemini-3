@@ -155,7 +155,6 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                         onBlur={(e) => handleUpdate({ description: e.target.value })}
                         onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !e.nativeEvent.isComposing) { e.preventDefault(); e.currentTarget.blur(); } }}
                         className="min-h-[100px]"
-                        placeholder="Add a more detailed description... (Press ⌘/Ctrl+Enter to save)"
                     />
                 </div>
 
@@ -305,7 +304,6 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                             defaultValue={task.estimate || undefined}
                             onBlur={(e) => handleUpdate({ estimate: parseInt(e.target.value) || null })}
                             onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) e.currentTarget.blur(); }}
-                            placeholder="e.g. 30"
                         />
                     </div>
                     <div className="grid gap-2">
@@ -316,7 +314,6 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                             defaultValue={task.actualTime || undefined}
                             onBlur={(e) => handleUpdate({ actualTime: parseInt(e.target.value) || null })}
                             onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) e.currentTarget.blur(); }}
-                            placeholder="e.g. 45"
                         />
                     </div>
                 </div>
