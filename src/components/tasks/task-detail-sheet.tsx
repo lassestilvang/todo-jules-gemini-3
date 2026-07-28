@@ -42,6 +42,16 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   const labelsMap = useMemo(() => new Map(labels.map(l => [l.id, l])), [labels]);
   const assignedLabelIds = useMemo(() => new Set(assignedLabels.map(l => l.id)), [assignedLabels]);
 
+  // ⚡ Bolt: Precompute expensive date parsing and formatting to avoid redundant evaluations on every render
+  const { formattedDate, parsedDate } = useMemo(() => {
+    if (!task?.date) return { formattedDate: null, parsedDate: undefined };
+    const dateObj = new Date(task.date);
+    return {
+      formattedDate: format(dateObj, "PPP"),
+      parsedDate: dateObj
+    };
+  }, [task?.date]);
+
   useEffect(() => {
     if (task) {
         // Reset state for new task to avoid ghosting

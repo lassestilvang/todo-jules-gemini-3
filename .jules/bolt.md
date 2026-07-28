@@ -188,3 +188,6 @@
 ## 2024-11-20 - Fix broken precomputed date parsing logic
 **Learning:** Having redundant blocks of optimization code (like both `useMemo` and regular `let/const` assignments for the same variables in the same scope) leads to immediate build failures due to redeclaration errors.
 **Action:** When precomputing expensive operations (like date parsing and formatting in `TaskItem`), ensure there is only one definitive block of logic—preferably leveraging `React.useMemo` for optimal performance without polluting the block scope with duplicate variable names.
+## 2024-11-20 - Precompute Date Formatting in Detailed Form Views
+**Learning:** Executing expensive date parsing (`new Date()`) and formatting (`format()`) inline within JSX in frequently updating detailed views (like `TaskDetailSheet` with heavy state) causes redundant evaluations on every render cycle during form interactions.
+**Action:** Extract and precompute date formatting operations into `useMemo` in the component body, even for single items in detail views, to prevent redundant recalculations when other form state changes trigger re-renders.
