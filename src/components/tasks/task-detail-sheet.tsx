@@ -67,6 +67,17 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
     }
   }, [task?.id]);
 
+  // ⚡ Bolt: Precompute expensive date parsing and formatting operations using useMemo to prevent
+  // redundant recalculations on every render cycle (e.g., during form inputs or UI interactions).
+  const { parsedDueDate, formattedDueDate } = useMemo(() => {
+      if (!task?.date) return { parsedDueDate: undefined, formattedDueDate: undefined };
+      const parsed = new Date(task.date);
+      return {
+          parsedDueDate: parsed,
+          formattedDueDate: format(parsed, "PPP")
+      };
+  }, [task?.date]);
+
   if (!task) return null;
 
   const handleUpdate = async (data: Partial<Task>) => {
@@ -280,13 +291,13 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                     )}
                                 >
                                     <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-                                    {formattedDate ? formattedDate : <span>Pick a date</span>}
+                                    {formattedDueDate ? formattedDueDate : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0">
                                 <Calendar
                                     mode="single"
-                                    selected={parsedDate}
+                                    selected={parsedDueDate}
                                     onSelect={(date) => handleUpdate({ date: date ? format(date, 'yyyy-MM-dd') : null })}
                                     initialFocus
                                 />
