@@ -32,9 +32,15 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+          <a
+            href="#main-content"
+            className="absolute left-0 top-0 -translate-y-full bg-primary text-primary-foreground px-4 py-2 transition-transform focus-visible:translate-y-0 z-50"
+          >
+            Skip to main content
+          </a>
           <div className="flex h-screen overflow-hidden">
             <Sidebar className="hidden md:block w-64 flex-shrink-0" lists={lists} labels={labels} />
-            <main className="flex-1 overflow-y-auto p-8">
+            <main id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto p-8 outline-none">
               {children}
             </main>
           </div>
