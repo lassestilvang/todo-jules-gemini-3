@@ -19,3 +19,7 @@
 ## 2024-07-28 - Tooltips for Disabled Submit Buttons
 **Learning:** In forms or dialogs where the submit button is disabled until mandatory fields are filled, users relying on hover to understand the application state might miss the contextual reason. Since native `title` attributes do not trigger on disabled `<button>` elements, wrapping the disabled button in a `<span>` with a `title` attribute allows sighted users to discover why the action is restricted.
 **Action:** Always wrap disabled submit buttons in a container element (like a `<span>` with `tabIndex={-1}`) and apply the `title` attribute to the wrapper to ensure the explanatory tooltip is accessible to sighted users via mouse hover. Note: using `tabIndex={-1}` is a tradeoff that prevents keyboard users from natively focusing the wrapper (since the disabled button itself drops out of the tab order), which means this technique primarily benefits mouse hover interactions.
+
+## 2025-02-06 - Add skip-to-content links for persistent sidebars
+**Learning:** When applications feature persistent or dense sidebars, keyboard users are forced to repeatedly tab through numerous navigation links just to reach the primary content area on every page load.
+**Action:** Always provide a visually hidden, keyboard-focusable 'Skip to main content' link at the top of the DOM that anchors to the primary content container. Ensure the target container has `id="main-content"`, `tabIndex={-1}`, and `outline-none` to properly receive programmatic focus without showing a default focus ring.
