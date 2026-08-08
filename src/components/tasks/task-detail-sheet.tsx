@@ -42,16 +42,6 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
   const labelsMap = useMemo(() => new Map(labels.map(l => [l.id, l])), [labels]);
   const assignedLabelIds = useMemo(() => new Set(assignedLabels.map(l => l.id)), [assignedLabels]);
 
-  // ⚡ Bolt: Precompute expensive date parsing and formatting to avoid redundant evaluations on every render
-  const { formattedDate, parsedDate } = useMemo(() => {
-    if (!task?.date) return { formattedDate: null, parsedDate: undefined };
-    const dateObj = new Date(task.date);
-    return {
-      formattedDate: format(dateObj, "PPP"),
-      parsedDate: dateObj
-    };
-  }, [task?.date]);
-
   useEffect(() => {
     if (task) {
         // Reset state for new task to avoid ghosting
@@ -69,12 +59,12 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
 
   // ⚡ Bolt: Precompute expensive date parsing and formatting operations using useMemo to prevent
   // redundant recalculations on every render cycle (e.g., during form inputs or UI interactions).
-  const { parsedDueDate, formattedDueDate } = useMemo(() => {
-      if (!task?.date) return { parsedDueDate: undefined, formattedDueDate: undefined };
+  const { parsedDate, formattedDate } = useMemo(() => {
+      if (!task?.date) return { parsedDate: undefined, formattedDate: undefined };
       const parsed = new Date(task.date);
       return {
-          parsedDueDate: parsed,
-          formattedDueDate: format(parsed, "PPP")
+          parsedDate: parsed,
+          formattedDate: format(parsed, "PPP")
       };
   }, [task?.date]);
 
@@ -291,13 +281,13 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                     )}
                                 >
                                     <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-                                    {formattedDueDate ? formattedDueDate : <span>Pick a date</span>}
+                                    {formattedDate ? formattedDate : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0">
                                 <Calendar
                                     mode="single"
-                                    selected={parsedDueDate}
+                                    selected={parsedDate}
                                     onSelect={(date) => handleUpdate({ date: date ? format(date, 'yyyy-MM-dd') : null })}
                                     initialFocus
                                 />
