@@ -45,6 +45,9 @@ export default async function RootLayout({
             Skip to main content
           </a>
           <div className="flex h-screen overflow-hidden">
+            <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-background focus:text-foreground">
+              Skip to main content
+            </a>
             <Sidebar className="hidden md:block w-64 flex-shrink-0" lists={lists} labels={labels} />
             <main id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto p-8 outline-none">
               {children}
