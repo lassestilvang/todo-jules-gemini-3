@@ -22,3 +22,9 @@
 ## 2024-11-20 - Skip to main content link
 **Learning:** For applications with dense or persistent sidebars, keyboard-only and screen reader users can be frustrated by having to tab through every sidebar item on every page load just to reach the main content.
 **Action:** Always provide a visually hidden 'Skip to main content' link at the top of the DOM that anchors to the primary content container. Ensure the target container has `id="main-content"`, `tabIndex={-1}`, and `outline-none` to properly receive programmatic focus without showing a default focus ring.
+
+## 2025-02-06 - Add skip-to-content links for persistent sidebars
+**Learning:** When applications feature persistent or dense sidebars, keyboard users are forced to repeatedly tab through numerous navigation links just to reach the primary content area on every page load.
+## 2024-08-04 - Skip to main content links
+**Learning:** For applications with dense or persistent sidebars, keyboard users have to tab through every single navigation link on every route change before reaching the actual page content, which is a frustrating accessibility barrier.
+**Action:** Always provide a visually hidden, keyboard-focusable 'Skip to main content' link at the top of the DOM that anchors to the primary content container. Ensure the target container has `id="main-content"`, `tabIndex={-1}`, and `outline-none` to properly receive programmatic focus without showing a default focus ring.
