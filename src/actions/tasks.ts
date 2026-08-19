@@ -226,8 +226,8 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
   db.transaction((tx: typeof db) => {
     const logsToInsert: (typeof activityLogs.$inferInsert)[] = [];
 
-    // ⚡ Bolt: Iterate over Object.keys() for small Partial payloads since they contain very few modified fields, which is faster than checking a large fixed array
-    for (const key of Object.keys(safeData)) {
+    // ⚡ Bolt: Use for..in loop over safeData object properties to eliminate Object.keys() array allocation and iterator overhead
+    for (const key in safeData) {
       const newValue = (safeData as Record<string, unknown>)[key];
       const oldValue = (current as Record<string, unknown>)[key];
 
