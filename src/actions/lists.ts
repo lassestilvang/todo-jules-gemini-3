@@ -39,6 +39,9 @@ export async function createList(name: string, color: string = '#000000') {
   if (color && color.length > 255) {
     throw new Error('List color must be 255 characters or less.');
   }
+  if (color && !/^#([0-9a-fA-F]{3}){1,2}$/.test(color)) {
+    throw new Error('Invalid color format. Expected hex code.');
+  }
 
   // SECURE: Rate limit list creation to prevent DoS/spam
   const headersList = await headers();

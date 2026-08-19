@@ -32,3 +32,7 @@
 **Vulnerability:** Public read-only Server Actions were exported without rate limiting logic.
 **Learning:** Even read-only Server Actions can be abused by attackers to exhaust database connections or compute resources, causing a Denial of Service (DoS) if they are called directly from Client Components or via their API endpoints.
 **Prevention:** Always apply rate limiting to all Server Actions, including read-heavy operations, to protect backend resources.
+## 2024-06-04 - Enforce Strict Input Validation for UI Style Properties
+**Vulnerability:** List and label creation endpoints lacked strict format validation for the `color` property, allowing arbitrary strings.
+**Learning:** When user input is directly used in UI styling (like React's `style` object), relying solely on framework auto-escaping is insufficient as a sole defense. An attacker could inject unexpected values that might cause rendering issues or become dangerous if reused in less secure contexts.
+**Prevention:** Always apply strict format validation (e.g., regex checks for hex codes) to any user-provided data that dictates UI presentation or inline styling.
