@@ -10,6 +10,8 @@ import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
 import { ALLOWED_TASK_KEYS } from '@/lib/types';
 
+const ALLOWED_TASK_KEYS_SET = new Set<string>(ALLOWED_TASK_KEYS);
+
 // ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
 export const getTasksInternal = cache(function getTasksInternal() {
   return db.select().from(tasks).where(sql`\${tasks.parentId} IS NULL`).all();
@@ -209,9 +211,10 @@ export async function updateTask(id: number, data: Partial<typeof tasks.$inferIn
     }
   }
 
-  for (const key of ALLOWED_TASK_KEYS) {
+  // ⚡ Bolt: Iterate over Object.keys(data) with O(1) Set lookup rather than checking all 15 entries in ALLOWED_TASK_KEYS
+  for (const key of Object.keys(data)) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((data as Record<string, any>)[key] !== undefined) {
+    if (ALLOWED_TASK_KEYS_SET.has(key) && (data as Record<string, any>)[key] !== undefined) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (safeData as Record<string, any>)[key] = (data as Record<string, any>)[key];
     }

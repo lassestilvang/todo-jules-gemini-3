@@ -191,3 +191,8 @@
 ## 2024-11-20 - Precompute Date Formatting in Detailed Form Views
 **Learning:** Executing expensive date parsing (`new Date()`) and formatting (`format()`) inline within JSX in frequently updating detailed views (like `TaskDetailSheet` with heavy state) causes redundant evaluations on every render cycle during form interactions.
 **Action:** Extract and precompute date formatting operations into `useMemo` in the component body, even for single items in detail views, to prevent redundant recalculations when other form state changes trigger re-renders.
+
+## 2026-08-19 - Optimize Payload Sanitization in updateTask
+
+**Learning:** Iterating over a fixed 15-element array with `for...of` in `updateTask` for small partial update payloads (typically 1–3 keys) unnecessarily checks 15 keys on every update call. Iterating over `Object.keys(data)` and performing O(1) set lookup via `Set.has(key)` reduces iteration overhead by ~85% for typical single-field updates.
+**Action:** Replace fixed array loop in `updateTask` payload sanitization with `Object.keys(data)` iteration checked against a pre-instantiated `Set`.
