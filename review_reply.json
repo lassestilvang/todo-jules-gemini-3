@@ -1,0 +1,6 @@
+[
+  {
+    "comment_id": "code_review_1",
+    "reply": "The review states that the functional key bindings (`onKeyDown`) were not added. However, inspecting the file `src/components/tasks/task-detail-sheet.tsx` shows that `onKeyDown` handlers intercepting `Enter` and `Cmd+Enter` to blur (and thus trigger `onBlur` to save) are ALREADY PRESENT in the original codebase on these fields (lines 157, 167, 305, 318, 329, 342). My change purely added the visual hints (as instructed by the UX memory 'Expose Hidden Keyboard Shortcuts' which explicitly notes these handlers already exist). The functionality is already there. No further changes to functionality are needed."
+  }
+]
