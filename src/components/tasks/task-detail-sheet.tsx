@@ -273,6 +273,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button
+                                    type="button"
                                     id={`due-date-${task.id}`}
                                     variant={"outline"}
                                     className={cn(
