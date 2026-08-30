@@ -149,7 +149,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
             <TabsContent value="details">
                 <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                    <Label htmlFor="name">Task Name</Label>
+                    <Label htmlFor="name">Task Name <span className="text-[10px] text-muted-foreground font-normal ml-2 hidden sm:inline">Press Enter to save</span></Label>
                     <Input
                         id="name"
                         defaultValue={task.name}
@@ -159,7 +159,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="description">Description <span className="text-[10px] text-muted-foreground font-normal ml-2 hidden sm:inline">Press ⌘/Ctrl+Enter to save</span></Label>
                     <Textarea
                         id="description"
                         defaultValue={task.description || ''}
@@ -296,7 +296,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="deadline">Deadline</Label>
+                        <Label htmlFor="deadline">Deadline <span className="text-[10px] text-muted-foreground font-normal ml-2 hidden sm:inline">Press Enter to save</span></Label>
                         <Input
                             id="deadline"
                             type="datetime-local"
@@ -309,7 +309,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="estimate">Estimate (min)</Label>
+                        <Label htmlFor="estimate">Estimate (min) <span className="text-[10px] text-muted-foreground font-normal ml-2 hidden sm:inline">Press Enter to save</span></Label>
                         <Input
                             id="estimate"
                             type="number"
@@ -320,7 +320,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                         />
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="actualTime">Actual (min)</Label>
+                        <Label htmlFor="actualTime">Actual (min) <span className="text-[10px] text-muted-foreground font-normal ml-2 hidden sm:inline">Press Enter to save</span></Label>
                         <Input
                             id="actualTime"
                             type="number"
@@ -333,7 +333,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="reminders">Reminders</Label>
+                    <Label htmlFor="reminders">Reminders <span className="text-[10px] text-muted-foreground font-normal ml-2 hidden sm:inline">Press Enter to save</span></Label>
                     <Input
                         id="reminders"
                         placeholder="e.g. 10m before"
