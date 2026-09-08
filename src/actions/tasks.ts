@@ -14,7 +14,7 @@ const ALLOWED_TASK_KEYS_SET = new Set<string>(ALLOWED_TASK_KEYS);
 
 // ⚡ Bolt: Prevent over-fetching by filtering out subtasks (where parentId IS NOT NULL) on root-level lists
 export const getTasksInternal = cache(function getTasksInternal() {
-  return db.select().from(tasks).where(sql`\${tasks.parentId} IS NULL`).all();
+  return db.select().from(tasks).where(sql`${tasks.parentId} IS NULL`).all();
 });
 
 export const getTasks = async function getTasks() {
