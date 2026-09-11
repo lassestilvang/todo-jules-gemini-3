@@ -43,7 +43,7 @@ function CreateSubtaskForm({ taskId, onCreated }: { taskId: number; onCreated: (
     <form onSubmit={handleAdd} className="flex items-center space-x-2 mt-2">
       <Input
         className="h-8 text-sm"
-        placeholder="Add subtask... (Press Enter to save)"
+        placeholder="Add subtask..."
         value={newSubtaskName}
         onChange={(e) => setNewSubtaskName(e.target.value)}
         aria-label="New subtask name"

@@ -69,6 +69,9 @@
 ## 2024-12-05 - Avoid Component Unmounting for Data Fetching
 **Learning:** Implementing `isLoading` checks to hide and entirely unmount child components during data fetching is an anti-pattern. It causes severe DOM thrashing by forcing components to unmount and remount, which hurts performance and creates jarring visual flickering. Better to pass null/undefined data and let the child components render loading skeletons or empty states.
 **Action:** Never use `!isLoading && <Component/>` to hide child components purely to avoid them making redundant API calls if they already handle null initial data. Optimize the data loading strategy (e.g., fetch in parent and pass down) instead of thrashing the DOM.
+## 2026-05-13 - Inlining Synchronous Database Reads to Avoid Promise Overhead
+**Learning:** When using `better-sqlite3` in Next.js Server Actions, even if the parent function is marked `async` to satisfy Next.js conventions, internally calling another `async` Server Action (e.g., `await getTaskLabels()`) strictly for a database read introduces unnecessary microtask Promise resolution overhead. SQLite queries themselves execute natively synchronously via C++ bindings.
+**Action:** Inline nested synchronous database read queries (like Drizzle's `.all()`) directly into the parent function body rather than calling and `await`ing separate `async` wrapper functions. This eliminates Promise overhead entirely while preserving the single-render-pass synchronous execution flow.
 ## 2026-05-13 - Parallelize IO-bound File System Operations
 **Learning:** While `better-sqlite3` queries are synchronous and do not benefit from `Promise.all`, Node.js native `fs/promises` operations like file deletion are truly asynchronous. A codebase-specific anti-pattern was found where file deletions were performed sequentially in a `for...of` loop, likely mirroring the sequential nature of DB queries. Parallelizing independent IO operations like `fs.unlink` with `Promise.all` significantly reduces latency when deleting tasks with many attachments.
 **Action:** Use `Promise.all` to parallelize independent `fs/promises` operations to prevent O(N) latency, contrasting this explicitly with the sequential await rule for `better-sqlite3` queries.
@@ -186,6 +189,17 @@
 ## 2024-07-25 - Use React.useMemo for date parsing and formatting in list items
 **Learning:** While precomputing expensive operations like `new Date()` and `date-fns format()` before the JSX return statement avoids redundant inline evaluations, doing so without `React.useMemo` means these operations still execute on every single render cycle of the component.
 **Action:** Wrap expensive synchronous operations like date parsing and formatting within `React.useMemo` (e.g., `const { formattedDate, isOverdue } = React.useMemo(() => { ... }, [task.date, task.isCompleted])`) when optimizing React list rendering. This ensures they are only re-evaluated when the underlying data changes, preventing CPU overhead on every render cycle.
+## 2024-07-21 - Precompute Date Formatting in Activity Log with useMemo
+**Learning:** In React list components, executing expensive operations such as `new Date()` and `format()` inline within JSX attributes inside a `.map()` causes redundant evaluations on every render cycle, degrading performance on large lists.
+**Action:** Wrap the mapping logic in `React.useMemo` to precompute expensive date parsing and formatting operations when the underlying data changes, and store the formatted strings in the mapped objects to prevent redundant inline recalculations.
 ## 2024-11-20 - Fix broken precomputed date parsing logic
 **Learning:** Having redundant blocks of optimization code (like both `useMemo` and regular `let/const` assignments for the same variables in the same scope) leads to immediate build failures due to redeclaration errors.
 **Action:** When precomputing expensive operations (like date parsing and formatting in `TaskItem`), ensure there is only one definitive block of logic—preferably leveraging `React.useMemo` for optimal performance without polluting the block scope with duplicate variable names.
+## 2024-11-20 - Precompute Date Formatting in Detailed Form Views
+**Learning:** Executing expensive date parsing (`new Date()`) and formatting (`format()`) inline within JSX in frequently updating detailed views (like `TaskDetailSheet` with heavy state) causes redundant evaluations on every render cycle during form interactions.
+**Action:** Extract and precompute date formatting operations into `useMemo` in the component body, even for single items in detail views, to prevent redundant recalculations when other form state changes trigger re-renders.
+
+## 2026-08-19 - Optimize Payload Sanitization in updateTask
+
+**Learning:** Iterating over a fixed 15-element array with `for...of` in `updateTask` for small partial update payloads (typically 1–3 keys) unnecessarily checks 15 keys on every update call. Iterating over `Object.keys(data)` and performing O(1) set lookup via `Set.has(key)` reduces iteration overhead by ~85% for typical single-field updates.
+**Action:** Replace fixed array loop in `updateTask` payload sanitization with `Object.keys(data)` iteration checked against a pre-instantiated `Set`.

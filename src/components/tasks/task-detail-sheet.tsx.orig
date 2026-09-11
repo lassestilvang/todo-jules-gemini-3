@@ -57,17 +57,6 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
     }
   }, [task?.id]);
 
-  // ⚡ Bolt: Precompute expensive date parsing and formatting operations using useMemo to prevent
-  // redundant recalculations on every render cycle (e.g., during form inputs or UI interactions).
-  const { parsedDate, formattedDate } = useMemo(() => {
-      if (!task?.date) return { parsedDate: undefined, formattedDate: undefined };
-      const parsed = new Date(task.date);
-      return {
-          parsedDate: parsed,
-          formattedDate: format(parsed, "PPP")
-      };
-  }, [task?.date]);
-
   if (!task) return null;
 
   const handleUpdate = async (data: Partial<Task>) => {
@@ -149,7 +138,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
             <TabsContent value="details">
                 <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                    <Label htmlFor="name">Task Name <span className="text-[10px] text-muted-foreground font-normal ml-2 hidden sm:inline">Press Enter to save</span></Label>
+                    <Label htmlFor="name">Task Name</Label>
                     <Input
                         id="name"
                         defaultValue={task.name}
@@ -159,14 +148,13 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="description">Description <span className="text-[10px] text-muted-foreground font-normal ml-2 hidden sm:inline">Press ⌘/Ctrl+Enter to save</span></Label>
+                    <Label htmlFor="description">Description</Label>
                     <Textarea
                         id="description"
                         defaultValue={task.description || ''}
                         onBlur={(e) => handleUpdate({ description: e.target.value })}
                         onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !e.nativeEvent.isComposing) { e.preventDefault(); e.currentTarget.blur(); } }}
                         className="min-h-[100px]"
-                        placeholder="Add a more detailed description... (Press ⌘/Ctrl+Enter to save)"
                     />
                 </div>
 
@@ -273,7 +261,6 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button
-                                    type="button"
                                     id={`due-date-${task.id}`}
                                     variant={"outline"}
                                     className={cn(
@@ -282,13 +269,13 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                                     )}
                                 >
                                     <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-                                    {formattedDate ? formattedDate : <span>Pick a date</span>}
+                                    {task.date ? format(new Date(task.date), "PPP") : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0">
                                 <Calendar
                                     mode="single"
-                                    selected={parsedDate}
+                                    selected={task.date ? new Date(task.date) : undefined}
                                     onSelect={(date) => handleUpdate({ date: date ? format(date, 'yyyy-MM-dd') : null })}
                                     initialFocus
                                 />
@@ -297,7 +284,7 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="deadline">Deadline <span className="text-[10px] text-muted-foreground font-normal ml-2 hidden sm:inline">Press Enter to save</span></Label>
+                        <Label htmlFor="deadline">Deadline</Label>
                         <Input
                             id="deadline"
                             type="datetime-local"
@@ -310,31 +297,29 @@ export function TaskDetailSheet({ task, open, onOpenChange, labels }: TaskDetail
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="estimate">Estimate (min) <span className="text-[10px] text-muted-foreground font-normal ml-2 hidden sm:inline">Press Enter to save</span></Label>
+                        <Label htmlFor="estimate">Estimate (min)</Label>
                         <Input
                             id="estimate"
                             type="number"
                             defaultValue={task.estimate || undefined}
                             onBlur={(e) => handleUpdate({ estimate: parseInt(e.target.value) || null })}
                             onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) e.currentTarget.blur(); }}
-                            placeholder="e.g. 30"
                         />
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="actualTime">Actual (min) <span className="text-[10px] text-muted-foreground font-normal ml-2 hidden sm:inline">Press Enter to save</span></Label>
+                        <Label htmlFor="actualTime">Actual (min)</Label>
                         <Input
                             id="actualTime"
                             type="number"
                             defaultValue={task.actualTime || undefined}
                             onBlur={(e) => handleUpdate({ actualTime: parseInt(e.target.value) || null })}
                             onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) e.currentTarget.blur(); }}
-                            placeholder="e.g. 45"
                         />
                     </div>
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="reminders">Reminders <span className="text-[10px] text-muted-foreground font-normal ml-2 hidden sm:inline">Press Enter to save</span></Label>
+                    <Label htmlFor="reminders">Reminders</Label>
                     <Input
                         id="reminders"
                         placeholder="e.g. 10m before"

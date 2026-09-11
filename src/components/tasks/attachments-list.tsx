@@ -87,6 +87,7 @@ export function AttachmentsList({ taskId, initialAttachments }: AttachmentsListP
             onChange={handleFileChange}
           />
           <Button
+            type="button"
             variant="outline"
             size="sm"
             onClick={() => fileInputRef.current?.click()}

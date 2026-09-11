@@ -36,6 +36,9 @@ export async function createLabel(data: { name: string; color?: string }) {
   if (color && color.length > 255) {
     throw new Error('Label color must be 255 characters or less.');
   }
+  if (color && !/^#([0-9a-fA-F]{3}){1,2}$/.test(color)) {
+    throw new Error('Invalid color format. Expected hex code.');
+  }
   db.insert(labels).values({ name, color }).run();
   try { revalidatePath('/'); } catch { /* empty */ }
 }

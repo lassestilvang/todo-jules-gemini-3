@@ -13,3 +13,18 @@
 ## 2024-06-01 - Accessible Names for Disabled Submit Buttons
 **Learning:** Dynamically changing the `aria-label` of a disabled submit button to an error message (e.g., "Task name is required") is an accessibility anti-pattern. It removes the button's semantic function ("Add task") for screen reader users, confusing them.
 **Action:** Keep the `aria-label` permanently focused on the button's action. Use a wrapping `<span title="...">` to display dynamic error messages as visual tooltips for sighted users hovering over the disabled button.
+## 2025-06-26 - Expose Hidden Keyboard Shortcuts
+**Learning:** Implementing power-user keyboard shortcuts (like ⌘/Ctrl+Enter to save a Textarea) is great for UX, but if they are completely hidden, users will never discover them, leading to frustration when there's no visible "Save" button.
+**Action:** Always expose hidden keyboard shortcuts in the UI, either through descriptive `placeholder` text on the input itself or via small helper text nearby, to ensure they are discoverable by all users.
+## 2024-07-28 - Tooltips for Disabled Submit Buttons
+**Learning:** In forms or dialogs where the submit button is disabled until mandatory fields are filled, users relying on hover to understand the application state might miss the contextual reason. Since native `title` attributes do not trigger on disabled `<button>` elements, wrapping the disabled button in a `<span>` with a `title` attribute allows sighted users to discover why the action is restricted.
+**Action:** Always wrap disabled submit buttons in a container element (like a `<span>` with `tabIndex={-1}`) and apply the `title` attribute to the wrapper to ensure the explanatory tooltip is accessible to sighted users via mouse hover. Note: using `tabIndex={-1}` is a tradeoff that prevents keyboard users from natively focusing the wrapper (since the disabled button itself drops out of the tab order), which means this technique primarily benefits mouse hover interactions.
+## 2024-11-20 - Skip to main content link
+**Learning:** For applications with dense or persistent sidebars, keyboard-only and screen reader users can be frustrated by having to tab through every sidebar item on every page load just to reach the main content.
+**Action:** Always provide a visually hidden 'Skip to main content' link at the top of the DOM that anchors to the primary content container. Ensure the target container has `id="main-content"`, `tabIndex={-1}`, and `outline-none` to properly receive programmatic focus without showing a default focus ring.
+
+## 2025-02-06 - Add skip-to-content links for persistent sidebars
+**Learning:** When applications feature persistent or dense sidebars, keyboard users are forced to repeatedly tab through numerous navigation links just to reach the primary content area on every page load.
+## 2024-08-04 - Skip to main content links
+**Learning:** For applications with dense or persistent sidebars, keyboard users have to tab through every single navigation link on every route change before reaching the actual page content, which is a frustrating accessibility barrier.
+**Action:** Always provide a visually hidden, keyboard-focusable 'Skip to main content' link at the top of the DOM that anchors to the primary content container. Ensure the target container has `id="main-content"`, `tabIndex={-1}`, and `outline-none` to properly receive programmatic focus without showing a default focus ring.
