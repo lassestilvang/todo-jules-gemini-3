@@ -203,3 +203,7 @@
 
 **Learning:** Iterating over a fixed 15-element array with `for...of` in `updateTask` for small partial update payloads (typically 1–3 keys) unnecessarily checks 15 keys on every update call. Iterating over `Object.keys(data)` and performing O(1) set lookup via `Set.has(key)` reduces iteration overhead by ~85% for typical single-field updates.
 **Action:** Replace fixed array loop in `updateTask` payload sanitization with `Object.keys(data)` iteration checked against a pre-instantiated `Set`.
+
+## 2024-11-20 - Extract Static Arrays Outside Components
+**Learning:** Defining static arrays (like `staticLinks`) inside React function components causes them to be re-allocated on every single render cycle, creating unnecessary garbage collection overhead and object references.
+**Action:** Move static array and object definitions outside of the component body to ensure they are only allocated once per module load.

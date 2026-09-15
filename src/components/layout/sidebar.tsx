@@ -89,15 +89,15 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
     labels: Label[];
 }
 
-export function Sidebar({ className, lists, labels }: SidebarProps) {
-  const staticLinks = [
-    { name: 'Inbox', href: '/', icon: Inbox },
-    { name: 'Today', href: '/today', icon: CalendarDays },
-    { name: 'Next 7 Days', href: '/next-7-days', icon: CalendarRange },
-    { name: 'Upcoming', href: '/upcoming', icon: Calendar },
-    { name: 'All Tasks', href: '/all', icon: Layers },
-  ];
+const staticLinks = [
+  { name: 'Inbox', href: '/', icon: Inbox },
+  { name: 'Today', href: '/today', icon: CalendarDays },
+  { name: 'Next 7 Days', href: '/next-7-days', icon: CalendarRange },
+  { name: 'Upcoming', href: '/upcoming', icon: Calendar },
+  { name: 'All Tasks', href: '/all', icon: Layers },
+];
 
+export function Sidebar({ className, lists, labels }: SidebarProps) {
   return (
     <div className={cn('pb-12 w-64 border-r min-h-screen bg-background', className)}>
       <div className="space-y-4 py-4">
