@@ -36,3 +36,8 @@
 **Vulnerability:** List and label creation endpoints lacked strict format validation for the `color` property, allowing arbitrary strings.
 **Learning:** When user input is directly used in UI styling (like React's `style` object), relying solely on framework auto-escaping is insufficient as a sole defense. An attacker could inject unexpected values that might cause rendering issues or become dangerous if reused in less secure contexts.
 **Prevention:** Always apply strict format validation (e.g., regex checks for hex codes) to any user-provided data that dictates UI presentation or inline styling.
+
+## 2025-05-31 - Drizzle SQL Template Variable Escaping
+**Vulnerability:** In Drizzle ORM, escaping the `$` in a `sql` tagged template literal (e.g., `sql\`\${table.column} IS NULL\``) prevents the JavaScript engine from interpolating the variable. This causes Drizzle to output the raw literal string containing the `$` instead of a parameterized query chunk.
+**Learning:** This can lead to SQL syntax errors (e.g., `SqliteError: unrecognized token: "$"`) and broken data retrieval because the actual column name or parameterized value is not bound correctly.
+**Prevention:** Never escape the `$` symbol when interpolating Drizzle columns or variables inside `sql` tagged template literals to ensure correct and safe parameterization.
