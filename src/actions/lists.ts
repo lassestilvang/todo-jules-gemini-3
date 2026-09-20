@@ -8,7 +8,7 @@ import { cache } from 'react';
 import { headers } from 'next/headers';
 import { rateLimit } from '@/lib/rate-limit';
 
-export const getListsInternal = cache(function getListsInternal() {
+const getListsInternal = cache(function getListsInternal() {
   return db.select().from(lists).all();
 });
 
