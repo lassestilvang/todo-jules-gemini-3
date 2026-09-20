@@ -36,3 +36,7 @@
 **Vulnerability:** List and label creation endpoints lacked strict format validation for the `color` property, allowing arbitrary strings.
 **Learning:** When user input is directly used in UI styling (like React's `style` object), relying solely on framework auto-escaping is insufficient as a sole defense. An attacker could inject unexpected values that might cause rendering issues or become dangerous if reused in less secure contexts.
 **Prevention:** Always apply strict format validation (e.g., regex checks for hex codes) to any user-provided data that dictates UI presentation or inline styling.
+## 2024-06-05 - Prevent Rate Limit Bypass via Exported Internal Server Actions
+**Vulnerability:** Internal helper functions (`getTasksInternal`, `getListsInternal`) in `'use server'` files were exported. In Next.js, any exported function from a `'use server'` file becomes a public API endpoint. These internal functions lacked rate limiting, allowing an attacker to invoke them directly and bypass the rate limits enforced on the public wrappers, leading to a potential Denial of Service (DoS) via database exhaustion.
+**Learning:** Next.js automatically creates public HTTP endpoints for ALL exports in `'use server'` files, even if they are only intended for internal use within the same file.
+**Prevention:** Never use the `export` keyword for internal helper functions inside `'use server'` files. Extract shared helpers to a separate file without the `'use server'` directive if they must be imported elsewhere.
